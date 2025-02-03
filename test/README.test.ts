@@ -98,7 +98,7 @@ test("Quickstart > Use as classical HKTs 🐱", () => {
 });
 
 test("Quickstart > Use as type-level functions ✨", () => {
-  const capitalize = (s: string) => (s.length > 0 ? s[0].toUpperCase() + s.slice(1) : "");
+  const capitalize = (s: string) => (s.length > 0 ? s[0]!.toUpperCase() + s.slice(1) : "");
 
   {
     const concatNames = (names: string[]) =>
@@ -405,8 +405,8 @@ test("Documentation > Generic type-level functions", () => {
       ) => TArg<this, "T"> & TArg<this, "U">;
       return: Arg0<this> & Arg1<this>;
     }
-    expect<MergeUserData>().to(
-      beOfSig<<T extends HasName, U>(user: T & HasName, data: U) => T & HasName & U>,
+    expect<Sig<MergeUserData>>().to(
+      equal<<T extends HasName, U>(user: T & HasName, data: U) => T & HasName & U>,
     );
   }
 });
@@ -426,7 +426,7 @@ test("Documentation > Type checking in detail > Bypassing strict type checking",
     interface Concat extends TypeLambda<[s1: string, s2: string], string> {
       return: RawArg0<this> extends infer S1 extends Stringifiable ?
         RawArg1<this> extends infer S2 extends Stringifiable ?
-          `${RawArg0<this>}${RawArg1<this>}`
+          `${S1}${S2}`
         : never
       : never;
     }
@@ -657,7 +657,7 @@ test("Documentation > Common Utilities > `Flip`", () => {
     expect<Call2<Map, Append<"baz">, ["foo", "bar"]>>().to(equal<["foobaz", "barbaz"]>);
 
     type FlippedMap = Flip<Map>;
-    expect<FlippedMap>().to(beOfSig<<U, T>(xs: U[], f: (x: U) => T) => T[]>);
+    expect<FlippedMap>().to(beOfSig<<T, U>(xs: T[], f: (x: T) => U) => U[]>);
     expect<Call2<FlippedMap, ["foo", "bar"], Append<"baz">>>().to(equal<["foobaz", "barbaz"]>);
   }
 
