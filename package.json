@@ -1,0 +1,65 @@
+{
+  "name": "hkt-core",
+  "version": "1.0.0-beta.0",
+  "private": true,
+  "description": "🍃 A micro HKT (higher-kinded type) implementation for TypeScript, with type safety elegantly guaranteed.",
+  "keywords": [
+    "type gymnastics",
+    "type level",
+    "type safe",
+    "generic",
+    "generic programming",
+    "hkt",
+    "higher kinded type",
+    "type level programming"
+  ],
+  "homepage": "https://github.com/Snowflyt/hkt-core",
+  "bugs": {
+    "url": "https://github.com/Snowflyt/hkt-core/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Snowflyt/hkt-core"
+  },
+  "license": "MIT",
+  "author": "Snowflyt <gaoge011022@163.com>",
+  "type": "module",
+  "types": "./index.d.ts",
+  "workspaces": [
+    "typroof-plugin"
+  ],
+  "scripts": {
+    "prebuild": "npm run clean",
+    "build": "tsc --noEmit && cpy \"src/**/*\" dist && rimraf --glob \"dist/**/*.test.ts\" && renamer --find .ts --replace .d.ts \"dist/**\" && replace-in-file \"/^\\s*\\/\\/ eslint-disable-next-line .+$/mg\" \"\" \"dist/**/*.d.ts\" --isRegex && replace-in-file \"/^\\s*\\/\\*\\s+eslint-disable\\s+(\\S+\\s+)?\\*\\/$/mg\" \"\" \"dist/**/*.d.ts\" --isRegex && prettier --log-level=silent --write \"dist/**/*\" --ignore-path !dist/ && cpy package.json dist && json -I -f dist/package.json -e \"delete this.private; delete this.workspaces; delete this.scripts; delete this.devDependencies\" && cpy LICENSE dist && cpy COMMERCIAL_LICENSE.md dist && cpy README.md dist",
+    "clean": "rimraf dist",
+    "format": "prettier --no-error-on-unmatched-pattern --write **/*.{js,ts,json,md} *.{cjs,mjs,cts,mts}",
+    "lint": "eslint **/*.{js,ts} *.{cjs,mjs,cts,mts} --no-error-on-unmatched-pattern --report-unused-disable-directives-severity error --max-warnings 0",
+    "lint:fix": "eslint --fix **/*.{js,ts} *.{cjs,mjs,cts,mts} --no-error-on-unmatched-pattern --report-unused-disable-directives-severity error --max-warnings 0",
+    "test": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json && typroof"
+  },
+  "devDependencies": {
+    "@types/eslint": "^8.56.12",
+    "@types/lint-staged": "^13.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.23.0",
+    "@typescript-eslint/parser": "^8.23.0",
+    "chalk": "^5.4.1",
+    "cpy-cli": "^5.0.0",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-import-resolver-typescript": "^3.7.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-prettier": "^5.2.3",
+    "eslint-plugin-sonarjs": "^0.25.1",
+    "eslint-plugin-sort-destructure-keys": "^2.0.0",
+    "fp-ts": "^2.16.9",
+    "json": "^11.0.0",
+    "lint-staged": "^15.4.3",
+    "prettier": "^3.4.2",
+    "prettier-plugin-packagejson": "^2.5.8",
+    "renamer": "^5.0.2",
+    "replace-in-file": "^8.3.0",
+    "rimraf": "^6.0.1",
+    "typescript": "latest",
+    "typroof": "^0.3.8"
+  }
+}

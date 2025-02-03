@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "typroof.config.ts",
+    ".eslintrc.cjs",
+    "prettier.config.cjs",
+    "commitlint.config.js",
+    ".lintstagedrc.js"
+  ]
+}

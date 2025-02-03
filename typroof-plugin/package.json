@@ -1,0 +1,18 @@
+{
+  "name": "@hkt-core/typroof-plugin",
+  "private": true,
+  "description": "Typroof plugin for hkt-core’s internal use for type testing",
+  "homepage": "https://github.com/Snowflyt/hkt-core/tree/main/typroof-plugin",
+  "bugs": {
+    "url": "https://github.com/Snowflyt/hkt-core/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Snowflyt/hkt-core"
+  },
+  "license": "MIT",
+  "author": "Snowflyt <gaoge011022@163.com>",
+  "type": "module",
+  "types": "./index.d.ts",
+  "main": "./index.js"
+}
