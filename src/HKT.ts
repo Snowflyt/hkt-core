@@ -765,12 +765,19 @@ interface GenericTypeLambdaMeta<TypeParameters extends TypeParameter[]> extends 
  * Get a generic type parameter of a {@linkcode TypeLambdaG} by name.
  */
 export type TArg<F extends TypeLambdaG, Name extends F["~hkt"]["tparams"][number][0]> =
-  F extends {
-    readonly [K in `~${Extract<F["~hkt"]["tparams"][number], [Name, any]>[0]}`]: infer T extends
-      Extract<F["~hkt"]["tparams"][number], [Name, any]>[1];
-  } ?
-    T
-  : Extract<F["~hkt"]["tparams"][number], [Name, any]>[1];
+  // Do not use the following implementation
+  // ```
+  // F extends {
+  //   readonly [K in `~${Name}`]: infer T extends _TypeParameterUpperBoundByName<F, Name>;
+  // } ? T : _TypeParameterUpperBoundByName<F, Name>
+  // ```
+  // which does not seem to infer a type argument when its corresponding upper bound is specified
+  F extends { readonly [K in `~${Name}`]: _TypeParameterUpperBoundByName<F, Name> } ? F[`~${Name}`]
+  : _TypeParameterUpperBoundByName<F, Name>;
+type _TypeParameterUpperBoundByName<F extends TypeLambdaG, Name extends string> = Extract<
+  F["~hkt"]["tparams"][number],
+  [Name, unknown]
+>[1];
 
 /**
  * Get type arguments of a {@linkcode TypeLambdaG} based on known parameters and return type.
@@ -803,7 +810,7 @@ export type TypeArgs<F extends TypeLambdaG, Known = never> =
     {
       readonly [K in keyof F["~hkt"]["tparams"] as `~${F["~hkt"]["tparams"][StringToNumber<K>][0]}`]: F["~hkt"]["tparams"][StringToNumber<K>][1];
     }
-  : _TypeArgs<F, F["~hkt"]["tparams"], _OmitInvalidKeysInKnown<F, Known>>;
+  : _TypeArgs<F, _OmitInvalidKeysInKnown<F, Known>>;
 type _PickTypeArgs<F> = Pick<F, `~${TypeParameterIdentifier}` & keyof F>;
 // Omit extract keys and keys that are not the subtype of declared parameters or return type
 type _OmitInvalidKeysInKnown<F extends TypeLambdaG, Known> = {
@@ -813,73 +820,69 @@ type _OmitInvalidKeysInKnown<F extends TypeLambdaG, Known> = {
   > as Known[K] extends (K extends number ? TolerantParams<F>[K] : TolerantRetType<F>) ? K
   : never]: Known[K];
 };
-type _TypeArgs<
-  F extends { readonly signature: unknown },
-  TypeParameters extends TypeParameter[],
-  Known,
-> =
-  TypeParameters["length"] extends 4 ?
+type _TypeArgs<F extends TypeLambdaG, Known> =
+  F["~hkt"]["tparams"]["length"] extends 4 ?
     _BuildKnownSignature<ParametersW<F["signature"]>["length"], Known> extends (
       (_FlipParameterVariance<F> & {
-        readonly [K in `~${TypeParameters[0][0]}`]: infer T;
+        readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: infer T;
       } & {
-        readonly [K in `~${TypeParameters[1][0]}`]: infer U;
+        readonly [K in `~${F["~hkt"]["tparams"][1][0]}`]: infer U;
       } & {
-        readonly [K in `~${TypeParameters[2][0]}`]: infer V;
+        readonly [K in `~${F["~hkt"]["tparams"][2][0]}`]: infer V;
       } & {
-        readonly [K in `~${TypeParameters[3][0]}`]: infer W;
+        readonly [K in `~${F["~hkt"]["tparams"][3][0]}`]: infer W;
       })["signature"]
     ) ?
       {
-        readonly [K in `~${TypeParameters[0][0]}`]: T & TypeParameters[0][1];
+        readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: T & F["~hkt"]["tparams"][0][1];
       } & {
-        readonly [K in `~${TypeParameters[1][0]}`]: U & TypeParameters[1][1];
+        readonly [K in `~${F["~hkt"]["tparams"][1][0]}`]: U & F["~hkt"]["tparams"][1][1];
       } & {
-        readonly [K in `~${TypeParameters[2][0]}`]: V & TypeParameters[2][1];
+        readonly [K in `~${F["~hkt"]["tparams"][2][0]}`]: V & F["~hkt"]["tparams"][2][1];
       } & {
-        readonly [K in `~${TypeParameters[3][0]}`]: W & TypeParameters[3][1];
+        readonly [K in `~${F["~hkt"]["tparams"][3][0]}`]: W & F["~hkt"]["tparams"][3][1];
       }
     : never
-  : TypeParameters["length"] extends 3 ?
+  : F["~hkt"]["tparams"]["length"] extends 3 ?
     _BuildKnownSignature<ParametersW<F["signature"]>["length"], Known> extends (
       (_FlipParameterVariance<F> & {
-        readonly [K in `~${TypeParameters[0][0]}`]: infer T;
+        readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: infer T;
       } & {
-        readonly [K in `~${TypeParameters[1][0]}`]: infer U;
+        readonly [K in `~${F["~hkt"]["tparams"][1][0]}`]: infer U;
       } & {
-        readonly [K in `~${TypeParameters[2][0]}`]: infer V;
+        readonly [K in `~${F["~hkt"]["tparams"][2][0]}`]: infer V;
       })["signature"]
     ) ?
       {
-        readonly [K in `~${TypeParameters[0][0]}`]: T & TypeParameters[0][1];
+        readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: T & F["~hkt"]["tparams"][0][1];
       } & {
-        readonly [K in `~${TypeParameters[1][0]}`]: U & TypeParameters[1][1];
+        readonly [K in `~${F["~hkt"]["tparams"][1][0]}`]: U & F["~hkt"]["tparams"][1][1];
       } & {
-        readonly [K in `~${TypeParameters[2][0]}`]: V & TypeParameters[2][1];
+        readonly [K in `~${F["~hkt"]["tparams"][2][0]}`]: V & F["~hkt"]["tparams"][2][1];
       }
     : never
-  : TypeParameters["length"] extends 2 ?
+  : F["~hkt"]["tparams"]["length"] extends 2 ?
     _BuildKnownSignature<ParametersW<F["signature"]>["length"], Known> extends (
       (_FlipParameterVariance<F> & {
-        readonly [K in `~${TypeParameters[0][0]}`]: infer T;
+        readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: infer T;
       } & {
-        readonly [K in `~${TypeParameters[1][0]}`]: infer U;
+        readonly [K in `~${F["~hkt"]["tparams"][1][0]}`]: infer U;
       })["signature"]
     ) ?
       {
-        readonly [K in `~${TypeParameters[0][0]}`]: T & TypeParameters[0][1];
+        readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: T & F["~hkt"]["tparams"][0][1];
       } & {
-        readonly [K in `~${TypeParameters[1][0]}`]: U & TypeParameters[1][1];
+        readonly [K in `~${F["~hkt"]["tparams"][1][0]}`]: U & F["~hkt"]["tparams"][1][1];
       }
     : never
-  : TypeParameters["length"] extends 1 ?
+  : F["~hkt"]["tparams"]["length"] extends 1 ?
     _BuildKnownSignature<ParametersW<F["signature"]>["length"], Known> extends (
       (_FlipParameterVariance<F> & {
-        readonly [K in `~${TypeParameters[0][0]}`]: infer T;
+        readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: infer T;
       })["signature"]
     ) ?
       {
-        readonly [K in `~${TypeParameters[0][0]}`]: T & TypeParameters[0][1];
+        readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: T & F["~hkt"]["tparams"][0][1];
       }
     : never
   : [];
@@ -905,11 +908,12 @@ type _BuildKnownReturnType<Known> =
 // NOTE: Wrap `In<...>` here is intentional to flip variance of parameters,
 // so TypeScript and infer type arguments correctly when known parameters are subtype of
 // declared parameters.
-interface _FlipParameterVariance<F extends { readonly signature: unknown }> {
+interface _FlipParameterVariance<F extends TypeLambdaG> extends TypeLambda {
+  readonly "~hkt": F["~hkt"];
   readonly signature: _WrapInForEachParameter<(F & _PickTypeArgs<this>)["signature"]>;
 }
-type _WrapInForEachParameter<S> = (
-  ...args: ParametersW<S> extends infer Params extends unknown[] ?
+type _WrapInForEachParameter<S extends (...args: never) => unknown> = (
+  ...args: Parameters<S> extends infer Params extends unknown[] ?
     { [K in keyof Params]: In<Params[K]> }
   : never
 ) => ReturnTypeW<S>;
