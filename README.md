@@ -609,15 +609,20 @@ type _Map<F, TS> = { [K in keyof TS]: Call1W<F, TS[K]> };
 
 type SigOfMap = Sig<Map>; // => <T, U>(f: (x: T) => U, xs: T[]) => U[]
 
-// Just an example for demonstrating the usage of multiple type parameters with optional upper bounds
-type HasName = { name: string };
-
-interface MergeUserData extends TypeLambdaG<[["T", HasName], "U"]> {
-  signature: (user: TArg<this, "T">, data: TArg<this, "U">) => TArg<this, "T"> & TArg<this, "U">;
-  return: Arg0<this> & Arg1<this>;
+// A generic `Object.fromEntries` at type level
+interface FromEntries extends TypeLambdaG<[["K", PropertyKey], "V"]> {
+  signature: (
+    entries: [TArg<this, "K">, TArg<this, "V">][],
+  ) => Record<TArg<this, "K">, TArg<this, "V">>;
+  return: _FromEntries<Arg0<this>>;
 }
+type _FromEntries<Entries extends [PropertyKey, unknown][]> = _PrettifyObject<{
+  [K in Entries[number][0]]: Extract<Entries[number], [K, unknown]>[1];
+}>;
+type _PrettifyObject<O> = O extends infer U ? { [K in keyof U]: U[K] } : never;
 
-type SigOfMergeUserData = Sig<MergeUserData>; // => <T extends HasName, U>(user: T, data: U) => T & U
+type SigOfFromEntries = Sig<FromEntries>; // => <K extends PropertyKey, V>(entries: [K, V][]) => Record<K, V>
+type FromEntriesResult = Call1<FromEntries, [["name", string], ["age", number]]>; // => { name: string, age: number }
 ```
 
 ### Aliases for classical HKT use cases
@@ -903,7 +908,7 @@ The same principles apply to **`Args`** and its variants. **`TolerantParams`** i
 
 ### Common Utilities
 
-There are many utilities commonly used in functional programming libraries. Some are very simple but are used frequently, while others may be used less often but can be quite complex to implement at the type level, especially to work well with *generic* type-level functions. Some of these utilities are already built into **hkt-core** and can be seamlessly composed with your own type-level functions.
+There are many utilities commonly used in functional programming libraries. Some are very simple but are used frequently, while others may be used less often but can be quite complex to implement at the type level, especially to work well with _generic_ type-level functions. Some of these utilities are already built into **hkt-core** and can be seamlessly composed with your own type-level functions.
 
 #### `Always`, `Identity` and `Ask`
 
@@ -948,7 +953,7 @@ type MatchResult = Pipe<Err<"Oops!">>, Result.Match<Prepend<"Mr. ">, Identity>>;
 
 Another interesting use case of **`Identity`** is converting a **`FlatMap`** operation to **`Flatten`** by passing **`Identity`** as the transformer, and you can find even more use cases in practice
 
-Lastly, we have **`Ask`**, which behaves similarly to **`Identity`**, but instead of being a *generic* type-level function, it is defined as a **type-level function template**:
+Lastly, we have **`Ask`**, which behaves similarly to **`Identity`**, but instead of being a _generic_ type-level function, it is defined as a **type-level function template**:
 
 ```typescript
 interface Ask<T> extends TypeLambda<[value: T], T> {
@@ -968,7 +973,7 @@ type SigOfIdentityString = Sig<Flow<Ask<string>, Identity>>; // => (value: strin
 type SigOfIdentityNumber = Sig<Compose<Identity, Ask<number>>>; // => (value: number) => number
 ```
 
-When composing multiple type-level functions via **`Flow`**, if the first function is a *generic* type-level function, you can use **`Ask`** to “pin” the first type-level function to avoid type errors about incompatible types.
+When composing multiple type-level functions via **`Flow`**, if the first function is a _generic_ type-level function, you can use **`Ask`** to “pin” the first type-level function to avoid type errors about incompatible types.
 
 #### `Tupled` and `Untupled`
 
@@ -1088,7 +1093,7 @@ It’s worth noting that **`U`** is widened to **`unknown`** in the **`MapOn`** 
 
 ### Tips for creating and managing your type-level functions
 
-**hkt-core** is a *core* library that provides essential utilities for type-level programming in TypeScript, but it doesn’t come with many built-in type-level functions out of the box. We’ve shown some examples of useful type-level functions in the previous sections, and you might create your own toolkit with a lot of useful type-level functions based on **hkt-core**. Below are some tips for creating and managing your type-level functions effectively.
+**hkt-core** is a _core_ library that provides essential utilities for type-level programming in TypeScript, but it doesn’t come with many built-in type-level functions out of the box. We’ve shown some examples of useful type-level functions in the previous sections, and you might create your own toolkit with a lot of useful type-level functions based on **hkt-core**. Below are some tips for creating and managing your type-level functions effectively.
 
 First, while it might seem appealing, we don’t recommend creating auto-currying type-level functions like those in [HOTScript](https://github.com/gvergnaud/HOTScript). TypeScript cannot reliably identify whether a function is partially applied or not (see [a discussion about TypeScript support in Ramda’s repository](https://github.com/ramda/ramda/issues/2976#issuecomment-706475091)), and this applies to type-level functions as well. Instead, we recommend manually creating curried functions, similar to how [fp-ts](https://github.com/gcanti/fp-ts) handles currying.
 

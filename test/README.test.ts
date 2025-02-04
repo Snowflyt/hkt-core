@@ -384,7 +384,6 @@ test("Documentation > Generic type-level functions", () => {
       signature: (value: TArg<this, "T">) => TArg<this, "T">;
       return: Arg0<this>;
     }
-    type B = Sig<Identity>;
     expect<Identity>().to(beOfSig<<T>(value: T) => T>);
 
     interface Map extends TypeLambdaG<["T", "U"]> {
@@ -397,16 +396,35 @@ test("Documentation > Generic type-level functions", () => {
     type _Map<F, TS> = { [K in keyof TS]: Call1W<F, TS[K]> };
     expect<Map>().to(beOfSig<<T, U>(f: (x: T) => U, xs: T[]) => U[]>);
 
-    type HasName = { name: string };
-    interface MergeUserData extends TypeLambdaG<[["T", HasName], "U"]> {
+    interface FromEntries extends TypeLambdaG<[["K", PropertyKey], "V"]> {
       signature: (
-        user: TArg<this, "T">,
-        data: TArg<this, "U">,
-      ) => TArg<this, "T"> & TArg<this, "U">;
-      return: Arg0<this> & Arg1<this>;
+        entries: [TArg<this, "K">, TArg<this, "V">][],
+      ) => Record<TArg<this, "K">, TArg<this, "V">>;
+      return: _FromEntries<Arg0<this>>;
     }
-    expect<Sig<MergeUserData>>().to(
-      equal<<T extends HasName, U>(user: T & HasName, data: U) => T & HasName & U>,
+    type _FromEntries<Entries extends [PropertyKey, unknown][]> = _PrettifyObject<{
+      [K in Entries[number][0]]: Extract<Entries[number], [K, unknown]>[1];
+    }>;
+    type _PrettifyObject<O> = O extends infer U ? { [K in keyof U]: U[K] } : never;
+
+    // Current, `Sig` has some problems and doesn’t fully expand the signature.
+    // For example, the result of `Sig<FromEntries>` is `<T extends PropertyKey, U>(
+    //   entries: [TArg<FromEntries & { readonly "~K": T; readonly "~V": U }, "K">, U][],
+    // ) => Record<TArg<FromEntries & { readonly "~K": T; readonly "~V": U }, "K">, U>`
+    // Though it seems equivalent to the expected signature (i.e.,
+    // `<K extends PropertyKey, V>(entries: [K, V][]) => Record<K, V>`), TypeScript doesn’t
+    // recognize them as equal.
+    // Therefore, we do not use `beOfSig` to test the signature of `FromEntries` here, but we test
+    // several refined signatures in the following tests.
+    expect<Sig<FromEntries, [[string, number][]]>>().to(
+      equal<(entries: [string, number][]) => Record<string, number>>,
+    );
+    expect<Sig<FromEntries, { r: Record<number, string | boolean> }>>().to(
+      equal<(entries: [number, string | boolean][]) => Record<number, string | boolean>>,
+    );
+
+    expect<Call1<FromEntries, [["name", string], ["age", number]]>>().to(
+      equal<{ name: string; age: number }>,
     );
   }
 });
