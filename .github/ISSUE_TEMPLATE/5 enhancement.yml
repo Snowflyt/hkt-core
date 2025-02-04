@@ -1,0 +1,12 @@
+name: ♻️ Propose change or improvement
+description: Propose a change or improvement to the library, such as new features, better documentation, or performance enhancements
+labels: enhancement
+
+body:
+  - type: textarea
+    id: description
+    validations:
+      required: true
+    attributes:
+      label: Description
+      description: Describe the change or improvement you are proposing

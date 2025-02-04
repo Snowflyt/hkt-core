@@ -1,0 +1,19 @@
+name: 😺 Share your type-level function
+description: Share your type-level function that could benefit others! While we only accept widely-used utilities, your function may still be a valuable resource, even if not added to the library.
+labels: type-level function share
+
+body:
+  - type: textarea
+    id: description
+    validations:
+      required: true
+    attributes:
+      label: Description + examples
+
+  - type: textarea
+    id: source
+    validations:
+      required: true
+    attributes:
+      label: Type-level function source
+      description: Provide the source code for your type-level function, either as a TypeScript snippet or a link to a GitHub repository or TypeScript playground.

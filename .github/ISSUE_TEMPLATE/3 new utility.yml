@@ -1,0 +1,33 @@
+name: 💡 Suggest new utility type
+description: Only utilities that are widely used and have a clear use case are accepted
+labels: utility addition
+
+body:
+  - type: textarea
+    id: description
+    validations:
+      required: true
+    attributes:
+      label: Utility description + examples
+      description: To keep this library small and focused, we only add utilities that are widely used and have a clear use case. Utilities for specific use cases or edge cases are not accepted.
+
+  - type: textarea
+    id: source
+    attributes:
+      label: Utility type source
+      description: If you already have the utility type source, enter it here as a starting point for the discussion.
+
+  - type: input
+    id: playground
+    attributes:
+      label: TypeScript playground link
+      description: |
+        If you already have some code to demonstrate the utility type, open [this TypeScript playground](https://www.typescriptlang.org/play/?#code/JYWwDg9gTgLgBDAnmApnA3nAglA5gBgBps8BGYgYQEMAbGgJmIBVkUAZKkAIwBMq4AvnABmUCCDgAiABYBrGAFoAxtBSSA3AFgAUDuAA7GCijCqStBQj6lVeCgAeR-TwDOcFqg7c+AHgDaLqQAXHAuMFAGuMQu9CFhEfq4ALrR4ZEAfBg6cHBQKDAArlD6IQAGACToOAQ+MNLALukCldWktfWNAqVa2gI6OkiocJbWtgBKKC4FNPAAvMO0DD4jNjDEksIQEJLrXFRQkuk9APTHOXAAegD8OkA), write a piece of code to show the proposed utility type behavior, click "Share", and paste the URL here.
+
+  - id: requirements
+    type: checkboxes
+    attributes:
+      label: Search existing types and issues first
+      options:
+        - label: I tried my best to look for it
+          required: true

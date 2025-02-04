@@ -1,0 +1,18 @@
+name: 🤔 Discuss limitation
+description: Discuss a limitation that can be hardly solved with the current implementation of this library
+labels: limitation
+
+body:
+  - type: textarea
+    id: description
+    validations:
+      required: true
+    attributes:
+      label: Limitation description
+
+  - type: input
+    id: repro
+    attributes:
+      label: Repro
+      description: |
+        Open [this TypeScript playground](https://www.typescriptlang.org/play/?#code/JYWwDg9gTgLgBDAnmApnA3nAglA5gBgBps8BGYgYQEMAbGgJmIBVkUAZKkAIwBMq4AvnABmUCCDgAiABYBrGAFoAxtBSSA3AFgAUDuAA7GCijCqStBQj6lVeCgAeR-TwDOcFqg7c+AHgDaLqQAXHAuMFAGuMQu9CFhEfq4ALrR4ZEAfBg6cHBQKDAArlD6IQAGACToOAQ+MNLALukCldWktfWNAqVa2gI6OkiocJbWtgBKKC4FNPAAvMO0DD4jNjDEksIQEJLrXFRQkuk9APTHOXAAegD8OkA), write a piece of code to show the limitation, click "Share", and paste the URL here.

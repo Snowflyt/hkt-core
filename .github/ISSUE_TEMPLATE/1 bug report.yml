@@ -1,0 +1,28 @@
+name: 🐞 Report BUG
+description: Report a BUG for unexpected behavior
+labels: bug
+
+body:
+  - type: textarea
+    id: description
+    validations:
+      required: true
+    attributes:
+      label: BUG description
+
+  - type: input
+    id: repro
+    validations:
+      required: true
+    attributes:
+      label: Repro
+      description: |
+        Open [this TypeScript playground](https://www.typescriptlang.org/play/?#code/JYWwDg9gTgLgBDAnmApnA3nAglA5gBgBps8BGYgYQEMAbGgJmIBVkUAZKkAIwBMq4AvnABmUCCDgAiABYBrGAFoAxtBSSA3AFgAUDuAA7GCijCqStBQj6lVeCgAeR-TwDOcFqg7c+AHgDaLqQAXHAuMFAGuMQu9CFhEfq4ALrR4ZEAfBg6cHBQKDAArlD6IQAGACToOAQ+MNLALukCldWktfWNAqVa2gI6OkiocJbWtgBKKC4FNPAAvMO0DD4jNjDEksIQEJLrXFRQkuk9APTHOXAAegD8OkA), write a piece of code that fails your expectations, click “Share”, and paste the URL here.
+
+  - id: requirements
+    type: checkboxes
+    attributes:
+      label: Search existing issues first
+      options:
+        - label: I tried my best to look for it
+          required: true
