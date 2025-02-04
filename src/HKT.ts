@@ -679,25 +679,20 @@ type _Sig<F, BaseParams extends unknown[], BaseRetType, Known = never> =
       ...args: _FurtherExpandAll<TolerantParams<F>, BaseParams>
     ) => _FurtherExpand<TolerantRetType<F>, BaseRetType>
   : never;
-type _FurtherExpandAll<TS, BaseTypes> = {
-  [K in keyof TS]: _FurtherExpand<TS[K], GetProp<BaseTypes, K>>;
+type _FurtherExpandAll<TS extends unknown[], BaseTypes extends unknown[]> = {
+  [K in keyof BaseTypes]: _FurtherExpand<TS[StringToNumber<K>], BaseTypes[K]>;
 };
 type _FurtherExpand<T, BaseType> =
   BaseType extends TypeLambda ? _Sig<T, TolerantParams<BaseType>, TolerantRetType<BaseType>> : T;
 type _GenericParamsWithTypeArgsTuple<F extends TypeLambdaG, Types extends unknown[]> = Parameters<
-  (F & {
-    // Use `& F["~hkt"]["tparams"][K][1]` to allow TypeScript evaluate the type deeper
-    readonly [K in IndexOf<F["~hkt"]["tparams"]> as `~${F["~hkt"]["tparams"][K][0]}`]: Types[K] &
-      F["~hkt"]["tparams"][K][1];
-  })["signature"]
+  _RefinedSigByTypeArgsTuple<F, Types>
 >;
 type _GenericRetTypeWithTypeArgsTuple<F extends TypeLambdaG, Types extends unknown[]> = ReturnType<
-  (F & {
-    // Use `& F["~hkt"]["tparams"][K][1]` to allow TypeScript evaluate the type deeper
-    readonly [K in IndexOf<F["~hkt"]["tparams"]> as `~${F["~hkt"]["tparams"][K][0]}`]: Types[K] &
-      F["~hkt"]["tparams"][K][1];
-  })["signature"]
+  _RefinedSigByTypeArgsTuple<F, Types>
 >;
+type _RefinedSigByTypeArgsTuple<F extends TypeLambdaG, Types extends unknown[]> = (F & {
+  readonly [K in IndexOf<F["~hkt"]["tparams"]> as `~${F["~hkt"]["tparams"][K][0]}`]: Types[K];
+})["signature"];
 
 /***********
  * Generic *
