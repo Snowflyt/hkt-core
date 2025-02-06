@@ -305,7 +305,7 @@ type _2 = Call2<Concat, "foo", "bar">; // => "foobar"
 
 Inside a **`TypeLambda`**, we can access the input types using **`Args<this>`** and its variants like **`Arg0<this>`**, **`Arg1<this>`**, etc. To “invoke” a **`TypeLambda`**, we use **`Apply`** or its aliases like **`Call1`**, **`Call2`**, etc., which correspond to type-level functions that take exactly one, two, or more type arguments. These utilities work similarly to **`Function.prototype.apply`** and **`Function.prototype.call`** in JavaScript.
 
-It’s worth noting that the **`Concat`** type-level function we created above is **`typed`**, meaning the input types are strictly checked. We declared the parameters as **`[s1: string, s2: string]`** and the return type as **`string`**. The parameters are represented as a [labeled tuple](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-0.html#labeled-tuple-elements) — these labels are just used by **`Sig`** to generate a human-readable signature and do not affect type checking. You can remove them if you prefer.
+It’s worth noting that the **`Concat`** type-level function we created above is **`typed`**, meaning the input types are strictly checked. We declared the parameters as **`[s1: string, s2: string]`** and the return type as **`string`**. The parameters are represented as a [labeled tuple](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-0.html#labeled-tuple-elements) — these labels are just used by **`Sig`** to generate a human-readable signature and do not affect type checking or validation. You can remove them if you prefer.
 
 If the input types don’t match the expected types, TypeScript will issue an error:
 
@@ -321,7 +321,7 @@ type ConcatWrong2 = Call2<Concat, "foo", 42>;
 //             Type 'number' does not satisfy the constraint 'string'.
 ```
 
-For more details on type checking (e.g., how incompatible arguments are handled and how to bypass strict type checking), check out the [Type Checking in Detail](#type-checking-in-detail) section.
+For more details on type checking and validation (e.g., how incompatible arguments are handled and how to bypass strict type checking), check out the [Type checking and validation in Detail](#type-checking-and-validation-in-detail) section.
 
 **hkt-core** also provides type-level **`Flow`** and **`Pipe`** utility types to compose unary type-level functions. These types work similarly to **`pipe`** and **`flow`** in **fp-ts**:
 
@@ -638,19 +638,29 @@ type _ = Call1<FromEntries, [["name", string], ["age", number]]>; // => { name: 
 
 The aliases for higher-arity type constructors allow you to work with type constructors that take multiple type arguments, such as **`Either<L, R>`** or **`State<S, A>`**.
 
-The **`W`** suffix in **`Call*W`** stands for “**widening**”, meaning type checking is relaxed for arguments passed to the type-level function. For more details, see the [Bypass strict type checking](#bypass-strict-type-checking) sections.
+The **`W`** suffix in **`Call*W`** stands for “**widening**”, meaning type checking and validation are relaxed for arguments passed to the type-level function. For more details, see the [Bypass strict type checking and validation](#bypass-strict-type-checking-and-validation) sections.
 
-### Type checking in detail
+### Type checking and validation in detail
 
-#### Bypass strict type checking
+#### Type checking V.S. Type validation
 
-There are cases where you might want to bypass strict type checking, such as when working with complex generic types or when you need to handle incompatible types. **hkt-core** provides a set of utilities to help you handle these cases:
+Just like in plain TypeScript, **type checking** and **type validation** are two different concepts that are often confused.
 
-- **`ApplyW`**, **`Call1W`**, **`Call2W`**, etc. are the “**widening**” versions of **`Apply`**, **`Call1`**, **`Call2`**, etc. They relax type checking for arguments passed to the type-level function **and the return type**.
+In plain TypeScript, **type checking** refers to the _compile-time_ verification that ensures variables, function parameters, and return values match their _declared_ types. Meanwhile, **(runtime) type validation** is the _run-time_ process that confirms actual values conform to the declared types. **Type checking** is handled by the TypeScript compiler, whereas **type validation** is usually performed by custom code or 3rd-party libraries such as [Zod](https://github.com/colinhacks/zod), [TypeBox](https://github.com/sinclairzx81/typebox) and [Arktype](https://github.com/arktypeio/arktype).
+
+Although **hkt-core** is a _type-only_ library operating solely at _compile-time_, the distinction still applies. In **hkt-core**, **type checking** verifies that the input types provided to a type-level function are compatible with the _declared_ types, e.g., the TypeScript compiler will emit errors for signature mismatches in utilities like `Flow` or `Pipe`.
+
+On the other hand, **type validation** in **hkt-core** ensures that the actual arguments passed or the computed return result match the _declared_ types, typically using utilities like `Args`, `Apply` and `Call*`. For example, if a `Concat` type-level function declared to return a `string` accidentally returns a `number`, the utility will yield **`never`** as the result without triggering a TypeScript error.
+
+#### Bypass strict type checking and validation
+
+There are cases where you might want to bypass strict type checking or validation, such as when working with complex generic types or when you need to handle incompatible types. **hkt-core** provides a set of utilities to help you handle these cases:
+
+- **`ApplyW`**, **`Call1W`**, **`Call2W`**, etc. are the “**widening**” versions of **`Apply`**, **`Call1`**, **`Call2`**, etc. They relax both type _checking_ for arguments passed to the type-level function **and type _validation_ for the return type**.
 - **`RawArgs`** and its variants (**`RawArg0`**, **`RawArg1`**, etc.) are used to access the original arguments passed to a **`TypeLambda`**, regardless of whether they are compatible with the parameters.
-- **`Params`**, **`RetType`**, **`Args`** and **`RawArgs`** all provide their **widening** versions (e.g., **`RetTypeW`**, **`Args0W`**, **`RawArgs1W`**, etc.) to bypass strict type checking. Unlike **`ApplyW`** and its variants, which relax type checking for both arguments and return types, these widening utilities are simple aliases for their strict counterparts. They return **`never`** when the input type is not a **`TypeLambda`**, and do not perform additional checks or relaxations.
+- **`Params`**, **`RetType`**, **`Args`** and **`RawArgs`** all provide their **widening** versions (e.g., **`RetTypeW`**, **`Args0W`**, **`RawArgs1W`**, etc.) to bypass strict type checking. Unlike **`ApplyW`** and its variants, which relax both type _checking_ for arguments and type _validation_ for return types, these widening utilities are simple aliases for their strict counterparts that relaxes type checking. They return **`never`** when the input type is not a **`TypeLambda`**, and do not perform additional checks or relaxations.
 
-Note that using **`ApplyW`** and its variants alone does not fully bypass strict type checking if the body of a type-level function is still defined using **`Args`** and its variants. **`ApplyW`** and its variants only relax type checking for arguments _passed_ to the type-level function and the return type, but they do not change the behavior of the type-level function’s body. For example:
+Note that using **`ApplyW`** and its variants alone does not fully bypass strict type checking and validation if the body of a type-level function is still defined using **`Args`** and its variants. **`ApplyW`** and its variants only relax type _checking_ for arguments _passed_ to the type-level function and the return type, but they do not suppress type _validation_ performed by **`Args`** in the type-level function’s body. For example:
 
 ```typescript
 interface Concat extends TypeLambda<[s1: string, s2: string], string> {
@@ -703,9 +713,9 @@ As we can see, bypassing strict type checking doesn’t always simplify things a
 
 In most cases, you don’t need these widening utilities if you skip declaring your type-level function’s signatures (i.e., use _untyped_ type-level functions). The parameters and return type of **`TypeLambda`** already default to **`any`**, so these widening utilities and their strict counterparts behave the same in such cases, as shown in the [Use as classical HKTs](#use-as-classical-hkts-) section.
 
-#### Type checking in `Args`
+#### Type validation in `Args`
 
-<strong><code>Args</code></strong> and its variants (**`Arg0`**, **`Arg1`**, etc.) enforce strict type checking inside the **`TypeLambda`** definition. By using them, TypeScript can infer the types of the arguments against the **_declared_ parameters** correctly — meaning you don’t need to manually check the types of the arguments inside the **`TypeLambda`**, they just work!
+<strong><code>Args</code></strong> and its variants (**`Arg0`**, **`Arg1`**, etc.) enforce strict type validation inside the **`TypeLambda`** definition. By using them, TypeScript can infer the types of the arguments against the **_declared_ parameters** correctly — meaning you don’t need to manually check the types of the arguments inside the **`TypeLambda`**, they just work!
 
 ```typescript
 type JoinString<S1 extends string, S2 extends string> = `${S1}${S2}`;
@@ -769,9 +779,9 @@ type _2 = ApplyW<PrintArgs, ["foo", "bar", "baz"]>; // => ["foo", "bar"]
 type _3 = ApplyW<PrintArgs, ["foo"]>; // => ["foo", never]
 ```
 
-If you want to access the original arguments passed to a **`TypeLambda`**, regardless of whether they are compatible with the parameters, use **`RawArgs`** or its variants instead (see the [Bypass strict type checking](#bypass-strict-type-checking) section for more details).
+If you want to access the original arguments passed to a **`TypeLambda`**, regardless of whether they are compatible with the parameters, use **`RawArgs`** or its variants instead (see the [Bypass strict type checking and validation](#bypass-strict-type-checking-and-validation) section for more details).
 
-#### Type checking in `Apply` and `Call*`
+#### Type checking and validation in `Apply` and `Call*`
 
 Just like **`Args`** and its variants, which coerce the arguments to match the declared parameters, **`Apply`** and its variants (**`Call1`**, **`Call2`**, etc.) coerce the returned value of a type-level function to match the declared return type. If the returned value is not compatible with the declared return type, it is cast to **`never`**:
 
@@ -792,7 +802,7 @@ type _3 = Call2<ConcatWrong, "foo", "bar">; // => never
 
 In the example above, **`ConcatWrong`** returns a number, which is incompatible with the declared return type **`string`**. Even though **`ConcatWrong`** returns a value that is not **`never`** (i.e., `42`), **`Apply`** still coerces the returned value to **`never`** because it is not compatible with the declared return type. The same applies to the variants of **`Apply`**, such as **`Call2`** in this case.
 
-As is already mentioned in the [Bypass strict type checking](#bypass-strict-type-checking) section, you can use **`ApplyW`** and its variants if you don’t want the return value to be coerced to **`never`** when it’s incompatible with the declared return type.
+As is already mentioned in the [Bypass strict type checking and validation](#bypass-strict-type-checking-and-validation) section, you can use **`ApplyW`** and its variants if you don’t want the return value to be coerced to **`never`** when it’s incompatible with the declared return type.
 
 While the return type coercion behavior of **`Apply`** and its variants might cause confusion in some cases, it is useful for making TypeScript aware of type incompatibilities early on. For example, let’s revisit the **`JoinBy`** function from the **`JoinBy`** function from the [Generic type-level functions](#generic-type-level-functions) section. However, instead of using `Arg0<this> extends [infer S extends string]` in the body, let’s remove the `extends string` constraint and use `Arg0<this> extends [infer S]`:
 
@@ -821,13 +831,13 @@ interface JoinBy<Sep extends string> extends TypeLambda<[strings: string[]], str
 
 However, because we use **`Call1`** in the original implementation, TypeScript doesn’t report such an issue in the function. This is because **`Call1`** always coerces the return value to match the declared return type **`string`**, allowing TypeScript to ensure that the type of `Call1<JoinBy<Sep>, Tail>` must be **`string`**, and thus no issue arises.
 
-#### Type checking in _generic_ type-level functions
+#### Type checking and validation in _generic_ type-level functions
 
 > [!TIP]
 >
 > This section assumes you’ve already read the [Generic type-level functions](#generic-type-level-functions) section.
 
-When it comes to **\*generic\* type-level functions**, the type-checking behavior is slightly different. The general rule is _still the same_ as in previous sections, but here we have to address an issue that can often break type checking in many libraries: **variance**.
+When it comes to **_generic_ type-level functions**, the type checking/validation behavior is slightly different. The general rule is _still the same_ as in previous sections, but here we have to address an issue that can often break type checking in many libraries: **variance**.
 
 Consider the generic **`Map`** example we skimmed at the end of the [Generic type-level functions](#generic-type-level-functions) section:
 
@@ -869,7 +879,7 @@ Let’s take a look at the result of **`Params<Map>`** to better understand the 
 type ParamsOfMap = Params<Map>; // => [f: TypeLambda<[x: unknown], unknown>, xs: unknown[]]
 ```
 
-The signature of **`Append<"baz">`** is `(s: string) => string`, whereas the expected signature is `(x: unknown) => unknown`. Because of the covariant nature of function parameters in TypeScript, **`(s: string) => string`** is not considered a subtype of **`(x: unknown) => unknown`**. This is because **`unknown`** is not assignable to **`string`**, which causes the type-checking error.
+The signature of **`Append<"baz">`** is `(s: string) => string`, whereas the expected signature is `(x: unknown) => unknown`. Because of the covariant nature of function parameters in TypeScript, **`(s: string) => string`** is not considered a subtype of **`(x: unknown) => unknown`**. This is because **`unknown`** is not assignable to **`string`**, which causes the type checking error.
 
 Similar issues also occur in non-type-level functions in TypeScript. For example:
 
@@ -906,9 +916,9 @@ type TolerantParamsOfMap = TolerantParams<Map>; // => [f: TypeLambda<[x: never],
 type TolernatRetTypeOfMap = TolerantRetType<Map>; // => unknown[]
 ```
 
-With **`TolerantParams`** replacing **`Params`**, TypeScript no longer throws errors about incompatible types — and that’s how type-checking for parameters is handled in **`Apply`** and its variants.
+With **`TolerantParams`** replacing **`Params`**, TypeScript no longer throws errors about incompatible types — and that’s how type checking for parameters is handled in **`Apply`** and its variants.
 
-The same principles apply to **`Args`** and its variants. **`TolerantParams`** is used instead of **`Params`** to ensure correct type-checking, and we’ll skip the details here since they work in much the same way.
+The same principles apply to **`Args`** and its variants. **`TolerantParams`** is used instead of **`Params`** to ensure correct type validation, and we’ll skip the details here since they work in much the same way.
 
 ### Common Utilities
 
