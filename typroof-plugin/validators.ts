@@ -1,5 +1,5 @@
 import type { Sig } from "../src";
-import type { Stringify, ToAnalyze } from "typroof";
+import type { Actual, Expected, IsNegated, Stringify, ToAnalyze, Validator } from "typroof/plugin";
 
 /**
  * Checks whether `T` exactly equals `U`.
@@ -33,27 +33,37 @@ type StringifyAll<TS> =
     `\`${Stringify<Head>}\`, \`${StringifyAll<Tail>}\``
   : "";
 
-declare module "typroof" {
-  interface Validator<T, U, Not> {
-    beOfSig: Not extends false ?
-      IsOfSignature<T, U> extends false ?
-        `Expect \`TypeLambda<${Stringify<Sig<T>>}>\` to be of signature \`${Stringify<U>}\`, but does not`
-      : IsOfSignature<T, U>
-    : IsOfSignature<T, U> extends false ? false
-    : IsOfSignature<T, U>;
-    beOneOf: Not extends false ?
-      IsOneOf<T, U> extends true ?
-        true
-      : `Expect \`Stringify<T>\` to be ${StringifyAll<U>}, but does not`
-    : IsOneOf<T, U> extends false ? false
-    : `Expect \`Stringify<T>\` not to be ${StringifyAll<U>}, but does`;
-    exactEqual: Not extends false ?
-      Equals<T, U> extends true ?
-        ToAnalyze<[T, U]>
-      : `Expect \`${Stringify<T>}\` to exactly equal \`${Stringify<U>}\`, but does not`
-    : Equals<T, U> extends false ? false
-    : ToAnalyze<[T, U]>;
+declare module "typroof/plugin" {
+  interface ValidatorRegistry {
+    beOfSig: BeOfSigValidator;
+    beOneOf: BeOneOfValidator;
+    exactEqual: ExactEqualValidator;
   }
+}
+
+interface BeOfSigValidator extends Validator {
+  return: IsNegated<this> extends false ?
+    IsOfSignature<Actual<this>, Expected<this>> extends false ?
+      `Expect \`TypeLambda<${Stringify<Sig<Actual<this>>>}>\` to be of signature \`${Stringify<Expected<this>>}\`, but does not`
+    : IsOfSignature<Actual<this>, Expected<this>>
+  : IsOfSignature<Actual<this>, Expected<this>> extends false ? false
+  : IsOfSignature<Actual<this>, Expected<this>>;
+}
+interface BeOneOfValidator extends Validator {
+  return: IsNegated<this> extends false ?
+    IsOneOf<Actual<this>, Expected<this>> extends true ?
+      true
+    : `Expect \`${Stringify<Actual<this>>}\` to be ${StringifyAll<Expected<this>>}, but does not`
+  : IsOneOf<Actual<this>, Expected<this>> extends false ? false
+  : `Expect \`${Stringify<Actual<this>>}\` not to be ${StringifyAll<Expected<this>>}, but does`;
+}
+interface ExactEqualValidator extends Validator {
+  return: IsNegated<this> extends false ?
+    Equals<Actual<this>, Expected<this>> extends true ?
+      ToAnalyze<[Actual<this>, Expected<this>]>
+    : `Expect \`${Stringify<Actual<this>>}\` to exactly equal \`${Stringify<Expected<this>>}\`, but does not`
+  : Equals<Actual<this>, Expected<this>> extends false ? false
+  : ToAnalyze<[Actual<this>, Expected<this>]>;
 }
 
 export {};
