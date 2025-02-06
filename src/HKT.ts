@@ -1073,7 +1073,7 @@ type _GetParameterOrReturnTypeByIndex<S, Index extends number | "r"> =
  */
 export type Apply<F extends TypeLambda, Args extends TolerantParams<F>> =
   F & { readonly Args: (_: Args) => void } extends infer F2 extends { readonly return: unknown } ?
-    F2["return"] extends infer R extends TolerantRetType<F> ?
+    F2["return"] extends infer R extends RetType<F, Args> ?
       R
     : never
   : never;
@@ -1093,7 +1093,7 @@ export type ApplyW<F, Args> =
  */
 export type Call0<F extends TypeLambda0<unknown>> =
   F extends infer F2 extends { readonly return: unknown } ?
-    F2["return"] extends infer R extends TolerantRetType<F> ?
+    F2["return"] extends infer R extends RetType<F> ?
       R
     : never
   : never;
@@ -1110,7 +1110,7 @@ export type Call0W<F> =
  */
 export type Call1<F extends TypeLambda1<never, unknown>, A0 extends TolerantParams<F>[0]> =
   F & { readonly Args: (_: [A0]) => void } extends infer F2 extends { readonly return: unknown } ?
-    F2["return"] extends infer R extends TolerantRetType<F> ?
+    F2["return"] extends infer R extends RetType<F, [A0]> ?
       R
     : never
   : never;
@@ -1139,7 +1139,7 @@ export type Call2<
   F & { readonly Args: (_: [A0, A1]) => void } extends (
     infer F2 extends { readonly return: unknown }
   ) ?
-    F2["return"] extends infer R extends TolerantRetType<F> ?
+    F2["return"] extends infer R extends RetType<F, [A0, A1]> ?
       R
     : never
   : never;
@@ -1171,7 +1171,7 @@ export type Call3<
   F & { readonly Args: (_: [A0, A1, A2]) => void } extends (
     infer F2 extends { readonly return: unknown }
   ) ?
-    F2["return"] extends infer R extends TolerantRetType<F> ?
+    F2["return"] extends infer R extends RetType<F, [A0, A1, A2]> ?
       R
     : never
   : never;
@@ -1204,7 +1204,7 @@ export type Call4<
   F & { readonly Args: (_: [A0, A1, A2, A3]) => void } extends (
     infer F2 extends { readonly signature: (...args: any) => unknown; readonly return: unknown }
   ) ?
-    F2["return"] extends infer R extends TolerantRetType<F> ?
+    F2["return"] extends infer R extends RetType<F, [A0, A1, A2, A3]> ?
       R
     : never
   : never;
