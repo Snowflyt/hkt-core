@@ -40,8 +40,8 @@ interface In<in T> {
  *
  * @example
  * ```typescript
- * type R1 = GetProp<{ a: 1, b: 2 }, "a">; // => 1
- * type R2 = GetProp<{ a: 1, b: 2 }, "c">; // => never
+ * type _1 = GetProp<{ a: 1, b: 2 }, "a">; // => 1
+ * type _2 = GetProp<{ a: 1, b: 2 }, "c">; // => never
  * ```
  */
 type GetProp<O, K> = K extends keyof O ? O[K] : never;
@@ -63,9 +63,9 @@ type StringToNumber<S> = S extends `${infer N extends number}` ? N : never;
  *
  * @example
  * ```typescript
- * type R1 = IndexOf<{ 0: string; b: number; 1: boolean }>; // => 0 | 1
- * type R2 = IndexOf<[string, number, boolean]>; // => 0 | 1 | 2
- * type R3 = IndexOf<string[]>; // => number
+ * type _1 = IndexOf<{ 0: string; b: number; 1: boolean }>; // => 0 | 1
+ * type _2 = IndexOf<[string, number, boolean]>; // => 0 | 1 | 2
+ * type _3 = IndexOf<string[]>; // => number
  * ```
  */
 type IndexOf<O> =
@@ -77,10 +77,10 @@ type IndexOf<O> =
 type _IndexOfTuple<
   O extends readonly unknown[],
   Counter extends void[] = [],
-  Result extends number = never,
+  Acc extends number = never,
 > =
-  Counter["length"] extends O["length"] ? Result
-  : _IndexOfTuple<O, [...Counter, void], Result | Counter["length"]>;
+  Counter["length"] extends O["length"] ? Acc
+  : _IndexOfTuple<O, [...Counter, void], Acc | Counter["length"]>;
 
 /**
  * Remove the first element from a tuple type (label is preserved).
@@ -88,10 +88,10 @@ type _IndexOfTuple<
  *
  * @example
  * ```typescript
- * type R1 = Tail<[1, 2, 3]>; // => [2, 3]
- * type R2 = Tail<[1]>; // => []
- * type R3 = Tail<[]>; // => []
- * type R4 = Tail<[a: 1, b: 2, c: 3]>; // => [b: 2, c: 3]
+ * type _1 = Tail<[1, 2, 3]>; // => [2, 3]
+ * type _2 = Tail<[1]>; // => []
+ * type _3 = Tail<[]>; // => []
+ * type _4 = Tail<[a: 1, b: 2, c: 3]>; // => [b: 2, c: 3]
  * ```
  */
 type Tail<TS> =
@@ -106,10 +106,10 @@ type Tail<TS> =
  *
  * @example
  * ```typescript
- * type R1 = Init<[1, 2, 3]>; // => [1, 2]
- * type R2 = Init<[1]>; // => []
- * type R3 = Init<[]>; // => []
- * type R4 = Init<[a: 1, b: 2, c: 3]>; // => [a: 1, b: 2]
+ * type _1 = Init<[1, 2, 3]>; // => [1, 2]
+ * type _2 = Init<[1]>; // => []
+ * type _3 = Init<[]>; // => []
+ * type _4 = Init<[a: 1, b: 2, c: 3]>; // => [a: 1, b: 2]
  * ```
  */
 type Init<TS> =
@@ -124,10 +124,10 @@ type Init<TS> =
  *
  * @example
  * ```typescript
- * type R1 = HeadPart<[1, 2, 3]>; // => [1]
- * type R2 = HeadPart<[1]>; // => [1]
- * type R3 = HeadPart<[]>; // => []
- * type R4 = HeadPart<[a: 1, b: 2, c: 3]>; // => [a: 1]
+ * type _1 = HeadPart<[1, 2, 3]>; // => [1]
+ * type _2 = HeadPart<[1]>; // => [1]
+ * type _3 = HeadPart<[]>; // => []
+ * type _4 = HeadPart<[a: 1, b: 2, c: 3]>; // => [a: 1]
  * ```
  */
 type HeadPart<TS, Result = TS> =
@@ -138,11 +138,11 @@ type HeadPart<TS, Result = TS> =
  *
  * @example
  * ```typescript
- * type R1 = GetPart<[1, 2, 3], 0>; // => [1]
- * type R2 = GetPart<[1, 2, 3], 1>; // => [2]
- * type R3 = GetPart<[1, 2, 3], 2>; // => [3]
- * type R4 = GetPart<[1, 2, 3], 3>; // => []
- * type R5 = GetPart<[a: 1, b: 2, c: 3], 1>; // => [b: 2]
+ * type _1 = GetPart<[1, 2, 3], 0>; // => [1]
+ * type _2 = GetPart<[1, 2, 3], 1>; // => [2]
+ * type _3 = GetPart<[1, 2, 3], 2>; // => [3]
+ * type _4 = GetPart<[1, 2, 3], 3>; // => []
+ * type _5 = GetPart<[a: 1, b: 2, c: 3], 1>; // => [b: 2]
  * ```
  */
 type GetPart<TS, Index, Counter extends void[] = []> =
@@ -178,12 +178,12 @@ type ReturnTypeW<F> = F extends (...args: any) => infer R ? R : never;
  *   return: `${Arg0<this>}${Arg1<this>}`;
  * }
  * // Apply a TypeLambda with arguments
- * type R1 = Apply<Concat, ["foo", "bar"]>; // => "foobar"
+ * type ConcatRes = Apply<Concat, ["foo", "bar"]>; // => "foobar"
  * // Print the signature of `Concat` for debugging purposes
- * type S1 = Sig<Concat>; // => (s1: string, s2: string) => string
+ * type ConcatSig = Sig<Concat>; // => (s1: string, s2: string) => string
  * // Errors are reported if arguments are not compatible with parameters
- * type Wrong = Apply<Concat, ["foo", 42]>;
- * //                         ~~~~~~~~~~~
+ * type ConcatWrong = Apply<Concat, ["foo", 42]>;
+ * //                               ~~~~~~~~~~~
  * // Type '["foo", 42]' does not satisfy the constraint '[s1: string, s2: string]'.
  * //   Type at position 1 in source is not compatible with type at position 1 in target.
  * //     Type 'number' is not assignable to type 'string'.
@@ -195,16 +195,16 @@ type ReturnTypeW<F> = F extends (...args: any) => infer R ? R : never;
  *     `${Head}${Sep}${Apply<JoinBy<Sep>, [Tail]>}`
  *   : "";
  * }
- * type S2 = Sig<JoinBy<", ">>; // => (strings: string[]) => string
- * type R2 = Apply<JoinBy<", ">, [["foo", "bar", "baz"]]>; // => "foo, bar, baz"
+ * type JoinBySig = Sig<JoinBy<", ">>; // => (strings: string[]) => string
+ * type JoinByRes = Apply<JoinBy<", ">, [["foo", "bar", "baz"]]>; // => "foo, bar, baz"
  *
  * // If you don’t want to type the TypeLambda, simply extend them without specifying the parameters
  * // and return type
  * interface JustConcat extends TypeLambda {
  *   return: `${Arg0<this>}${Arg1<this>}`;
  * }
- * type R3 = Apply<JustConcat, ["foo", "bar"]>; // => "foobar"
- * type R4 = Apply<JustConcat, ["foo", 42]>; // => "foo42"
+ * type JustConcatSig = Apply<JustConcat, ["foo", "bar"]>; // => "foobar"
+ * type JustConcatRes = Apply<JustConcat, ["foo", 42]>; // => "foo42"
  * ```
  */
 export interface TypeLambda<in Params extends unknown[] = any, out RetType = any> {
@@ -300,11 +300,11 @@ export type HKT4<T = any, U = any, V = any, W = any, F = any> = TypeLambda4<T, U
  * }
  *
  * // Incompatible arguments are cast to `never`
- * type R1 = ApplyW<PrintArgs, ["foo", 42]>; // => ["foo", never]
+ * type _1 = ApplyW<PrintArgs, ["foo", 42]>; // => ["foo", never]
  * // Redundant arguments are truncated
- * type R2 = ApplyW<PrintArgs, ["foo", "bar", "baz"]>; // => ["foo", "bar"]
+ * type _2 = ApplyW<PrintArgs, ["foo", "bar", "baz"]>; // => ["foo", "bar"]
  * // Missing arguments are filled with `never`
- * type R3 = ApplyW<PrintArgs, ["foo"]>; // => ["foo", never]
+ * type _3 = ApplyW<PrintArgs, ["foo"]>; // => ["foo", never]
  * ```
  */
 export type Args<F extends TypeLambda> =
@@ -326,9 +326,9 @@ export type ArgsW<F> = F extends TypeLambda ? Args<F> : never;
  *
  * @example
  * ```typescript
- * type R1 = CastArgs<["foo", 42], [string, string]>; // => ["foo", never]
- * type R3 = CastArgs<["foo", "bar"], [string]>; // => ["foo"]
- * type R2 = CastArgs<["foo"], [string, string]>; // => ["foo", never]
+ * type _1 = CastArgs<["foo", 42], [string, string]>; // => ["foo", never]
+ * type _2 = CastArgs<["foo", "bar"], [string]>; // => ["foo"]
+ * type _3 = CastArgs<["foo"], [string, string]>; // => ["foo", never]
  * ```
  */
 type CastArgs<Args, ExpectedParams extends unknown[]> =
@@ -351,12 +351,12 @@ type CastArgs<Args, ExpectedParams extends unknown[]> =
  * @example
  * ```typescript
  * // Redundant arguments are truncated
- * type R1 = AlignArgs<[1, 2, 3], [number, number]>; // => [1, 2]
+ * type _1 = AlignArgs<[1, 2, 3], [number, number]>; // => [1, 2]
  * // Missing arguments are filled with `never`
- * type R2 = AlignArgs<[1], [number, number]>; // => [1, never]
+ * type _2 = AlignArgs<[1], [number, number]>; // => [1, never]
  *
  * // NOTE: Argument types are not checked here
- * type R3 = AlignArgs<[1, 2], [number, string]>; // => [1, 2], OK
+ * type _3 = AlignArgs<[1, 2], [number, string]>; // => [1, 2], OK
  * ```
  */
 type AlignArgs<Args, ExpectedParams extends unknown[], Acc extends unknown[] = []> =
@@ -576,20 +576,20 @@ export type RetTypeW<F, Known = never> = F extends TypeLambda ? RetType<F, Known
  * interface Concat extends TypeLambda<[s1: string, s2: string], string> {
  *   return: `${Arg0<this>}${Arg1<this>}`
  * }
- * type SigOfConcat = Sig<Concat>; // => (s1: string, s2: string) => string
+ * type ConcatSig = Sig<Concat>; // => (s1: string, s2: string) => string
  *
  * interface MakeTuple extends TypeLambdaG<["T"]> {
  *   signature: (value: TArg<this, "T">) => [TArg<this, "T">];
  *   return: [Arg0<this>];
  * }
- * type SigOfMakeTuple = Sig<MakeTuple>; // => <T>(value: T) => [T]
+ * type MakeTupleSig = Sig<MakeTuple>; // => <T>(value: T) => [T]
  *
  * interface Map extends TypeLambdaG<["T", "U"]> {
  *   signature: (f: TypeLambda<[x: TArg<this, "T">], TArg<this, "U">>, xs: TArg<this, "T">[]) => TArg<this, "U">[];
  *   return: _Map<Arg0<this>, Arg1<this>>;
  * }
  * type _Map<F, TS> = { [K in keyof TS]: Call1W<F, TS[K]> };
- * type SigOfMap = Sig<Map>; // => <T, U>(f: (x: T) => U, xs: T[]) => U[]
+ * type MapSig = Sig<Map>; // => <T, U>(f: (x: T) => U, xs: T[]) => U[]
  * ```
  */
 export type Sig<F, Known = never> =
@@ -718,12 +718,12 @@ type TypeParameter = [TypeParameterIdentifier, unknown];
  *   return: [Arg0<this>];
  * }
  *
- * type SigOfMakeTuple = Sig<MakeTuple>; // => <T>(value: T) => [T]
- * type ResultOfMakeTuple = Apply<MakeTuple, [42]>; // => [42]
+ * type MakeTupleSig = Sig<MakeTuple>; // => <T>(value: T) => [T]
+ * type _1 = Apply<MakeTuple, [42]>; // => [42]
  *
  * type WrapStringTuple = Flow<Ask<string>, MakeTuple>;
- * type SigOfWrapStringTuple = Sig<WrapStringTuple>; // => (value: string) => [string]
- * type ResultOfWrapStringTuple = Apply<WrapStringTuple, ["foo"]>; // => ["foo"]
+ * type WrapStringTupleSig = Sig<WrapStringTuple>; // => (value: string) => [string]
+ * type _2 = Apply<WrapStringTuple, ["foo"]>; // => ["foo"]
  * ```
  *
  * @see {@linkcode TArg}
@@ -890,13 +890,13 @@ type _TypeArgs<F extends TypeLambdaG, Known> =
 type _BuildKnownSignature<ParameterLength extends number, Known> = (
   ...args: _BuildKnownParameters<ParameterLength, Known>
 ) => _BuildKnownReturnType<Known>;
-type _BuildKnownParameters<ParameterLength extends number, Known, Result extends unknown[] = []> =
-  Result["length"] extends ParameterLength ? Result
-  : Result["length"] extends IndexOf<Known> ?
+type _BuildKnownParameters<ParameterLength extends number, Known, Acc extends unknown[] = []> =
+  Acc["length"] extends ParameterLength ? Acc
+  : Acc["length"] extends IndexOf<Known> ?
     // The reason for wrapping `In<...>` here can be found in the comment of `_WrapInForEachParam`
-    _BuildKnownParameters<ParameterLength, Known, [...Result, In<Known[Result["length"]]>]>
+    _BuildKnownParameters<ParameterLength, Known, [...Acc, In<Known[Acc["length"]]>]>
   : // Use `any` as placeholder for unknown parameters
-    _BuildKnownParameters<ParameterLength, Known, [...Result, any]>;
+    _BuildKnownParameters<ParameterLength, Known, [...Acc, any]>;
 type _BuildKnownReturnType<Known> =
   // Use `never` as placeholder for unknown return type
   "r" extends keyof Known ? Known["r"] : never;
@@ -984,7 +984,7 @@ export type TolerantParamsW<F> = F extends TypeLambda ? TolerantParams<F> : neve
  * type _Map<F, TS> = { [K in keyof TS]: Call1W<F, TS[K]> };
  *
  * type CurriedMap = Curry<Map>;
- * type SigOfCurriedMap = Sig<CurriedMap>; // => <T, U>(f: (x: T) => U) => (xs: T[]) => U[]
+ * type CurriedMapSig = Sig<CurriedMap>; // => <T, U>(f: (x: T) => U) => (xs: T[]) => U[]
  *
  * type TolerantCurriedMapRetType = TolerantRetType<CurriedMap>;
  * // => TypeLambda<[xs: never[]], unknown[]>
@@ -1063,12 +1063,12 @@ type _GetParameterOrReturnTypeByIndex<S, Index extends number | "r"> =
  * interface ParseNumber extends TypeLambda<[n: string], number> {
  *   return: Arg0<this> extends `${infer N extends number}` ? N : never;
  * }
- * type ResultOfParseNumber = Apply<ParseNumber, ["42"]>; // => 42
+ * type ParserNumberRes = Apply<ParseNumber, ["42"]>; // => 42
  *
  * interface Concat extends TypeLambda<[s1: string, s2: string], string> {
  *   return: `${Arg0<this>}${Arg1<this>}`
  * }
- * type ResultOfConcat = Apply<Concat, ["foo", "bar"]>; // => "foobar"
+ * type ConcatRes = Apply<Concat, ["foo", "bar"]>; // => "foobar"
  * ```
  */
 export type Apply<F extends TypeLambda, Args extends TolerantParams<F>> =
@@ -1235,8 +1235,8 @@ export type Kind4<F, T, U, V, W> = Call4W<F, T, U, V, W>;
  * ```typescript
  * type Always42 = Always<42>;
  *
- * type SigOfAlways42 = Sig<Always42>; // => () => 42
- * type ResultOfAlways42 = Apply<Always42, [42]>; // => 42
+ * type Always42Sig = Sig<Always42>; // => () => 42
+ * type _ = Apply<Always42, [42]>; // => 42
  * ```
  */
 export interface Always<T> extends TypeLambda<[], T> {
@@ -1250,7 +1250,7 @@ export interface Always<T> extends TypeLambda<[], T> {
  *
  * @example
  * ```typescript
- * type ResultOfIdentity = Apply<Identity, [42]>; // => 42
+ * type _ = Apply<Identity, [42]>; // => 42
  * ```
  */
 export interface Identity extends TypeLambdaG<["T"]> {
@@ -1267,13 +1267,13 @@ export interface Identity extends TypeLambdaG<["T"]> {
  * @example
  * ```typescript
  * type AskNumber = Ask<number>;
- * type SigOfAskNumber = Sig<AskNumber>; // => (value: number) => number
- * type ResultOfAskNumber = Apply<AskNumber, [42]>; // => 42
+ * type AskNumberSig = Sig<AskNumber>; // => (value: number) => number
+ * type _1 = Apply<AskNumber, [42]>; // => 42
  *
  * // Fix the input type of `Identity` to `string`
  * type AskString = Flow<Ask<string>, Identity>;
- * type SigOfAskString = Sig<AskString>; // => (value: string) => string
- * type ResultOfAskString = Apply<AskString, ["foo"]>; // => "foo"
+ * type AskStringSig = Sig<AskString>; // => (value: string) => string
+ * type _2 = Apply<AskString, ["foo"]>; // => "foo"
  * ```
  */
 export interface Ask<T> extends TypeLambda<[value: T], T> {
@@ -1294,12 +1294,12 @@ export interface Ask<T> extends TypeLambda<[value: T], T> {
  *   : Acc["length"] extends Length ? Acc
  *   : _BuildTuple<Length, Fill, [...Acc, Fill]>;
  *
- * type SigOfAdd = Sig<Add>; // => (a: number, b: number) => number
- * type ResultOfAdd = Apply<Add, [1, 2]>; // => 3
+ * type AddSig = Sig<Add>; // => (a: number, b: number) => number
+ * type _1 = Apply<Add, [1, 2]>; // => 3
  *
  * type TupledAdd = Tupled<Add>;
- * type SigOfTupledAdd = Sig<TupledAdd>; // => (args: [a: number, b: number]) => number
- * type ResultOfTupledAdd = Apply<TupledAdd, [[1, 2]]>; // => 3
+ * type TupledAddSig = Sig<TupledAdd>; // => (args: [a: number, b: number]) => number
+ * type _2 = Apply<TupledAdd, [[1, 2]]>; // => 3
  * ```
  *
  * @see {@linkcode Untupled} for the inverse operation.
@@ -1327,12 +1327,12 @@ interface TupledGeneric<F extends TypeLambdaG & TypeLambda> extends TypeLambdaG 
  *   return: Arg0<this>[0];
  * }
  *
- * type SigOfFirst = Sig<First>; // => <T>(pair: [T, unknown]) => T
- * type ResultOfFirst = Apply<First, [[42, "foo"]]>; // => 42
+ * type FirstSig = Sig<First>; // => <T>(pair: [T, unknown]) => T
+ * type _1 = Apply<First, [[42, "foo"]]>; // => 42
  *
  * type UntupledFirst = Untupled<First>;
- * type SigOfUntupledFirst = Sig<UntupledFirst>; // => <T>(args_0: T, args_1: unknown) => T
- * type ResultOfUntupledFirst = Apply<UntupledFirst, [42, "foo"]>; // => 42
+ * type UntupledFirstSig = Sig<UntupledFirst>; // => <T>(args_0: T, args_1: unknown) => T
+ * type _2 = Apply<UntupledFirst, [42, "foo"]>; // => 42
  * ```
  */
 export type Untupled<F extends TypeLambda> =
@@ -1371,26 +1371,24 @@ interface UntupledGeneric<F extends TypeLambdaG & TypeLambda1<any[]>> extends Ty
  * }
  * type _Map<F, TS> = { [K in keyof TS]: Call1W<F, TS[K]> };
  *
- * type SigOfMap = Sig<Map>; // => <T, U>(f: (x: T) => U, xs: T[]) => U[]
- * type MapResult = Apply<Map, [Append<"!">, ["foo", "bar"]]>; // => ["foo!", "bar!"]
+ * type MapSig = Sig<Map>; // => <T, U>(f: (x: T) => U, xs: T[]) => U[]
+ * type _1 = Apply<Map, [Append<"!">, ["foo", "bar"]]>; // => ["foo!", "bar!"]
  *
  * type FlippedMap = Flip<Map>;
- * type SigOfFlippedMap = Sig<FlippedMap>; // => <T, U>(xs: T[], f: (x: T) => U) => U[]
- * type FlippedMapResult = Apply<FlippedMap, [["foo", "bar"], Append<"!">]>; // => ["foo!", "bar!"]
+ * type FlippedMapSig = Sig<FlippedMap>; // => <T, U>(xs: T[], f: (x: T) => U) => U[]
+ * type _2 = Apply<FlippedMap, [["foo", "bar"], Append<"!">]>; // => ["foo!", "bar!"]
  * ```
  *
  * @example
  * ```TypeScript
  * // Flip the arguments of a curried binary type-level function
  * type CurriedMap = Curry<Map>;
- * type SigOfCurriedMap = Sig<CurriedMap>; // => <T, U>(f: (x: T) => U) => (xs: T[]) => U[]
- * type CurriedMapResult = Apply<Apply<CurriedMap, [Append<"!">]>, [["foo", "bar"]]>;
- * // => ["foo!", "bar!"]
+ * type CurriedMapSig = Sig<CurriedMap>; // => <T, U>(f: (x: T) => U) => (xs: T[]) => U[]
+ * type _1 = Apply<Apply<CurriedMap, [Append<"!">]>, [["foo", "bar"]]>; // => ["foo!", "bar!"]
  *
  * type FlippedCurriedMap = Flip<CurriedMap>;
- * type SigOfFlippedCurriedMap = Sig<FlippedCurriedMap>; // => <T, U>(xs: T[]) => (f: (x: T) => U) => U[]
- * type FlippedCurriedMapResult = Apply<FlippedCurriedMap, [["foo", "bar"], Append<"!">]>;
- * // => ["foo!", "bar!"]
+ * type FlippedCurriedMapSig = Sig<FlippedCurriedMap>; // => <T, U>(xs: T[]) => (f: (x: T) => U) => U[]
+ * type _2 = Apply<FlippedCurriedMap, [["foo", "bar"], Append<"!">]>; // => ["foo!", "bar!"]
  * ```
  */
 export type Flip<F extends TypeLambda1<TypeLambda1> | TypeLambda2> =
@@ -1475,13 +1473,12 @@ type _WrapInForIntermediateParameterOfCurried2<S> = (
  * }
  * type _Map<F, TS> = { [K in keyof TS]: Call1W<F, TS[K]> };
  *
- * type SigOfMap = Sig<Map>; // => <T, U>(f: (x: T) => U, xs: T[]) => U[]
- * type MapResult = Apply<Map, [Append<"!">, ["foo", "bar"]]>; // => ["foo!", "bar!"]
+ * type MapSig = Sig<Map>; // => <T, U>(f: (x: T) => U, xs: T[]) => U[]
+ * type _1 = Apply<Map, [Append<"!">, ["foo", "bar"]]>; // => ["foo!", "bar!"]
  *
  * type CurriedMap = Curry<Map>;
- * type SigOfCurriedMap = Sig<CurriedMap>; // => <T, U>(f: (x: T) => U) => (xs: T[]) => U[]
- * type CurriedMapResult = Apply<Apply<CurriedMap, [Append<"!">]>, [["foo", "bar"]]>;
- * // => ["foo!", "bar!"]
+ * type CurriedMapSig = Sig<CurriedMap>; // => <T, U>(f: (x: T) => U) => (xs: T[]) => U[]
+ * type _2 = Apply<Apply<CurriedMap, [Append<"!">]>, [["foo", "bar"]]>; // => ["foo!", "bar!"]
  * ```
  * 
  * @example
@@ -1502,13 +1499,13 @@ type _WrapInForIntermediateParameterOfCurried2<S> = (
  *   TS extends readonly [infer Head, ...infer Tail] ? _Reduce<F, Call2W<F, Acc, Head>, Tail>
  *   : Acc;
  * 
- * type SigOfReduce = Sig<Reduce>; // => <T, U>(f: (acc: U, x: T) => U, init: U, xs: T[]) => U
- * type ReduceResult = Apply<Reduce, [Concat, "", ["foo", "bar", "baz"]]>; // => "foobarbaz"
+ * type ReduceSig = Sig<Reduce>; // => <T, U>(f: (acc: U, x: T) => U, init: U, xs: T[]) => U
+ * type _1 = Apply<Reduce, [Concat, "", ["foo", "bar", "baz"]]>; // => "foobarbaz"
  * 
  * type CurriedReduce = Curry<Reduce>;
- * type SigOfCurriedReduce = Sig<CurriedReduce>;
+ * type CurriedReduceSig = Sig<CurriedReduce>;
  * // => <T, U>(f: (acc: U, x: T) => U) => (init: U) => (xs: T[]) => U
- * type CurriedReduceResult = Apply<Apply<Apply<CurriedReduce, [Concat]>, [""]>, [["foo", "bar", "baz"]]>;
+ * type _2 = Apply<Apply<Apply<CurriedReduce, [Concat]>, [""]>, [["foo", "bar", "baz"]]>;
  * // => "foobarbaz"
  * ```
  */
@@ -1619,20 +1616,20 @@ interface __Curry3Generic<F extends TypeLambdaG & TypeLambda2, A0, A1>
  *   signature: (value: TArg<this, "T">) => [TArg<this, "T">];
  *   return: [Arg0<this>];
  * }
- * type SigOfMakeTuple = Sig<MakeTuple>; // => <T>(value: T) => [T]
+ * type MakeTupleSig = Sig<MakeTuple>; // => <T>(value: T) => [T]
  *
  * interface IsTuple1 extends TypeLambda<[value: unknown], boolean> {
  *   return: Arg0<this> extends [unknown] ? true : false;
  * }
  *
  * // When `F` is a not generic TypeLambda, but `G` is
- * type S1 = Sig<Compose<MakeTuple, Ask<string>>>; // => (x: string) => [string]
+ * type _1 = Sig<Compose<MakeTuple, Ask<string>>>; // => (x: string) => [string]
  * // When `F` is a generic TypeLambda, but `G` is not
- * type S2 = Sig<Compose<IsTuple1, MakeTuple>>; // => (value: unknown) => boolean
+ * type _2 = Sig<Compose<IsTuple1, MakeTuple>>; // => (value: unknown) => boolean
  *
  * // When both `F` and `G` are generic TypeLambdas, the result is still a generic TypeLambda
  * type ToNestedTuple = Sig<Compose<MakeTuple, MakeTuple>>;
- * type S3 = Sig<ToNestedTuple>; // => <T>(value: T) => [[T]]
+ * type ToNestedTupleSig = Sig<ToNestedTuple>; // => <T>(value: T) => [[T]]
  * ```
  */
 export type Compose<G extends TypeLambda1<RetType<F>>, F extends TypeLambda1> =
@@ -1782,11 +1779,11 @@ export type Flow<
  *   return: `${Prefix}${Arg0<this>}`;
  * }
  *
- * type R1 = Pipe<"bAr", Lower, Prepend<"foo">, Cap>; // => "Foobar"
+ * type _1 = Pipe<"bAr", Lower, Prepend<"foo">, Cap>; // => "Foobar"
  *
  * type F<S extends string> = Pipe<S, Lower, Prepend<"foo">, Cap>;
  * //   ^?: type F<S extends string> = `Foo${Lowercase<S>}`
- * type R2 = F<"bAr">; // => "Foobar"
+ * type _2 = F<"bAr">; // => "Foobar"
  * ```
  */
 export type Pipe<

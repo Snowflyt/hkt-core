@@ -6,11 +6,11 @@ import type { Stringify, ToAnalyze } from "typroof";
  *
  * @example
  * ```typescript
- * type R1 = Equals<1, 1>;
+ * type _1 = Equals<1, 1>;
  * //   ^?: true
- * type R2 = Equals<1, number>;
+ * type _2 = Equals<1, number>;
  * //   ^?: false
- * type R3 = Equals<1, 1 | 2>;
+ * type _3 = Equals<1, 1 | 2>;
  * //   ^?: false
  * ```
  */

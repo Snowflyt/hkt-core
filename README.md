@@ -40,7 +40,7 @@ type ConcatNames<Names extends string[]> = Pipe<
   JoinBy<", "> // Join names with a comma
 >;
 
-type Result = ConcatNames<["alice", "bob", "i"]>; // => "Alice, Bob"
+type _ = ConcatNames<["alice", "bob", "i"]>; // => "Alice, Bob"
 ```
 
 <small>[1]: This is just an example to demonstrate type-level functions. Some types used here (e.g., <code>Filter</code>, <code>Map</code>) are not built into hkt-core. See the following sections for more details.</small>
@@ -299,8 +299,8 @@ interface Concat extends TypeLambda<[s1: string, s2: string], string> {
 // Use the `Sig` utility to check the signature of a type-level function
 type ConcatSig = Sig<Concat>; // => (s1: string, s2: string) => string
 
-type ConcatResult1 = Apply<Concat, ["Hello", "World"]>; // => "HelloWorld"
-type ConcatResult2 = Call2<Concat, "foo", "bar">; // => "foobar"
+type _1 = Apply<Concat, ["Hello", "World"]>; // => "HelloWorld"
+type _2 = Call2<Concat, "foo", "bar">; // => "foobar"
 ```
 
 Inside a **`TypeLambda`**, we can access the input types using **`Args<this>`** and its variants like **`Arg0<this>`**, **`Arg1<this>`**, etc. To “invoke” a **`TypeLambda`**, we use **`Apply`** or its aliases like **`Call1`**, **`Call2`**, etc., which correspond to type-level functions that take exactly one, two, or more type arguments. These utilities work similarly to **`Function.prototype.apply`** and **`Function.prototype.call`** in JavaScript.
@@ -335,10 +335,10 @@ interface ConcatBar extends TypeLambda<[s: string], string> {
 
 type Composed = Flow<ConcatFoo, ConcatBar>;
 type ComposedSig = Sig<Composed>; // => (s: string) => string
-type ComposedResult1 = Call1<Composed, "hello">; // => "hellofoobar"
+type _1 = Call1<Composed, "hello">; // => "hellofoobar"
 
 type ConcatFooBar<S extends string> = Pipe<S, ConcatFoo, ConcatBar>;
-type ComposedResult2 = ConcatFooBar<"hello">; // => "hellofoobar"
+type _2 = ConcatFooBar<"hello">; // => "hellofoobar"
 ```
 
 <strong><code>Flow</code></strong> and **`Pipe`** supports up to 16 variadic type arguments, which should be sufficient for most use cases. Type checking is also performed on these utility types, ensuring that the input and output types match the expected types:
@@ -431,8 +431,8 @@ type ConcatNames<Names extends string[]> = Pipe<
 /* Test the results! */
 type Names = ["alice", "bob", "i", "charlie"];
 
-type ConcatNamesResult1 = Call1<ConcatNamesFn, Names>; // => "Alice, "Bob", Charlie"
-type ConcatNamesResult2 = ConcatNames<Names>; // => "Alice, "Bob", Charlie"
+type _1 = Call1<ConcatNamesFn, Names>; // => "Alice, "Bob", Charlie"
+type _2 = ConcatNames<Names>; // => "Alice, "Bob", Charlie"
 ```
 
 Some unfamiliar utility types are used in the example above:
@@ -471,7 +471,7 @@ type _Take<TS extends unknown[], N extends number, Counter extends void[] = []> 
     : [Head, ..._Take<Tail, N, [...Counter, void]>]
   : [];
 
-type SigOfTake = Sig<Take<3>>; // => (values: any[]) => any[]
+type TakeSig = Sig<Take<3>>; // => (values: any[]) => any[]
 ```
 
 Since we haven’t yet introduced the concept of _generic_ type-level functions, we simply declare the signature of **`Take`** as `[n: number](values: any[]) => any[]`. Let’s use it to enhance the **`ConcatNames`** example:
@@ -490,7 +490,7 @@ type ConcatNames = Flow<
 >;
 
 type Names = ["alice", "bob", "i", "charlie", "david"];
-type ResultOfConcatNames = Call1<ConcatNames, Names>; // => "Alice, Bob, Charlie, ..."
+type _ = Call1<ConcatNames, Names>; // => "Alice, Bob, Charlie, ..."
 ```
 
 This version works as expected, but we lose some type safety since the return type of **`Take`** is **`any[]`**. If we change `Map<CapitalizeString>` to something like `Map<RepeatString<"foo">>`, TypeScript will not catch the error:
@@ -513,7 +513,7 @@ type ConcatNames = Flow<
 >;
 
 // Unexpected result!
-type ResultOfConcatNames = Call1<ConcatNames, Names>; // => "${string}, ..."
+type _ = Call1<ConcatNames, Names>; // => "${string}, ..."
 ```
 
 We can declare **`Take`** as a **_generic_ type-level function** to ensure type safety:
@@ -526,7 +526,7 @@ interface Take<N extends number> extends TypeLambdaG<["T"]> {
   return: _Take<Arg0<this>, N>;
 }
 
-type SigOfTake = Sig<Take<3>>; // => <T>(values: T[]) => T[]
+type TakeSig = Sig<Take<3>>; // => <T>(values: T[]) => T[]
 ```
 
 Here, instead of extending `TypeLambda`, we extend **`TypeLambdaG`**, where the **`G`** suffix stands for “**generic**”. Instead of directly declaring the signature in `TypeLambda`, we declare the **type parameter list** in **`TypeLambdaG`** and use the **`signature`** property inside the function body to define the signature. All declared type parameters can be accessed using the **`TArg<this, "Name">`** syntax within the **`TypeLambdaG`** body.
@@ -599,7 +599,7 @@ interface Identity extends TypeLambdaG<["T"]> {
   return: Arg0<this>;
 }
 
-type SigOfIdentity = Sig<Identity>; // => <T>(value: T) => T
+type IdentitySig = Sig<Identity>; // => <T>(value: T) => T
 
 // A generic implementation of `Map`
 interface Map extends TypeLambdaG<["T", "U"]> {
@@ -611,7 +611,7 @@ interface Map extends TypeLambdaG<["T", "U"]> {
 }
 type _Map<F, TS> = { [K in keyof TS]: Call1W<F, TS[K]> };
 
-type SigOfMap = Sig<Map>; // => <T, U>(f: (x: T) => U, xs: T[]) => U[]
+type MapSig = Sig<Map>; // => <T, U>(f: (x: T) => U, xs: T[]) => U[]
 
 // A generic `Object.fromEntries` at type level
 interface FromEntries extends TypeLambdaG<[["K", PropertyKey], "V"]> {
@@ -625,8 +625,8 @@ type _FromEntries<Entries extends [PropertyKey, unknown][]> = _PrettifyObject<{
 }>;
 type _PrettifyObject<O> = O extends infer U ? { [K in keyof U]: U[K] } : never;
 
-type SigOfFromEntries = Sig<FromEntries>; // => <K extends PropertyKey, V>(entries: [K, V][]) => Record<K, V>
-type FromEntriesResult = Call1<FromEntries, [["name", string], ["age", number]]>; // => { name: string, age: number }
+type FromEntriesSig = Sig<FromEntries>; // => <K extends PropertyKey, V>(entries: [K, V][]) => Record<K, V>
+type _ = Call1<FromEntries, [["name", string], ["age", number]]>; // => { name: string, age: number }
 ```
 
 ### Aliases for classical HKT use cases
@@ -695,8 +695,8 @@ interface Concat extends TypeLambda<[s1: string, s2: string], number> {
   return: `${Arg0<this>}${Arg1<this>}`;
 }
 
-type ConcatResult1 = Apply<Concat, ["foo", "bar"]>; // => never, since the declared return type is `number`
-type ConcatResult2 = ApplyW<Concat, ["foo", "bar"]>; // => "foobar", since the return type is relaxed
+type _1 = Apply<Concat, ["foo", "bar"]>; // => never, since the declared return type is `number`
+type _2 = ApplyW<Concat, ["foo", "bar"]>; // => "foobar", since the return type is relaxed
 ```
 
 As we can see, bypassing strict type checking doesn’t always simplify things and can introduce additional complexity. These widening utilities are primarily intended for handling complex scenarios, such as when dealing with intricate variance or type constraints, and are not meant for common use cases. For example, they are useful when defining a **`Flip`** type-level function (already built into **hkt-core**) that swaps the order of two types.
@@ -762,11 +762,11 @@ interface PrintArgs extends TypeLambda<[a: string, b: string], string> {
 }
 
 // Incompatible arguments are cast to `never`
-type R1 = ApplyW<PrintArgs, ["foo", 42]>; // => ["foo", never]
+type _1 = ApplyW<PrintArgs, ["foo", 42]>; // => ["foo", never]
 // Redundant arguments are truncated
-type R2 = ApplyW<PrintArgs, ["foo", "bar", "baz"]>; // => ["foo", "bar"]
+type _2 = ApplyW<PrintArgs, ["foo", "bar", "baz"]>; // => ["foo", "bar"]
 // Missing arguments are filled with `never`
-type R3 = ApplyW<PrintArgs, ["foo"]>; // => ["foo", never]
+type _3 = ApplyW<PrintArgs, ["foo"]>; // => ["foo", never]
 ```
 
 If you want to access the original arguments passed to a **`TypeLambda`**, regardless of whether they are compatible with the parameters, use **`RawArgs`** or its variants instead (see the [Bypassing strict type checking](#bypassing-strict-type-checking) section for more details).
@@ -785,9 +785,9 @@ interface ConcatWrong extends TypeLambda<[s1: string, s2: string], string> {
   return: 42;
 }
 
-type ConcatResult = Apply<Concat, ["foo", "bar"]>; // => "foobar"
-type ConcatWrongResult1 = Apply<ConcatWrong, ["foo", "bar"]>; // => never
-type ConcatWrongResult2 = Call2<ConcatWrong, "foo", "bar">; // => never
+type _1 = Apply<Concat, ["foo", "bar"]>; // => "foobar"
+type _2 = Apply<ConcatWrong, ["foo", "bar"]>; // => never
+type _3 = Call2<ConcatWrong, "foo", "bar">; // => never
 ```
 
 In the example above, **`ConcatWrong`** returns a number, which is incompatible with the declared return type **`string`**. Even though **`ConcatWrong`** returns a value that is not **`never`** (i.e., `42`), **`Apply`** still coerces the returned value to **`never`** because it is not compatible with the declared return type. The same applies to the variants of **`Apply`**, such as **`Call2`** in this case.
@@ -851,8 +851,8 @@ type MyApply<F extends TypeLambda, Args extends Params<F>> = ApplyW<F, Args>;
 This works well for simple non-generic type-level functions, such as **`Concat`**, **`Add`**, or even type-level function templates like **`JoinBy`**. But when we apply it to **`Map`**, an issue arises:
 
 ```typescript
-type MapResult = MyApply<Map, [Append<"baz">, ["foo", "bar"]]>;
-//                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+type _ = MyApply<Map, [Append<"baz">, ["foo", "bar"]]>;
+//                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Type '[Append<"baz">, ["foo", "bar"]]' does not satisfy the constraint '[f: TypeLambda<[x: unknown], unknown>, xs: unknown[]]'.
 //   Type at position 0 in source is not compatible with type at position 0 in target.
 //     The types of 'signature' are incompatible between these types.
@@ -937,7 +937,7 @@ namespace Result {
   }
 }
 
-type MatchResult = Pipe<Ok<"Bob">, Result.Match<Prepend<"Mr. ">, Always<"Oops!">>>; // => "Mr. Bob"
+type _ = Pipe<Ok<"Bob">, Result.Match<Prepend<"Mr. ">, Always<"Oops!">>>; // => "Mr. Bob"
 ```
 
 Next is **`Identity`**, a **_generic_ type-level function** that accepts a single argument and returns the same value:
@@ -970,11 +970,11 @@ interface Ask<T> extends TypeLambda<[value: T], T> {
 ```typescript
 import type { Ask, Compose, Flow, Identity } from "hkt-core";
 
-type SigOfIdentityString = Sig<Flow<Ask<string>, Identity>>; // => (value: string) => string
+type IdentityStringSig = Sig<Flow<Ask<string>, Identity>>; // => (value: string) => string
 
 // You can also use `Compose`, which is used internally by `Flow`,
 // to compose exactly 2 type-level functions from **right to left**
-type SigOfIdentityNumber = Sig<Compose<Identity, Ask<number>>>; // => (value: number) => number
+type IdentityNumberSig = Sig<Compose<Identity, Ask<number>>>; // => (value: number) => number
 ```
 
 When composing multiple type-level functions via **`Flow`**, if the first function is a _generic_ type-level function, you can use **`Ask`** to “pin” the first type-level function to avoid type errors about incompatible types.
@@ -987,12 +987,12 @@ When composing multiple type-level functions via **`Flow`**, if the first functi
 interface Concat extends TypeLambda<[s1: string, s2: string], string> {
   return: `${Arg0<this>}${Arg1<this>}`;
 }
-type SigOfConcat = Sig<Concat>; // => (s1: string, s2: string) => string
-type ResultOfConcat = Call2<Concat, "foo", "bar">; // => "foobar"
+type ConcatSig = Sig<Concat>; // => (s1: string, s2: string) => string
+type _1 = Call2<Concat, "foo", "bar">; // => "foobar"
 
 type TupledConcat = Tupled<Concat>;
-type SigOfTupledConcat = Sig<TupledConcat>; // => (args: [s1: string, s2: string]) => string
-type ResultOfTupledConcat = Call1<TupledConcat, ["foo", "bar"]>; // => "foobar"
+type TupledConcatSig = Sig<TupledConcat>; // => (args: [s1: string, s2: string]) => string
+type _2 = Call1<TupledConcat, ["foo", "bar"]>; // => "foobar"
 ```
 
 The inverse of **`Tupled`** is **`Untupled`**, which converts a function that accepts a single tuple argument back into a function that accepts multiple arguments:
@@ -1002,12 +1002,12 @@ interface First extends TypeLambdaG<["T"]> {
   signature: (pair: [TArg<this, "T">, unknown]) => TArg<this, "T">;
   return: Arg0<this>[0];
 }
-type SigOfFirst = Sig<First>; // => <T>(pair: [T, unknown]) => T
-type ResultOfFirst = Call1<First, [42, "foo"]>; // => 42
+type FirstSig = Sig<First>; // => <T>(pair: [T, unknown]) => T
+type _1 = Call1<First, [42, "foo"]>; // => 42
 
 type UntupledFirst = Untupled<First>;
-type SigOfUntupledFirst = Sig<UntupledFirst>; // => <T>(args_0: T, args_1: unknown) => T
-type ResultOfUntupledFirst = Call2<UntupledFirst, 42, "foo">; // => 42
+type UntupledFirstSig = Sig<UntupledFirst>; // => <T>(args_0: T, args_1: unknown) => T
+type _2 = Call2<UntupledFirst, 42, "foo">; // => 42
 ```
 
 #### `Flip`
@@ -1024,12 +1024,12 @@ interface Map extends TypeLambdaG<["T", "U"]> {
 }
 type _Map<F, TS> = { [K in keyof TS]: Call1W<F, TS[K]> };
 
-type SigOfMap = Sig<Map>; // => <T, U>(f: (x: T) => U, xs: T[]) => U[]
-type MapResult = Call2<Map, Append<"baz">, ["foo", "bar"]>; // => ["foobaz", "barbaz"]
+type MapSig = Sig<Map>; // => <T, U>(f: (x: T) => U, xs: T[]) => U[]
+type _1 = Call2<Map, Append<"baz">, ["foo", "bar"]>; // => ["foobaz", "barbaz"]
 
 type FlippedMap = Flip<Map>;
-type SigOfFlippedMap = Sig<FlippedMap>; // => <U, T>(xs: U[], f: (x: U) => T) => T[]
-type FlippedMapResult = Call2<FlippedMap, ["foo", "bar"], Append<"baz">>; // => ["foobaz", "barbaz"]
+type FlippedMapSig = Sig<FlippedMap>; // => <U, T>(xs: U[], f: (x: U) => T) => T[]
+type _2 = Call2<FlippedMap, ["foo", "bar"], Append<"baz">>; // => ["foobaz", "barbaz"]
 ```
 
 As you can see, **`Flip`** swaps the order of the arguments in the function. In this example, the **`Map`** function originally expects the function (`f`) to be the first argument, and the array (`xs`) to be the second. After using **`Flip`**, the arguments are reversed so that the array comes first, followed by the function.
@@ -1039,13 +1039,12 @@ As you can see, **`Flip`** swaps the order of the arguments in the function. In 
 ```typescript
 // See the next section for `Curry`
 type CurriedMap = Curry<Map>;
-type SigOfCurriedMap = Sig<CurriedMap>; // => <T, U>(f: (x: T) => U) => (xs: T[]) => U[]
-type CurriedMapResult = Call1<Call1<CurriedMap, Append<"baz">>, ["foo", "bar"]>; // => ["foobaz", "barbaz"]
+type CurriedMapSig = Sig<CurriedMap>; // => <T, U>(f: (x: T) => U) => (xs: T[]) => U[]
+type _1 = Call1<Call1<CurriedMap, Append<"baz">>, ["foo", "bar"]>; // => ["foobaz", "barbaz"]
 
 type FlippedCurriedMap = Flip<CurriedMap>;
-type SigOfFlippedCurriedMap = Sig<FlippedCurriedMap>; // => <T, U>(xs: T[]) => (f: (x: T) => U) => U[]
-type FlippedCurriedMapResult = Call1<Call1<FlippedCurriedMap, ["foo", "bar"]>, Append<"baz">>;
-// => ["foobaz", "barbaz"]
+type FlippedCurriedMapSig = Sig<FlippedCurriedMap>; // => <T, U>(xs: T[]) => (f: (x: T) => U) => U[]
+type _2 = Call1<Call1<FlippedCurriedMap, ["foo", "bar"]>, Append<"baz">>; // => ["foobaz", "barbaz"]
 ```
 
 #### `Curry`
@@ -1058,8 +1057,8 @@ For example, you can curry the previously defined **`Map`** function like this:
 
 ```typescript
 type CurriedMap = Curry<Map>;
-type SigOfCurriedMap = Sig<CurriedMap>; // => <T, U>(f: (x: T) => U) => (xs: T[]) => U[]
-type CurriedMapResult = Call1<Call1<CurriedMap, Append<"baz">>, ["foo", "bar"]>; // => ["foobaz", "barbaz"]
+type CurriedMapSig = Sig<CurriedMap>; // => <T, U>(f: (x: T) => U) => (xs: T[]) => U[]
+type _ = Call1<Call1<CurriedMap, Append<"baz">>, ["foo", "bar"]>; // => ["foobaz", "barbaz"]
 ```
 
 You can also create a curried version of **`Reduce`**:
@@ -1073,12 +1072,12 @@ interface Reduce extends TypeLambdaG<["T", "U"]> {
   ) => TArg<this, "U">;
   return: _Reduce<Arg0<this>, Arg1<this>, Arg2<this>>;
 }
-type SigOfReduce = Sig<Reduce>; // => <T, U>(f: (acc: U, x: T) => U, init: U, xs: T[]) => U
-type ReduceResult = Call3<Reduce, Concat, "", ["foo", "bar", "baz"]>; // => "foobarbaz"
+type ReduceSig = Sig<Reduce>; // => <T, U>(f: (acc: U, x: T) => U, init: U, xs: T[]) => U
+type _1 = Call3<Reduce, Concat, "", ["foo", "bar", "baz"]>; // => "foobarbaz"
 
 type CurriedReduce = Curry<Reduce>;
-type SigOfCurriedReduce = Sig<CurriedReduce>; // => <T, U>(f: (acc: U, x: T) => U) => (init: U) => (xs: T[]) => U
-type CurriedReduceResult = Call1<Call1<Call1<CurriedReduce, Concat>, "">, ["foo", "bar", "baz"]>; // => "foobarbaz"
+type CurriedReduceSig = Sig<CurriedReduce>; // => <T, U>(f: (acc: U, x: T) => U) => (init: U) => (xs: T[]) => U
+type _2 = Call1<Call1<Call1<CurriedReduce, Concat>, "">, ["foo", "bar", "baz"]>; // => "foobarbaz"
 ```
 
 **`Curry`** is also quite useful in combination with **`Flip`**. If you have a binary type-level function like **`Map`**, you can use **`Curry`** and **`Flip`** to create two type-level function templates with different argument orders:
@@ -1086,11 +1085,11 @@ type CurriedReduceResult = Call1<Call1<Call1<CurriedReduce, Concat>, "">, ["foo"
 ```typescript
 // <T, U>[f: (x: T) => U](xs: T[]) => U[]
 type MapBy<F extends TypeLambda1> = Call1<Curry<Map>, F>;
-type SigOfMapBy = Sig<MapBy<Append<"baz">>>; // => (xs: string[]) => string[]
+type MapBySig = Sig<MapBy<Append<"baz">>>; // => (xs: string[]) => string[]
 
 // <T, U>[xs: T[]](f: (x: T) => U) => U[]
 type MapOn<TS extends unknown[]> = Call1<Curry<Flip<Map>>, TS>;
-type SigOfMapOn = Sig<MapOn<string[]>>; // => (f: (x: string) => unknown) => unknown[]
+type MapOnSig = Sig<MapOn<string[]>>; // => (f: (x: string) => unknown) => unknown[]
 ```
 
 It’s worth noting that **`U`** is widened to **`unknown`** in the **`MapOn`** example. This is a limitation of TypeScript’s type inference system, and you’ll encounter the same issue if you define similar non-type-level `flip` and `curry2` functions in TypeScript. We provide this example for demonstration purposes, but in real-world scenarios, manually creating curried versions for the two different argument orders is generally a better choice.
