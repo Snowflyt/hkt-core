@@ -638,11 +638,11 @@ type _ = Call1<FromEntries, [["name", string], ["age", number]]>; // => { name: 
 
 The aliases for higher-arity type constructors allow you to work with type constructors that take multiple type arguments, such as **`Either<L, R>`** or **`State<S, A>`**.
 
-The **`W`** suffix in **`Call*W`** stands for “**widening**”, meaning type checking is relaxed for arguments passed to the type-level function. For more details, see the [Bypassing strict type checking](#bypassing-strict-type-checking) sections.
+The **`W`** suffix in **`Call*W`** stands for “**widening**”, meaning type checking is relaxed for arguments passed to the type-level function. For more details, see the [Bypass strict type checking](#bypass-strict-type-checking) sections.
 
 ### Type checking in detail
 
-#### Bypassing strict type checking
+#### Bypass strict type checking
 
 There are cases where you might want to bypass strict type checking, such as when working with complex generic types or when you need to handle incompatible types. **hkt-core** provides a set of utilities to help you handle these cases:
 
@@ -769,7 +769,7 @@ type _2 = ApplyW<PrintArgs, ["foo", "bar", "baz"]>; // => ["foo", "bar"]
 type _3 = ApplyW<PrintArgs, ["foo"]>; // => ["foo", never]
 ```
 
-If you want to access the original arguments passed to a **`TypeLambda`**, regardless of whether they are compatible with the parameters, use **`RawArgs`** or its variants instead (see the [Bypassing strict type checking](#bypassing-strict-type-checking) section for more details).
+If you want to access the original arguments passed to a **`TypeLambda`**, regardless of whether they are compatible with the parameters, use **`RawArgs`** or its variants instead (see the [Bypass strict type checking](#bypass-strict-type-checking) section for more details).
 
 #### Type checking in `Apply` and `Call*`
 
@@ -792,7 +792,7 @@ type _3 = Call2<ConcatWrong, "foo", "bar">; // => never
 
 In the example above, **`ConcatWrong`** returns a number, which is incompatible with the declared return type **`string`**. Even though **`ConcatWrong`** returns a value that is not **`never`** (i.e., `42`), **`Apply`** still coerces the returned value to **`never`** because it is not compatible with the declared return type. The same applies to the variants of **`Apply`**, such as **`Call2`** in this case.
 
-As is already mentioned in the [Bypassing strict type checking](#bypassing-strict-type-checking) section, you can use **`ApplyW`** and its variants if you don’t want the return value to be coerced to **`never`** when it’s incompatible with the declared return type.
+As is already mentioned in the [Bypass strict type checking](#bypass-strict-type-checking) section, you can use **`ApplyW`** and its variants if you don’t want the return value to be coerced to **`never`** when it’s incompatible with the declared return type.
 
 While the return type coercion behavior of **`Apply`** and its variants might cause confusion in some cases, it is useful for making TypeScript aware of type incompatibilities early on. For example, let’s revisit the **`JoinBy`** function from the **`JoinBy`** function from the [Generic type-level functions](#generic-type-level-functions) section. However, instead of using `Arg0<this> extends [infer S extends string]` in the body, let’s remove the `extends string` constraint and use `Arg0<this> extends [infer S]`:
 
