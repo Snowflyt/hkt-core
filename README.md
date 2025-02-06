@@ -913,7 +913,7 @@ By applying these rules, **`TolerantParams`** and **`TolerantRetType`** yield mo
 import type { TolerantParams, TolerantRetType } from "hkt-core";
 
 type TolerantParamsOfMap = TolerantParams<Map>; // => [f: TypeLambda<[x: never], unknown>, xs: unknown[]]
-type TolernatRetTypeOfMap = TolerantRetType<Map>; // => unknown[]
+type TolerantRetTypeOfMap = TolerantRetType<Map>; // => unknown[]
 ```
 
 With **`TolerantParams`** replacing **`Params`**, TypeScript no longer throws errors about incompatible types — and that’s how type checking for parameters is handled in **`Apply`** and its variants.
