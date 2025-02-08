@@ -1301,6 +1301,90 @@ While these limitations are not expected to be fixed in the near future, you’r
 
 If you believe you’ve encountered a bug — where the equivalent runtime code works in TypeScript but **hkt-core** behaves unexpectedly — please [open an issue on the GitHub repository](https://www.github.com/Snowflyt/hkt-core/issues) with a minimal reproduction case. Some known issues are already listed there, so please check whether your issue has already been reported before submitting a new one.
 
+### What’s the magic behind generic type-level functions?
+
+Here’s a minimal example of a generic type-level function:
+
+```typescript
+type TODO = any;
+
+// Utility types for type arguments
+type ArgT<F> = F extends { T: infer T } ? T : never;
+type ArgU<F> = F extends { U: infer U } ? U : never;
+
+// Define a generic type-level function
+interface Map {
+  signature: (f: (x: ArgT<this>) => ArgU<this>, xs: ArgT<this>[]) => ArgU<this>[];
+  return: TODO;
+}
+
+// Instantiate type arguments from known parameter types
+type TypeArgs =
+  // ^?: { T: string; U: number }
+  ((f: (x: string) => number, xs: string[]) => never) extends (
+    (Map & { T: infer T; U: infer U })["signature"]
+  ) ?
+    { T: T; U: U }
+  : never;
+
+// Get the refined signature with instantiated type args
+type _ = (Map & TypeArgs)["signature"];
+//   ^?: (f: (x: string) => number, xs: string[]) => number[]
+```
+
+We use `ArgT` and `ArgU` to extract the type arguments from the type-level function, just like `TArg` in **hkt-core**. We then instantiate the type arguments from known parameter types and refine the signature with the instantiated type arguments. This is the basic idea behind generic type-level functions.
+
+We use `ArgT` and `ArgU` to extract the type arguments from the type-level function — just like `TArg` in hkt-core. Then we instantiate these type arguments from known parameter types and refine the signature accordingly. This is the core idea behind generic type-level functions.
+
+While the example above works well for simple cases, it doesn’t handle subtyping correctly. For instance, the following code will simply yield never:
+
+```typescript
+// We replace `xs: string[]` with `xs: "foo"[]` to test subtyping
+type TypeArgs =
+  // ^?: never
+  ((f: (x: string) => number, xs: "foo"[]) => never) extends (
+    (Map & { T: infer T; U: infer U })["signature"]
+  ) ?
+    { T: T; U: U }
+  : never;
+```
+
+To support subtyping properly, we need to **flip the variance** of parameter types in our type-level function. We achieve this by wrapping each parameter with a helper type that inverts the variance:
+
+```typescript
+// Flip the variance of a type
+interface In<T> {
+  (_: T): void;
+}
+
+// Same as before
+type ArgT<F> = F extends { T: infer T } ? T : never;
+type ArgU<F> = F extends { U: infer U } ? U : never;
+
+// Wrap each parameter with `In<...>`
+interface Map {
+  signature: (f: In<(x: ArgT<this>) => ArgU<this>>, xs: In<ArgT<this>[]>) => ArgU<this>[];
+  return: any;
+}
+
+// Still wrap each parameter with `In<...>`, and...
+// Now it works!
+type TypeArgs =
+  // ^?: { T: "foo"; U: number }
+  ((f: In<(x: string) => number>, xs: In<"foo"[]>) => never) extends (
+    (Map & { T: infer T; U: infer U })["signature"]
+  ) ?
+    { T: T; U: U }
+  : never;
+
+type _ = (Map & TypeArgs)["signature"];
+//   ^?: (f: In<(x: "foo") => number>, xs: In<"foo"[]>) => number[
+```
+
+This might seem like magic at first, and it can be a bit tricky to grasp initially. We’ll skip the finer details here, but if you’re curious, you can apply the variance rules in TypeScript step by step to see how everything falls into place.
+
+Internally, **hkt-core** uses a similar technique to handle variance correctly, so you don’t have to write this kind of code yourself. Understanding the basic idea behind generic type-level functions can help explain why some seemingly simple functions might not infer types correctly in edge cases.
+
 ### Why not just access arguments and type parameters via `this`?
 
 Libraries like [HOTScript](https://github.com/gvergnaud/hotscript) use syntax like **`this["arg0"]`** to access arguments inside a type-level function. While this approach seems simpler and more concise, it introduces unnecessary properties to the type-level function, which can lead to variance issues. Let’s first revisit the variance of function types in TypeScript:
