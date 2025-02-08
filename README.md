@@ -71,9 +71,9 @@ Alternatively, if you prefer a zero-dependency approach, you can directly _copy-
 
 **hkt-core** introduces some concepts that might take a little time to fully grasp. To get the most out of it, we recommend following the [quickstart guide](#quickstart) from start to finish. However, if you’re eager to jump straight into examples, we’ve provided a few here as TypeScript playground links. These examples will give you a quick overview of what **hkt-core** can do:
 
-- [Create a monad typeclass with HKT](https://tsplay.dev/NBbodN) (like in [fp-ts](https://github.com/gcanti/fp-ts))
-- [Composable type-level function programming with HKTs](https://tsplay.dev/mbeo2N) (like in [HOTScript](https://github.com/gvergnaud/HOTScript), but in a type-safe way)
-- [A type-level JSON parser with parser combinators](https://tsplay.dev/mAqo1m) (like in Haskell [Parsec](https://hackage.haskell.org/package/parsec))
+- [Create a monad typeclass with HKT](https://tsplay.dev/w8eZ9N) (like in [fp-ts](https://github.com/gcanti/fp-ts))
+- [Composable type-level function programming with HKTs](https://tsplay.dev/NldbrN) (like in [HOTScript](https://github.com/gvergnaud/HOTScript), but in a type-safe way)
+- [A type-level JSON parser with parser combinators](https://tsplay.dev/wRkYvN) (like in Haskell [Parsec](https://hackage.haskell.org/package/parsec))
 
 ## Quickstart
 
