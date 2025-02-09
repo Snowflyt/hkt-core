@@ -1223,6 +1223,37 @@ export namespace Str {
 
 We use namespaces here to avoid polluting the global scope, and apply different suffixes to distinguish different variants of the same type-level function. For instance, `List.Map` is a simple generic type that isn’t a type-level function, `List.Map$` is a type-level function template that accepts a single argument, and `List.Map$$` is a type-level function that accepts two arguments. This naming convention allows you to easily manage various versions of the same type-level function and avoid confusion.
 
+### Performance
+
+For experienced TypeScript developers, performance in type-level programming is a common concern. Although **hkt-core** uses many conditional types and recursive type aliases, it’s designed so that TypeScript simplifies types as if **hkt-core** weren’t even there. For example:
+
+```typescript
+import type { Arg0, Pipe, TypeLambda } from "hkt-core";
+
+interface CapStr extends TypeLambda<[s: string], string> {
+  return: Capitalize<Arg0<this>>;
+}
+
+interface StrLength extends TypeLambda<[s: string], number> {
+  return: _StrLength<Arg0<this>>;
+}
+type _StrLength<S extends string, Acc extends void[] = []> =
+  S extends `${string}${infer Tail}` ? _StrLength<Tail, [...Acc, void]> : Acc["length"];
+
+type F<S extends string> = Pipe<S, CapStr, StrLength>;
+```
+
+When you hover over `F`, TypeScript simplifies it to something like:
+
+```typescript
+type F<S extends string> =
+  Capitalize<S> extends `${string}${infer Tail}` ? _StrLength<Tail, [void]> : 0;
+```
+
+This is equivalent to writing the type directly without **hkt-core**, demonstrating that the extra type-checking adds minimal overhead.
+
+However, there are cases where **hkt-core** can slow down the TypeScript compiler, especially when using utilities with _type validation_ (not merely _type checking_) features. In particular, **`Apply`** and its variants might slow down the compiler when used with _generic_ type-level functions that have complex type signatures — if you encounter this, try using **`ApplyW`** and **`Call*W`** instead. On the other hand, even though **`Args`** and its variants also perform type validation, they seldom affect the compiler’s performance, so normally, you can safely use them without worry.
+
 ## FAQ
 
 ### Should I add it as a dev dependency or a regular dependency?
