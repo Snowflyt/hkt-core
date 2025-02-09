@@ -307,7 +307,7 @@ export type HKT4<T = any, U = any, V = any, W = any, F = any> = TypeLambda4<T, U
  * type _3 = ApplyW<PrintArgs, ["foo"]>; // => ["foo", never]
  * ```
  */
-export type Args<F extends TypeLambda> =
+export type Args<F extends TypeLambda<never, unknown>> =
   // A quick happy path for the most common case
   F extends { readonly Args: (_: infer Args extends TolerantParams<F>) => void } ? Args
   : F extends { readonly Args: (_: infer Args) => void } ? CastArgs<Args, TolerantParams<F>>
@@ -315,7 +315,7 @@ export type Args<F extends TypeLambda> =
 /**
  * The **unsafe** version of {@linkcode Args} (i.e., no type checking with {@linkcode F}).
  */
-export type ArgsW<F> = F extends TypeLambda ? Args<F> : never;
+export type ArgsW<F> = F extends TypeLambda<never, unknown> ? Args<F> : never;
 /**
  * Cast the arguments to the expected parameters.
  *
@@ -375,7 +375,7 @@ type AlignArgs<Args, ExpectedParams extends unknown[], Acc extends unknown[] = [
  *
  * @see {@linkcode Args}
  */
-export type Arg0<F extends TypeLambda> = Args<F>[0];
+export type Arg0<F extends TypeLambda<never, unknown>> = Args<F>[0];
 /**
  * The **unsafe** version of {@linkcode Arg0} (i.e., no type checking with {@linkcode F}).
  */
@@ -385,7 +385,7 @@ export type Arg0W<F> = ArgsW<F>[0];
  *
  * @see {@linkcode Args}
  */
-export type Arg1<F extends TypeLambda> = Args<F>[1];
+export type Arg1<F extends TypeLambda<never, unknown>> = Args<F>[1];
 /**
  * The **unsafe** version of {@linkcode Arg1} (i.e., no type checking with {@linkcode F}).
  */
@@ -395,7 +395,7 @@ export type Arg1W<F> = ArgsW<F>[1];
  *
  * @see {@linkcode Args}
  */
-export type Arg2<F extends TypeLambda> = Args<F>[2];
+export type Arg2<F extends TypeLambda<never, unknown>> = Args<F>[2];
 /**
  * The **unsafe** version of {@linkcode Arg2} (i.e., no type checking with {@linkcode F}).
  */
@@ -405,7 +405,7 @@ export type Arg2W<F> = ArgsW<F>[2];
  *
  * @see {@linkcode Args}
  */
-export type Arg3<F extends TypeLambda> = Args<F>[3];
+export type Arg3<F extends TypeLambda<never, unknown>> = Args<F>[3];
 /**
  * The **unsafe** version of {@linkcode Arg3} (i.e., no type checking with {@linkcode F}).
  */
@@ -417,7 +417,7 @@ export type Arg3W<F> = ArgsW<F>[3];
  *
  * @see {@linkcode Args} for a type that casts arguments to the expected parameters.
  */
-export type RawArgs<F extends TypeLambda> = RawArgsW<F>;
+export type RawArgs<F extends TypeLambda<never, unknown>> = RawArgsW<F>;
 /**
  * The **unsafe** version of {@linkcode RawArgs} (i.e., no type checking with {@linkcode F}).
  */
@@ -429,7 +429,7 @@ export type RawArgsW<F> =
  *
  * @see {@linkcode RawArgs}
  */
-export type RawArg0<F extends TypeLambda> = RawArgs<F>[0];
+export type RawArg0<F extends TypeLambda<never, unknown>> = RawArgs<F>[0];
 /**
  * The **unsafe** version of {@linkcode RawArg0} (i.e., no type checking with {@linkcode F}).
  */
@@ -439,7 +439,7 @@ export type RawArg0W<F> = RawArgsW<F>[0];
  *
  * @see {@linkcode RawArgs}
  */
-export type RawArg1<F extends TypeLambda> = RawArgs<F>[1];
+export type RawArg1<F extends TypeLambda<never, unknown>> = RawArgs<F>[1];
 /**
  * The **unsafe** version of {@linkcode RawArg1} (i.e., no type checking with {@linkcode F}).
  */
@@ -449,7 +449,7 @@ export type RawArg1W<F> = RawArgsW<F>[1];
  *
  * @see {@linkcode RawArgs}
  */
-export type RawArg2<F extends TypeLambda> = RawArgs<F>[2];
+export type RawArg2<F extends TypeLambda<never, unknown>> = RawArgs<F>[2];
 /**
  * The **unsafe** version of {@linkcode RawArg2} (i.e., no type checking with {@linkcode F}).
  */
@@ -459,7 +459,7 @@ export type RawArg2W<F> = RawArgsW<F>[2];
  *
  * @see {@linkcode RawArgs}
  */
-export type RawArg3<F extends TypeLambda> = RawArgs<F>[3];
+export type RawArg3<F extends TypeLambda<never, unknown>> = RawArgs<F>[3];
 /**
  * The **unsafe** version of {@linkcode RawArg3} (i.e., no type checking with {@linkcode F}).
  */
@@ -468,7 +468,7 @@ export type RawArg3W<F> = RawArgsW<F>[3];
 /**
  * Get the length of the original arguments passed to a {@linkcode TypeLambda}.
  */
-export type RawArgsLength<F extends TypeLambda> = RawArgs<F>["length"];
+export type RawArgsLength<F extends TypeLambda<never, unknown>> = RawArgs<F>["length"];
 
 /****************************************************************
  * Utilities for handling signatures of {@linkcode TypeLambda}s *
@@ -484,19 +484,20 @@ export type RawArgsLength<F extends TypeLambda> = RawArgs<F>["length"];
  * type ConcatParams = Params<Concat>; // => [s1: string, s2: string]
  * ```
  */
-export type Params<F extends TypeLambda, Known = never> = Parameters<
+export type Params<F extends TypeLambda<never, unknown>, Known = never> = Parameters<
   (F extends TypeLambdaG ? F & TypeArgs<F, Known> : F)["signature"]
 >;
 /**
  * The **unsafe** version of {@linkcode Params} (i.e., no type checking with {@linkcode F}).
  */
-export type ParamsW<F, Known = never> = F extends TypeLambda ? Params<F, Known> : never;
+export type ParamsW<F, Known = never> =
+  F extends TypeLambda<never, unknown> ? Params<F, Known> : never;
 /**
  * A shorthand for `Params<F>[0]`.
  *
  * @see {@linkcode Params}
  */
-export type Param0<F extends TypeLambda, Known = never> = Params<F, Known>[0];
+export type Param0<F extends TypeLambda<never, unknown>, Known = never> = Params<F, Known>[0];
 /**
  * The **unsafe** version of {@linkcode Param0} (i.e., no type checking with {@linkcode F}).
  */
@@ -506,7 +507,7 @@ export type Param0W<F, Known = never> = ParamsW<F, Known>[0];
  *
  * @see {@linkcode Params}
  */
-export type Param1<F extends TypeLambda, Known = never> = Params<F, Known>[1];
+export type Param1<F extends TypeLambda<never, unknown>, Known = never> = Params<F, Known>[1];
 /**
  * The **unsafe** version of {@linkcode Param1} (i.e., no type checking with {@linkcode F}).
  */
@@ -516,7 +517,7 @@ export type Param1W<F, Known = never> = ParamsW<F, Known>[1];
  *
  * @see {@linkcode Params}
  */
-export type Param2<F extends TypeLambda, Known = never> = Params<F, Known>[2];
+export type Param2<F extends TypeLambda<never, unknown>, Known = never> = Params<F, Known>[2];
 /**
  * The **unsafe** version of {@linkcode Param2} (i.e., no type checking with {@linkcode F}).
  */
@@ -526,7 +527,7 @@ export type Param2W<F, Known = never> = ParamsW<F, Known>[2];
  *
  * @see {@linkcode Params}
  */
-export type Param3<F extends TypeLambda, Known = never> = Params<F, Known>[3];
+export type Param3<F extends TypeLambda<never, unknown>, Known = never> = Params<F, Known>[3];
 /**
  * The **unsafe** version of {@linkcode Param3} (i.e., no type checking with {@linkcode F}).
  */
@@ -543,7 +544,9 @@ export type Param3W<F, Known = never> = ParamsW<F, Known>[3];
  * type ConcatParamsLength = ParamsLength<Concat>; // => 2
  * ```
  */
-export type ParamsLength<F extends TypeLambda> = Parameters<F["signature"]>["length"];
+export type ParamsLength<F extends TypeLambda<never, unknown>> = Parameters<
+  F["signature"]
+>["length"];
 
 /**
  * Get the return type of a {@linkcode TypeLambda}.
@@ -556,13 +559,14 @@ export type ParamsLength<F extends TypeLambda> = Parameters<F["signature"]>["len
  * type ConcatRetType = RetType<Concat>; // => string
  * ```
  */
-export type RetType<F extends TypeLambda, Known = never> = ReturnType<
+export type RetType<F extends TypeLambda<never, unknown>, Known = never> = ReturnType<
   (F extends TypeLambdaG ? F & TypeArgs<F, Known> : F)["signature"]
 >;
 /**
  * The **unsafe** version of {@linkcode RetType} (i.e., no type checking with {@linkcode F}).
  */
-export type RetTypeW<F, Known = never> = F extends TypeLambda ? RetType<F, Known> : never;
+export type RetTypeW<F, Known = never> =
+  F extends TypeLambda<never, unknown> ? RetType<F, Known> : never;
 
 /**
  * Get the signature of a {@linkcode TypeLambda}.
@@ -593,7 +597,7 @@ export type RetTypeW<F, Known = never> = F extends TypeLambda ? RetType<F, Known
  * ```
  */
 export type Sig<F, Known = never> =
-  F extends TypeLambda ? _Sig<F, Params<F>, RetType<F>, Known> : F;
+  F extends TypeLambda<never, unknown> ? _Sig<F, Params<F>, RetType<F>, Known> : F;
 type _Sig<F, BaseParams extends unknown[], BaseRetType, Known = never> =
   F extends TypeLambdaG ?
     [Known] extends [never] ?
@@ -674,7 +678,7 @@ type _Sig<F, BaseParams extends unknown[], BaseRetType, Known = never> =
       (
         ...args: _FurtherExpandAll<Params<F, Known>, BaseParams>
       ) => _FurtherExpand<RetType<F, Known>, BaseRetType>
-  : F extends TypeLambda ?
+  : F extends TypeLambda<never, unknown> ?
     (
       ...args: _FurtherExpandAll<TolerantParams<F>, BaseParams>
     ) => _FurtherExpand<TolerantRetType<F>, BaseRetType>
@@ -683,7 +687,9 @@ type _FurtherExpandAll<TS extends unknown[], BaseTypes extends unknown[]> = {
   [K in keyof BaseTypes]: _FurtherExpand<TS[StringToNumber<K>], BaseTypes[K]>;
 };
 type _FurtherExpand<T, BaseType> =
-  BaseType extends TypeLambda ? _Sig<T, TolerantParams<BaseType>, TolerantRetType<BaseType>> : T;
+  BaseType extends TypeLambda<never, unknown> ?
+    _Sig<T, TolerantParams<BaseType>, TolerantRetType<BaseType>>
+  : T;
 type _GenericParamsWithTypeArgsTuple<F extends TypeLambdaG, Types extends unknown[]> = Parameters<
   _RefinedSigByTypeArgsTuple<F, Types>
 >;
@@ -746,7 +752,8 @@ export type TypeLambdaG<
         [TypeParameters[K], unknown]
       : never;
     }>;
-interface GenericTypeLambda<TypeParameters extends TypeParameter[]> extends TypeLambda {
+interface GenericTypeLambda<TypeParameters extends TypeParameter[]>
+  extends TypeLambda<never, unknown> {
   readonly ["~hkt"]: GenericTypeLambdaMeta<TypeParameters>;
 }
 interface GenericTypeLambdaMeta<TypeParameters extends TypeParameter[]> extends TypeLambdaMeta {
@@ -939,7 +946,7 @@ type _WrapInForEachParameter<S extends (...args: never) => unknown> = (
  * type TolerantMapParams = TolerantParams<Map>; // => [f: TypeLambda<[x: never], unknown>, xs: unknown[]]
  * ```
  */
-export type TolerantParams<F extends TypeLambda> =
+export type TolerantParams<F extends TypeLambda<never, unknown>> =
   F extends TypeLambdaG ?
     ParametersW<F["signature"]> extends infer Params extends unknown[] ?
       {
@@ -959,7 +966,7 @@ export type TolerantParams<F extends TypeLambda> =
 /**
  * The **unsafe** version of {@linkcode TolerantParams} (i.e., no type checking with {@linkcode F}).
  */
-export type TolerantParamsW<F> = F extends TypeLambda ? TolerantParams<F> : never;
+export type TolerantParamsW<F> = F extends TypeLambda<never, unknown> ? TolerantParams<F> : never;
 /**
  * Get a tolerant return type for a {@linkcode TypeLambda}.
  *
@@ -990,7 +997,7 @@ export type TolerantParamsW<F> = F extends TypeLambda ? TolerantParams<F> : neve
  * // => TypeLambda<[xs: never[]], unknown[]>
  * ```
  */
-export type TolerantRetType<F extends TypeLambda> =
+export type TolerantRetType<F extends TypeLambda<never, unknown>> =
   F extends TypeLambdaG ?
     ReturnTypeW<
       (F &
@@ -1003,7 +1010,7 @@ export type TolerantRetType<F extends TypeLambda> =
 /**
  * The **unsafe** version of {@linkcode TolerantRetType} (i.e., no type checking with {@linkcode F}).
  */
-export type TolerantRetTypeW<F> = F extends TypeLambda ? TolerantRetType<F> : never;
+export type TolerantRetTypeW<F> = F extends TypeLambda<never, unknown> ? TolerantRetType<F> : never;
 type _GetTypeParametersBase<TypeParameters extends TypeParameter[], Variances> =
   _BuildBaseTypeArgs<TypeParameters> extends infer Base ?
     { [K in keyof Base]: _TolerantTypeArg<GetProp<Variances, K>, Base[K]> }
@@ -1071,7 +1078,7 @@ type _GetParameterOrReturnTypeByIndex<S, Index extends number | "r"> =
  * type ConcatRes = Apply<Concat, ["foo", "bar"]>; // => "foobar"
  * ```
  */
-export type Apply<F extends TypeLambda, Args extends TolerantParams<F>> =
+export type Apply<F extends TypeLambda<never, unknown>, Args extends TolerantParams<F>> =
   F & { readonly Args: (_: Args) => void } extends infer F2 extends { readonly return: unknown } ?
     F2["return"] extends infer R extends RetType<F, Args> ?
       R
@@ -1304,12 +1311,13 @@ export interface Ask<T> extends TypeLambda<[value: T], T> {
  *
  * @see {@linkcode Untupled} for the inverse operation.
  */
-export type Tupled<F extends TypeLambda> =
+export type Tupled<F extends TypeLambda<never, unknown>> =
   F extends TypeLambdaG ? TupledGeneric<F> : TupledNormal<F>;
-interface TupledNormal<F extends TypeLambda> extends TypeLambda<[args: Params<F>], RetType<F>> {
+interface TupledNormal<F extends TypeLambda<never, unknown>>
+  extends TypeLambda<[args: Params<F>], RetType<F>> {
   readonly return: ApplyW<F, Arg0<this>>;
 }
-interface TupledGeneric<F extends TypeLambdaG & TypeLambda> extends TypeLambdaG {
+interface TupledGeneric<F extends TypeLambdaG & TypeLambda<never, unknown>> extends TypeLambdaG {
   readonly ["~hkt"]: F["~hkt"];
   readonly signature: (F & _PickTypeArgs<this>)["signature"] extends infer S ?
     (args: ParametersW<S>) => ReturnTypeW<S>
@@ -1335,17 +1343,17 @@ interface TupledGeneric<F extends TypeLambdaG & TypeLambda> extends TypeLambdaG 
  * type _2 = Apply<UntupledFirst, [42, "foo"]>; // => 42
  * ```
  */
-export type Untupled<F extends TypeLambda> =
+export type Untupled<F extends TypeLambda1<any, unknown>> =
   F extends TypeLambdaG ? UntupledGeneric<F> : UntupledNormal<F>;
-interface UntupledNormal<F extends TypeLambda1<any[]>>
+interface UntupledNormal<F extends TypeLambda1<any, unknown>>
   extends TypeLambda<[...args: Param0<F>], RetType<F>> {
   readonly return: Call1W<F, Args<this>>;
 }
-interface UntupledGeneric<F extends TypeLambdaG & TypeLambda1<any[]>> extends TypeLambdaG {
+interface UntupledGeneric<F extends TypeLambdaG & TypeLambda1<any, unknown>> extends TypeLambdaG {
   readonly ["~hkt"]: F["~hkt"];
   readonly signature: (F & _PickTypeArgs<this>)["signature"] extends infer S ?
     (
-      ...args: ParametersW<S>[0] extends readonly any[] ? ParametersW<S>[0] : never
+      ...args: ParametersW<S>[0] extends readonly unknown[] ? ParametersW<S>[0] : never
     ) => ReturnTypeW<S>
   : never;
   readonly return: Call1W<F, Args<this>>;
@@ -1391,18 +1399,22 @@ interface UntupledGeneric<F extends TypeLambdaG & TypeLambda1<any[]>> extends Ty
  * type _2 = Apply<FlippedCurriedMap, [["foo", "bar"], Append<"!">]>; // => ["foo!", "bar!"]
  * ```
  */
-export type Flip<F extends TypeLambda1<TypeLambda1> | TypeLambda2> =
-  F extends TypeLambda1<TypeLambda1> ? Flip1<F>
-  : F extends TypeLambda2 ? Flip2<F>
+export type Flip<
+  F extends TypeLambda1<never, TypeLambda1<never, unknown>> | TypeLambda2<never, never, unknown>,
+> =
+  F extends TypeLambda1<never, TypeLambda1<never, unknown>> ? Flip1<F>
+  : F extends TypeLambda2<never, never, unknown> ? Flip2<F>
   : never;
 /* Flip `TypeLambda2` */
-type Flip2<F extends TypeLambda2> = F extends TypeLambdaG ? Flip2Generic<F> : Flip2Normal<F>;
-interface Flip2Normal<F extends TypeLambda2>
+type Flip2<F extends TypeLambda2<never, never, unknown>> =
+  F extends TypeLambdaG ? Flip2Generic<F> : Flip2Normal<F>;
+interface Flip2Normal<F extends TypeLambda2<never, never, unknown>>
   // Use `GetPart` to preserve tuple labels
   extends TypeLambda<[...GetPart<Params<F>, 1>, ...HeadPart<Params<F>>], RetType<F>> {
   readonly return: Call2W<F, RawArg1<this>, RawArg0<this>>;
 }
-interface Flip2Generic<F extends TypeLambdaG & TypeLambda2> extends TypeLambdaG {
+interface Flip2Generic<F extends TypeLambdaG & TypeLambda2<never, never, unknown>>
+  extends TypeLambdaG {
   readonly ["~hkt"]: F["~hkt"];
   readonly signature: (F & _PickTypeArgs<this>)["signature"] extends infer S ?
     // Use `GetPart` to preserve tuple labels
@@ -1410,33 +1422,38 @@ interface Flip2Generic<F extends TypeLambdaG & TypeLambda2> extends TypeLambdaG 
   : never;
   readonly return: Call2W<F, RawArg1<this>, RawArg0<this>>;
 }
-/* Flip `TypeLambda1<TypeLambda1>` */
-type Flip1<F extends TypeLambda1<TypeLambda1>> =
+/* Flip `TypeLambda1<never, TypeLambda1>` */
+type Flip1<F extends TypeLambda1<never, TypeLambda1<never, unknown>>> =
   F extends TypeLambdaG ? Flip1Generic<F> : Flip1Normal<F>;
-interface Flip1Normal<F extends TypeLambda1<TypeLambda1>>
+interface Flip1Normal<F extends TypeLambda1<never, TypeLambda1<never, unknown>>>
   // Use `GetPart` to preserve tuple labels
   extends TypeLambda<Params<RetType<F>>, TypeLambda<Params<F>, RetType<RetType<F>>>> {
   readonly return: _Flip1Normal<F, RawArg0<this>>;
 }
-interface _Flip1Normal<F extends TypeLambda1<TypeLambda1>, A1>
+interface _Flip1Normal<F extends TypeLambda1<never, TypeLambda1<never, unknown>>, A1>
   extends TypeLambda<Params<F>, RetType<RetType<F>>> {
   readonly return: Call1W<Call1W<F, RawArg0<this>>, A1>;
 }
-interface Flip1Generic<F extends TypeLambdaG & TypeLambda1<TypeLambda1>> extends TypeLambdaG {
+interface Flip1Generic<F extends TypeLambdaG & TypeLambda1<never, TypeLambda1<never, unknown>>>
+  extends TypeLambdaG {
   readonly ["~hkt"]: F["~hkt"];
   readonly signature: (F & _PickTypeArgs<this>)["signature"] extends infer S ?
     (...args: ParamsW<ReturnTypeW<S>>) => TypeLambda<ParametersW<S>, RetTypeW<ReturnTypeW<S>>>
   : never;
   readonly return: _Flip1Generic<F, RawArg0<this>>;
 }
-interface _Flip1Generic<F extends TypeLambdaG & TypeLambda1<TypeLambda1>, A1>
+interface _Flip1Generic<F extends TypeLambdaG & TypeLambda1<never, TypeLambda1<never, unknown>>, A1>
   extends TypeLambda<
-    Params<_FlipIntermediateParameterVarianceForCurried2<F>, { r: TypeLambda1<In<A1>> }>,
-    RetTypeW<RetType<_FlipIntermediateParameterVarianceForCurried2<F>, { r: TypeLambda1<In<A1>> }>>
+    // `any` in `TypeLambda1<In<A1>, any>` here is intentional to avoid variance issues
+    Params<_FlipIntermediateParameterVarianceForCurried2<F>, { r: TypeLambda1<In<A1>, any> }>,
+    RetTypeW<
+      RetType<_FlipIntermediateParameterVarianceForCurried2<F>, { r: TypeLambda1<In<A1>, any> }>
+    >
   > {
   readonly return: Call1W<Call1W<F, RawArg0<this>>, A1>;
 }
-interface _FlipIntermediateParameterVarianceForCurried2<F extends TypeLambda> extends TypeLambda {
+interface _FlipIntermediateParameterVarianceForCurried2<F extends TypeLambda<never, unknown>>
+  extends TypeLambda {
   readonly ["~hkt"]: F["~hkt"];
   readonly signature: _WrapInForIntermediateParameterOfCurried2<
     (F & _PickTypeArgs<this>)["signature"]
@@ -1509,23 +1526,30 @@ type _WrapInForIntermediateParameterOfCurried2<S> = (
  * // => "foobarbaz"
  * ```
  */
-export type Curry<F extends TypeLambda1 | TypeLambda2 | TypeLambda3> =
-  F extends TypeLambda1 ? F
-  : F extends TypeLambda2 ? Curry2<F>
-  : F extends TypeLambda3 ? Curry3<F>
+export type Curry<
+  F extends
+    | TypeLambda1<never, unknown>
+    | TypeLambda2<never, never, unknown>
+    | TypeLambda3<never, never, never, unknown>,
+> =
+  F extends TypeLambda1<never, unknown> ? F
+  : F extends TypeLambda2<never, never, unknown> ? Curry2<F>
+  : F extends TypeLambda3<never, never, never, unknown> ? Curry3<F>
   : never;
 /* Curry `TypeLambda2` */
-type Curry2<F extends TypeLambda2> = F extends TypeLambdaG ? Curry2Generic<F> : Curry2Normal<F>;
-interface Curry2Normal<F extends TypeLambda2>
+type Curry2<F extends TypeLambda2<never, never, unknown>> =
+  F extends TypeLambdaG ? Curry2Generic<F> : Curry2Normal<F>;
+interface Curry2Normal<F extends TypeLambda2<never, never, unknown>>
   // Use `GetPart` to preserve tuple labels
   extends TypeLambda<[...HeadPart<Params<F>>], TypeLambda<[...GetPart<Params<F>, 1>], RetType<F>>> {
   readonly return: _Curry2Normal<F, RawArg0<this>>;
 }
-interface _Curry2Normal<F extends TypeLambda2, A0>
+interface _Curry2Normal<F extends TypeLambda2<never, never, unknown>, A0>
   extends TypeLambda<[...GetPart<Params<F>, 1>], RetType<F>> {
   readonly return: Call2W<F, A0, RawArg0<this>>;
 }
-interface Curry2Generic<F extends TypeLambdaG & TypeLambda2> extends TypeLambdaG {
+interface Curry2Generic<F extends TypeLambdaG & TypeLambda2<never, never, unknown>>
+  extends TypeLambdaG {
   readonly ["~hkt"]: F["~hkt"];
   readonly signature: (F & _PickTypeArgs<this>)["signature"] extends infer S ?
     // Use `GetPart` to preserve tuple labels
@@ -1535,14 +1559,15 @@ interface Curry2Generic<F extends TypeLambdaG & TypeLambda2> extends TypeLambdaG
   : never;
   readonly return: _Curry2Generic<F, RawArg0<this>>;
 }
-interface _Curry2Generic<F extends TypeLambdaG & TypeLambda2, A0>
+interface _Curry2Generic<F extends TypeLambdaG & TypeLambda2<never, never, unknown>, A0>
   // Use `GetPart` to preserve tuple labels
   extends TypeLambda<[...GetPart<Params<F, [A0]>, 1>], RetType<F, [A0]>> {
   readonly return: Call2W<F, A0, RawArg0<this>>;
 }
 /* Curry `TypeLambda3` */
-type Curry3<F extends TypeLambda3> = F extends TypeLambdaG ? Curry3Generic<F> : Curry3Normal<F>;
-interface Curry3Normal<F extends TypeLambda3>
+type Curry3<F extends TypeLambda3<never, never, never, unknown>> =
+  F extends TypeLambdaG ? Curry3Generic<F> : Curry3Normal<F>;
+interface Curry3Normal<F extends TypeLambda3<never, never, never, unknown>>
   // Use `HeadPart` to preserve tuple labels
   extends TypeLambda<
     [...HeadPart<Params<F>>],
@@ -1550,18 +1575,19 @@ interface Curry3Normal<F extends TypeLambda3>
   > {
   readonly return: _Curry3Normal<F, RawArg0<this>>;
 }
-interface _Curry3Normal<F extends TypeLambda3, A0>
+interface _Curry3Normal<F extends TypeLambda3<never, never, never, unknown>, A0>
   extends TypeLambda<
     [...GetPart<Params<F>, 1>],
     TypeLambda<[...GetPart<Params<F>, 2>], RetType<F>>
   > {
   readonly return: __Curry3Normal<F, A0, RawArg0<this>>;
 }
-interface __Curry3Normal<F extends TypeLambda3, A0, A1>
+interface __Curry3Normal<F extends TypeLambda3<never, never, never, unknown>, A0, A1>
   extends TypeLambda<[...GetPart<Params<F>, 2>], RetType<F>> {
   readonly return: Call3W<F, A0, A1, RawArg0<this>>;
 }
-interface Curry3Generic<F extends TypeLambdaG & TypeLambda3> extends TypeLambdaG {
+interface Curry3Generic<F extends TypeLambdaG & TypeLambda3<never, never, never, unknown>>
+  extends TypeLambdaG {
   readonly ["~hkt"]: F["~hkt"];
   readonly signature: (F & _PickTypeArgs<this>)["signature"] extends infer S ?
     // Use `GetPart` to preserve tuple labels
@@ -1574,7 +1600,7 @@ interface Curry3Generic<F extends TypeLambdaG & TypeLambda3> extends TypeLambdaG
   : never;
   readonly return: _Curry3Generic<F, RawArg0<this>>;
 }
-interface _Curry3Generic<F extends TypeLambdaG & TypeLambda2, A0>
+interface _Curry3Generic<F extends TypeLambdaG & TypeLambda3<never, never, never, unknown>, A0>
   // Use `GetPart` to preserve tuple labels
   extends TypeLambda<
     [...GetPart<Params<F, [A0]>, 1>],
@@ -1582,7 +1608,7 @@ interface _Curry3Generic<F extends TypeLambdaG & TypeLambda2, A0>
   > {
   readonly return: __Curry3Generic<F, A0, RawArg0<this>>;
 }
-interface __Curry3Generic<F extends TypeLambdaG & TypeLambda2, A0, A1>
+interface __Curry3Generic<F extends TypeLambdaG & TypeLambda3<never, never, never, unknown>, A0, A1>
   // Use `GetPart` to preserve tuple labels
   extends TypeLambda<[...GetPart<Params<F, [A0, A1]>, 2>], RetType<F, [A0, A1]>> {
   readonly return: Call3W<F, A0, A1, RawArg0<this>>;
@@ -1632,9 +1658,12 @@ interface __Curry3Generic<F extends TypeLambdaG & TypeLambda2, A0, A1>
  * type ToNestedTupleSig = Sig<ToNestedTuple>; // => <T>(value: T) => [[T]]
  * ```
  */
-export type Compose<G extends TypeLambda1<RetType<F>>, F extends TypeLambda1> =
-  F extends TypeLambdaG & TypeLambda1 ?
-    G extends TypeLambdaG & TypeLambda1<RetType<F>> ?
+export type Compose<
+  G extends TypeLambda1<RetType<F>, unknown>,
+  F extends TypeLambda1<never, unknown>,
+> =
+  F extends TypeLambdaG & TypeLambda1<never, unknown> ?
+    G extends TypeLambdaG & TypeLambda1<RetType<F>, unknown> ?
       // Use `ComposeGeneric` only if both `F` and `G` are generic
       ComposeGeneric<G, F>
     : ComposeNormal<G, F>
@@ -1644,28 +1673,30 @@ export type Compose<G extends TypeLambda1<RetType<F>>, F extends TypeLambda1> =
  * {@linkcode G}).
  */
 export type ComposeW<G, F> =
-  F extends TypeLambdaG & TypeLambda1 ?
-    G extends TypeLambdaG & TypeLambda1<RetType<F>> ? ComposeGeneric<G, F>
-    : G extends TypeLambda1<RetType<F>> ? ComposeNormal<G, F>
+  F extends TypeLambdaG & TypeLambda1<never, unknown> ?
+    G extends TypeLambdaG & TypeLambda1<RetType<F>, unknown> ? ComposeGeneric<G, F>
+    : G extends TypeLambda1<RetType<F>, unknown> ? ComposeNormal<G, F>
     : never
-  : F extends TypeLambda1 ?
-    G extends TypeLambda1<RetType<F>> ?
+  : F extends TypeLambda1<never, unknown> ?
+    G extends TypeLambda1<RetType<F>, unknown> ?
       ComposeNormal<G, F>
     : never
   : never;
 /**
  * Compose two {@linkcode TypeLambda1}s if either or none of them is generic.
  */
-interface ComposeNormal<G extends TypeLambda1<RetType<F>>, F extends TypeLambda1>
-  extends TypeLambda<Params<F, { r: Param0<G> }>, RetType<G, [RetType<F>]>> {
+interface ComposeNormal<
+  G extends TypeLambda1<RetType<F>, unknown>,
+  F extends TypeLambda1<never, unknown>,
+> extends TypeLambda<Params<F, { r: Param0<G> }>, RetType<G, [RetType<F>]>> {
   readonly return: Call1W<G, Call1W<F, RawArg0<this>>>;
 }
 /**
  * Compose two {@linkcode TypeLambda1}s if both of them are generic.
  */
 interface ComposeGeneric<
-  G extends TypeLambdaG & TypeLambda1<RetType<F>>,
-  F extends TypeLambdaG & TypeLambda1,
+  G extends TypeLambdaG & TypeLambda1<RetType<F>, unknown>,
+  F extends TypeLambdaG & TypeLambda1<never, unknown>,
 > extends TypeLambdaG {
   readonly ["~hkt"]: F["~hkt"];
   readonly signature: (F & _PickTypeArgs<this>)["signature"] extends infer S ?
@@ -1699,32 +1730,33 @@ interface ComposeGeneric<
  * ```
  */
 export type Flow<
-  A extends TypeLambda1,
-  B extends TypeLambda1<RetType<A>> = never,
-  C extends TypeLambda1<RetType<B, [RetType<A>]>> = never,
-  D extends TypeLambda1<RetType<C, [RetType<B, [RetType<A>]>]>> = never,
-  E extends TypeLambda1<RetType<D, [RetType<C, [RetType<B, [RetType<A>]>]>]>> = never,
-  F extends TypeLambda1<RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A>]>]>]>]>> = never,
+  A extends TypeLambda1<never, unknown>,
+  B extends TypeLambda1<RetType<A>, unknown> = never,
+  C extends TypeLambda1<RetType<B, [RetType<A>]>, unknown> = never,
+  D extends TypeLambda1<RetType<C, [RetType<B, [RetType<A>]>]>, unknown> = never,
+  E extends TypeLambda1<RetType<D, [RetType<C, [RetType<B, [RetType<A>]>]>]>, unknown> = never,
   // prettier-ignore
-  G extends TypeLambda1<RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A>]>]>]>]>]>> = never,
+  F extends TypeLambda1<RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A>]>]>]>]>, unknown> = never,
   // prettier-ignore
-  H extends TypeLambda1<RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A>]>]>]>]>]>]>> = never,
+  G extends TypeLambda1<RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A>]>]>]>]>]>, unknown> = never,
   // prettier-ignore
-  I extends TypeLambda1<RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A>]>]>]>]>]>]>]>> = never,
+  H extends TypeLambda1<RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A>]>]>]>]>]>]>, unknown> = never,
   // prettier-ignore
-  J extends TypeLambda1<RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A>]>]>]>]>]>]>]>]>> = never,
+  I extends TypeLambda1<RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A>]>]>]>]>]>]>]>, unknown> = never,
   // prettier-ignore
-  K extends TypeLambda1<RetType<J, [RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A>]>]>]>]>]>]>]>]>]>> = never,
+  J extends TypeLambda1<RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A>]>]>]>]>]>]>]>]>, unknown> = never,
   // prettier-ignore
-  L extends TypeLambda1<RetType<K, [RetType<J, [RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A>]>]>]>]>]>]>]>]>]>]>> = never,
+  K extends TypeLambda1<RetType<J, [RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A>]>]>]>]>]>]>]>]>]>, unknown> = never,
   // prettier-ignore
-  M extends TypeLambda1<RetType<L, [RetType<K, [RetType<J, [RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A>]>]>]>]>]>]>]>]>]>]>]>> = never,
+  L extends TypeLambda1<RetType<K, [RetType<J, [RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A>]>]>]>]>]>]>]>]>]>]>, unknown> = never,
   // prettier-ignore
-  N extends TypeLambda1<RetType<M, [RetType<L, [RetType<K, [RetType<J, [RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A>]>]>]>]>]>]>]>]>]>]>]>]>> = never,
+  M extends TypeLambda1<RetType<L, [RetType<K, [RetType<J, [RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A>]>]>]>]>]>]>]>]>]>]>]>, unknown> = never,
   // prettier-ignore
-  O extends TypeLambda1<RetType<N, [RetType<M, [RetType<L, [RetType<K, [RetType<J, [RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A>]>]>]>]>]>]>]>]>]>]>]>]>]>> = never,
+  N extends TypeLambda1<RetType<M, [RetType<L, [RetType<K, [RetType<J, [RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A>]>]>]>]>]>]>]>]>]>]>]>]>, unknown> = never,
   // prettier-ignore
-  P extends TypeLambda1<RetType<O, [RetType<N, [RetType<M, [RetType<L, [RetType<K, [RetType<J, [RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A>]>]>]>]>]>]>]>]>]>]>]>]>]>]>> = never,
+  O extends TypeLambda1<RetType<N, [RetType<M, [RetType<L, [RetType<K, [RetType<J, [RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A>]>]>]>]>]>]>]>]>]>]>]>]>]>, unknown> = never,
+  // prettier-ignore
+  P extends TypeLambda1<RetType<O, [RetType<N, [RetType<M, [RetType<L, [RetType<K, [RetType<J, [RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A>]>]>]>]>]>]>]>]>]>]>]>]>]>]>, unknown> = never,
 > =
   [B] extends [never] ? A
   : [C] extends [never] ? ComposeW<B, A>
@@ -1788,33 +1820,33 @@ export type Flow<
  */
 export type Pipe<
   T,
-  A extends TypeLambda1<T>,
-  B extends TypeLambda1<RetType<A, [T]>> = never,
-  C extends TypeLambda1<RetType<B, [RetType<A, [T]>]>> = never,
-  D extends TypeLambda1<RetType<C, [RetType<B, [RetType<A, [T]>]>]>> = never,
-  E extends TypeLambda1<RetType<D, [RetType<C, [RetType<B, [RetType<A, [T]>]>]>]>> = never,
+  A extends TypeLambda1<T, unknown>,
+  B extends TypeLambda1<RetType<A, [T]>, unknown> = never,
+  C extends TypeLambda1<RetType<B, [RetType<A, [T]>]>, unknown> = never,
+  D extends TypeLambda1<RetType<C, [RetType<B, [RetType<A, [T]>]>]>, unknown> = never,
+  E extends TypeLambda1<RetType<D, [RetType<C, [RetType<B, [RetType<A, [T]>]>]>]>, unknown> = never,
   // prettier-ignore
-  F extends TypeLambda1<RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A, [T]>]>]>]>]>> = never,
+  F extends TypeLambda1<RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A, [T]>]>]>]>]>, unknown> = never,
   // prettier-ignore
-  G extends TypeLambda1<RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A, [T]>]>]>]>]>]>> = never,
+  G extends TypeLambda1<RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A, [T]>]>]>]>]>]>, unknown> = never,
   // prettier-ignore
-  H extends TypeLambda1<RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A, [T]>]>]>]>]>]>]>> = never,
+  H extends TypeLambda1<RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A, [T]>]>]>]>]>]>]>, unknown> = never,
   // prettier-ignore
-  I extends TypeLambda1<RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A, [T]>]>]>]>]>]>]>]>> = never,
+  I extends TypeLambda1<RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A, [T]>]>]>]>]>]>]>]>, unknown> = never,
   // prettier-ignore
-  J extends TypeLambda1<RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A, [T]>]>]>]>]>]>]>]>]>> = never,
+  J extends TypeLambda1<RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A, [T]>]>]>]>]>]>]>]>]>, unknown> = never,
   // prettier-ignore
-  K extends TypeLambda1<RetType<J, [RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A, [T]>]>]>]>]>]>]>]>]>]>> = never,
+  K extends TypeLambda1<RetType<J, [RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A, [T]>]>]>]>]>]>]>]>]>]>, unknown> = never,
   // prettier-ignore
-  L extends TypeLambda1<RetType<K, [RetType<J, [RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A, [T]>]>]>]>]>]>]>]>]>]>]>> = never,
+  L extends TypeLambda1<RetType<K, [RetType<J, [RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A, [T]>]>]>]>]>]>]>]>]>]>]>, unknown> = never,
   // prettier-ignore
-  M extends TypeLambda1<RetType<L, [RetType<K, [RetType<J, [RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A, [T]>]>]>]>]>]>]>]>]>]>]>]>> = never,
+  M extends TypeLambda1<RetType<L, [RetType<K, [RetType<J, [RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A, [T]>]>]>]>]>]>]>]>]>]>]>]>, unknown> = never,
   // prettier-ignore
-  N extends TypeLambda1<RetType<M, [RetType<L, [RetType<K, [RetType<J, [RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A, [T]>]>]>]>]>]>]>]>]>]>]>]>]>> = never,
+  N extends TypeLambda1<RetType<M, [RetType<L, [RetType<K, [RetType<J, [RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A, [T]>]>]>]>]>]>]>]>]>]>]>]>]>, unknown> = never,
   // prettier-ignore
-  O extends TypeLambda1<RetType<N, [RetType<M, [RetType<L, [RetType<K, [RetType<J, [RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A, [T]>]>]>]>]>]>]>]>]>]>]>]>]>]>> = never,
+  O extends TypeLambda1<RetType<N, [RetType<M, [RetType<L, [RetType<K, [RetType<J, [RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A, [T]>]>]>]>]>]>]>]>]>]>]>]>]>]>, unknown> = never,
   // prettier-ignore
-  P extends TypeLambda1<RetType<O, [RetType<N, [RetType<M, [RetType<L, [RetType<K, [RetType<J, [RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A, [T]>]>]>]>]>]>]>]>]>]>]>]>]>]>]>> = never,
+  P extends TypeLambda1<RetType<O, [RetType<N, [RetType<M, [RetType<L, [RetType<K, [RetType<J, [RetType<I, [RetType<H, [RetType<G, [RetType<F, [RetType<E, [RetType<D, [RetType<C, [RetType<B, [RetType<A, [T]>]>]>]>]>]>]>]>]>]>]>]>]>]>]>, unknown> = never,
 > =
   [B] extends [never] ? Call1W<A, T>
   : [C] extends [never] ? Call1W<B, Call1W<A, T>>
