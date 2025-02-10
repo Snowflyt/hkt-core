@@ -15,7 +15,7 @@ If you are simply using this library in your commercial projects without modifyi
 
 To obtain a commercial license or discuss pricing, please contact:
 
-- Email: gaoge011022@163.com
+- Email: gaoge011022@gmail.com
 
 ## Why Choose a Commercial License?
 

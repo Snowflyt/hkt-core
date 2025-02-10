@@ -15,7 +15,7 @@
 ║    Licensed under MPL 2.0                                       ║
 ║    Commercial License Available Upon Request                    ║
 ║                                                                 ║
-║    Ge Gao (Snowflyt) <gaoge011022@163.com>                      ║
+║    Ge Gao (Snowflyt) <gaoge011022@gmail.com>                    ║
 ║                                                                 ║
 ║    https://github.com/Snowflyt/hkt-core                         ║
 ║                                                                 ║

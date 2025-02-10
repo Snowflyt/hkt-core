@@ -22,7 +22,7 @@
     "url": "https://github.com/Snowflyt/hkt-core"
   },
   "license": "MPL-2.0",
-  "author": "Snowflyt <gaoge011022@163.com>",
+  "author": "Ge Gao (Snowflyt) <gaoge011022@gmail.com>",
   "type": "module",
   "types": "./index.d.ts",
   "workspaces": [

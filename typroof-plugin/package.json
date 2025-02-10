@@ -11,8 +11,8 @@
     "url": "https://github.com/Snowflyt/hkt-core"
   },
   "license": "MIT",
-  "author": "Snowflyt <gaoge011022@163.com>",
+  "author": "Ge Gao (Snowflyt) <gaoge011022@gmail.com>",
   "type": "module",
-  "types": "./index.d.ts",
-  "main": "./index.js"
+  "main": "./index.js",
+  "types": "./index.d.ts"
 }
