@@ -39,7 +39,6 @@
   },
   "devDependencies": {
     "@types/eslint": "^8.56.12",
-    "@types/lint-staged": "^13.3.0",
     "@typescript-eslint/eslint-plugin": "^8.23.0",
     "@typescript-eslint/parser": "^8.23.0",
     "chalk": "^5.4.1",
@@ -54,7 +53,6 @@
     "eslint-plugin-sort-destructure-keys": "^2.0.0",
     "fp-ts": "^2.16.9",
     "json": "^11.0.0",
-    "lint-staged": "^15.4.3",
     "prettier": "^3.4.2",
     "prettier-plugin-packagejson": "^2.5.8",
     "renamer": "^5.0.2",
