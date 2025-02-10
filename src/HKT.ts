@@ -1881,3 +1881,6 @@ export type Pipe<
     Call1W<O, Call1W<N, Call1W<M, Call1W<L, Call1W<K, Call1W<J, Call1W<I, Call1W<H, Call1W<G, Call1W<F, Call1W<E, Call1W<D, Call1W<C, Call1W<B, Call1W<A, T>>>>>>>>>>>>>>>
   : // prettier-ignore
     Call1W<P, Call1W<O, Call1W<N, Call1W<M, Call1W<L, Call1W<K, Call1W<J, Call1W<I, Call1W<H, Call1W<G, Call1W<F, Call1W<E, Call1W<D, Call1W<C, Call1W<B, Call1W<A, T>>>>>>>>>>>>>>>>;
+
+/* Ensure TypeScript treats this file as a module to prevent internal from exportation */
+export {};
