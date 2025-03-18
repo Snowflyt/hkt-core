@@ -1,5 +1,5 @@
-import { filter, map } from "fp-ts/Array";
-import { pipe } from "fp-ts/function";
+import { pipe } from "effect";
+import { filter, map } from "effect/Array";
 import { beNever, equal, error, expect, test } from "typroof";
 
 import { beOfSig } from "@hkt-core/typroof-plugin";

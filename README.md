@@ -20,7 +20,7 @@
 </p>
 
 ```typescript
-/* Use as classical HKTs (e.g., fp-ts style) */
+/* Use as classical HKTs (e.g., @effect/typeclass or fp-ts style) */
 interface MonadTypeClass<F extends HKT> {
   of: <T>(a: T) => Kind<F, T>; // Lift a value into the monad
   flatMap: <T, U>(fa: Kind<F, T>, f: (a: T) => Kind<F, U>) => Kind<F, U>;
@@ -47,9 +47,9 @@ type _ = ConcatNames<["alice", "bob", "i"]>; // => "Alice, Bob"
 
 ## About
 
-**Higher-Kinded Types (HKT)** are a powerful concept used in many popular TypeScript libraries, including [fp-ts](https://github.com/gcanti/fp-ts/blob/669cd3ed7cb5726024331a7a1cf35125669feb30/src/HKT.ts#L7-L70), [Effect](https://github.com/Effect-TS/website/blob/115da7cebb6ff3e4a266d47c8cbd37900219479b/content/limbo/hkt.mdx), [TypeBox](https://github.com/sinclairzx81/typebox/blob/870ab417fb69775e3b490d4457aa5963b6f16673/src/type/schema/schema.ts#L52-L58) and [HOTScript](https://github.com/gvergnaud/hotscript/blob/0bc205286bd5eea0b89fa903c411df9aca95923c/src/internals/core/Core.ts#L29-L37). While these libraries share the core idea of HKTs, their detailed implementations differ, making it difficult to share HKTs across libraries seamlessly.
+**Higher-Kinded Types (HKT)** are a powerful concept used in many popular TypeScript libraries, including [Effect](https://github.com/Effect-TS/website/blob/269d5065c5b548bc7fccc40b164dffcdb61b16bb/content/limbo/hkt.mdx), [fp-ts](https://github.com/gcanti/fp-ts/blob/669cd3ed7cb5726024331a7a1cf35125669feb30/src/HKT.ts#L7-L70), [TypeBox](https://github.com/sinclairzx81/typebox/blob/870ab417fb69775e3b490d4457aa5963b6f16673/src/type/schema/schema.ts#L52-L58) and [HOTScript](https://github.com/gvergnaud/hotscript/blob/0bc205286bd5eea0b89fa903c411df9aca95923c/src/internals/core/Core.ts#L29-L37). While these libraries share the core idea of HKTs, their detailed implementations differ, making it difficult to share HKTs across libraries seamlessly.
 
-hkt-core solves this problem by providing a **standardized** and **type-safe** HKT implementation that works for **both classical HKT use cases** (like fp-ts) and **type-level functions** (like HOTScript). Designed for easy integration with other libraries, it’s a **micro-library** that focuses solely on core HKT functionality without unnecessary extras.
+hkt-core solves this problem by providing a **standardized** and **type-safe** HKT implementation that works for **both classical HKT use cases** (like @effect/typeclass or fp-ts) and **type-level functions** (like HOTScript). Designed for easy integration with other libraries, it’s a **micro-library** that focuses solely on core HKT functionality without unnecessary extras.
 
 Regarding the type-level functions use case, hkt-core also aims for **_zero-cost_ abstractions** — the type computations are **optimized** to be as efficient as possible. By using hkt-core, you get a more concise way to write type-level code without worrying about slowing down TypeScript's compilation.
 
@@ -71,19 +71,19 @@ Alternatively, if you prefer a zero-dependency approach, you can directly _copy-
 
 hkt-core introduces some concepts that might take a little time to fully grasp. To get the most out of it, we recommend following the [quickstart guide](#quickstart) from start to finish. However, if you’re eager to jump straight into examples, we’ve provided a few here as TypeScript playground links. These examples will give you a quick overview of what hkt-core can do:
 
-- [Create a monad typeclass with HKT](https://tsplay.dev/mLjKbw) (like in [fp-ts](https://github.com/gcanti/fp-ts))
+- [Create a monad typeclass with HKT](https://tsplay.dev/mLjKbw) (like in [@effect/typeclass](https://github.com/Effect-TS/effect/tree/596e051b0ced130899d35b32ed740e78326fd9a3/packages/typeclass) or [fp-ts](https://github.com/gcanti/fp-ts))
 - [Composable type-level function programming with HKTs](https://tsplay.dev/w1Xz2W) (like in [HOTScript](https://github.com/gvergnaud/HOTScript), but in a type-safe way)
 - [A type-level JSON parser with parser combinators](https://tsplay.dev/WKJ1om) (like in Haskell [Parsec](https://hackage.haskell.org/package/parsec))
 
 ## Quickstart
 
-This section demonstrates how to use hkt-core in two common scenarios: **classical HKTs** (like in fp-ts) and **type-level functions** (like in HOTScript).
+This section demonstrates how to use hkt-core in two common scenarios: **classical HKTs** (like in @effect/typeclass or fp-ts) and **type-level functions** (like in HOTScript).
 
 ### Use as classical HKTs 🐱
 
 > [!TIP]
 >
-> This section assumes familiarity with **monads** and **type classes**. If you’re new to these concepts, we recommend checking out the [fp-ts documentation](https://gcanti.github.io/fp-ts/) first — or feel free to skip to the next section, which is more beginner-friendly.
+> This section assumes familiarity with **monads** and **type classes**. If you’re new to these concepts, we recommend checking out the [Effect documentation](https://github.com/Effect-TS/website/blob/269d5065c5b548bc7fccc40b164dffcdb61b16bb/content/limbo/hkt.mdx) first — or feel free to skip to the next section, which is more beginner-friendly.
 
 Let’s start with a **monad** example. A monad is a container type that supports `flatMap` (also known as `chain`) and `of` (also known as `pure` or `return`). For example, both `Array` and `Option` are monads because they support these operations. Since TypeScript doesn’t have a built-in `Option` type, let’s define one first:
 
@@ -232,11 +232,11 @@ const concatNames = (names: string[]) =>
     .join(", ");
 ```
 
-In functional programming libraries like [fp-ts](https://gcanti.github.io/fp-ts/), this can be rewritten using **function composition**:
+In functional programming libraries like [Effect](https://github.com/Effect-TS/effect), this can be rewritten using **function composition**:
 
 ```typescript
-import { pipe } from "fp-ts/function";
-import { filter, map } from "fp-ts/Array";
+import { pipe } from "effect";
+import { filter, map } from "effect/Array";
 
 const joinBy = (sep: string) => (strings: string[]) => strings.join(sep);
 
@@ -249,7 +249,7 @@ const concatNames = (names: string[]) =>
   );
 ```
 
-Here, `filter`, `map`, and `join` are higher-order functions that return new unary functions, and `pipe` chains them together. For example, `pipe(value, f, g, h)` is equivalent to `h(g(f(value)))`. Similarly, `flow` can be used to create a composed function in **fp-ts**, e.g., `flow(f, g, h)` is equivalent to `(value) => h(g(f(value)))`.
+Here, `filter`, `map`, and `join` are higher-order functions that return new unary functions, and `pipe` chains them together. For example, `pipe(value, f, g, h)` is equivalent to `h(g(f(value)))`. Similarly, `flow` can be used to create a composed function in Effect, e.g., `flow(f, g, h)` is equivalent to `(value) => h(g(f(value)))`.
 
 But how can we implement such a function at **type level**? While the employee names example might seem trivial at type level, consider a real-world use case: replacing names with route paths, the predicate with a route prefix, and the join function with a router builder. This becomes a type-safe routing system! For now, let’s focus on the employee names example.
 
@@ -323,7 +323,7 @@ type ConcatWrong2 = Call2<Concat, "foo", 42>;
 
 For more details on type checking and validation (e.g., how incompatible arguments are handled and how to bypass strict type checking), check out the [Type checking and validation in Detail](#type-checking-and-validation-in-detail) section.
 
-hkt-core also provides type-level `Flow` and `Pipe` utility types to compose unary type-level functions. These types work similarly to `pipe` and `flow` in **fp-ts**:
+hkt-core also provides type-level `Flow` and `Pipe` utility types to compose unary type-level functions. These types work similarly to `pipe` and `flow` in Effect or fp-ts:
 
 ```typescript
 interface ConcatFoo extends TypeLambda<[s: string], string> {
@@ -1108,7 +1108,7 @@ It’s worth noting that `U` is widened to `unknown` in the `MapOn` example. Thi
 
 hkt-core is a _core_ library that provides essential utilities for type-level programming in TypeScript, but it doesn’t come with many built-in type-level functions out of the box. We’ve shown some examples of useful type-level functions in the previous sections, and you might create your own toolkit with a lot of useful type-level functions based on hkt-core. Below are some tips for creating and managing your type-level functions effectively.
 
-First, while it might seem appealing, we don’t recommend creating auto-currying type-level functions like those in [HOTScript](https://github.com/gvergnaud/HOTScript). TypeScript cannot reliably identify whether a function is partially applied or not (see [a discussion about TypeScript support in Ramda’s repository](https://github.com/ramda/ramda/issues/2976#issuecomment-706475091)), and this applies to type-level functions as well. Instead, we recommend manually creating curried functions, similar to how [fp-ts](https://github.com/gcanti/fp-ts) handles currying.
+First, while it might seem appealing, we don’t recommend creating auto-currying type-level functions like those in [HOTScript](https://github.com/gvergnaud/HOTScript). TypeScript cannot reliably identify whether a function is partially applied or not (see [a discussion about TypeScript support in Ramda’s repository](https://github.com/ramda/ramda/issues/2976#issuecomment-706475091)), and this applies to type-level functions as well. Instead, we recommend manually creating curried functions, similar to how [Effect](https://github.com/Effect-TS/effect) and [fp-ts](https://github.com/gcanti/fp-ts) handles currying.
 
 Another challenge is how to manage different variants of the same type-level function — such as the simple generic version, the type-level function version, and the type-level function template version. A useful strategy is to apply different suffixes to distinguish between these variants. For example, `Map`, `Map$`, and `Map$$`, where the number of `$` indicates the number of arguments the returned type-level function accepts:
 
@@ -1264,7 +1264,7 @@ On the other hand, if you’re using hkt-core just for your own project and don�
 
 ### _Generic_ type-level functions don’t infer types correctly!
 
-hkt-core simulates the TypeScript type system at the type level as closely as possible, but it’s not perfect. If something doesn’t work in TypeScript, it’s likely that it won’t work in hkt-core either. When encountering issues with generic type-level functions, first test whether their equivalent runtime version works in TypeScript (you can use **fp-ts** or other libraries for this). If it doesn’t work in TypeScript, it’s also unlikely to work in hkt-core.
+hkt-core simulates the TypeScript type system at the type level as closely as possible, but it’s not perfect. If something doesn’t work in TypeScript, it’s likely that it won’t work in hkt-core either. When encountering issues with generic type-level functions, first test whether their equivalent runtime version works in TypeScript (you can use Effect or other libraries for this). If it doesn’t work in TypeScript, it’s also unlikely to work in hkt-core.
 
 For example, the following code will trigger an error in TypeScript:
 
@@ -1283,10 +1283,10 @@ type Composed = Flow<Head, Head, Head>;
 //         Type 'unknown' is not assignable to type '[unknown, ...unknown[]]'.
 ```
 
-You might expect the signature of `Composed` to be inferred as `<T>(tuple3: [[[T, ...unknown[]], ...unknown[]], ...unknown[]]) => T`, but this is the expected behavior. If you try the equivalent runtime code in **fp-ts**, you’ll see that it still doesn’t work in TypeScript:
+You might expect the signature of `Composed` to be inferred as `<T>(tuple3: [[[T, ...unknown[]], ...unknown[]], ...unknown[]]) => T`, but this is the expected behavior. If you try the equivalent runtime code in Effect, you’ll see that it still doesn’t work in TypeScript:
 
 ```typescript
-import { flow } from "fp-ts/function";
+import { flow } from "effect";
 
 const head = <T>(tuple: [T, ...unknown[]]): T => tuple[0];
 
