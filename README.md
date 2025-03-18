@@ -63,10 +63,6 @@ npm install hkt-core
 
 Alternatively, if you prefer a zero-dependency approach, you can directly _copy-and-paste_ `src/index.ts` into your project, which contains all hkt-core’s code in a single file. We guarantee **_no_ breaking changes** in **releases** _without_ a major version bump.
 
-> [!WARNING]
->
-> However, currently hkt-core is still a work-in-progress project, so **breaking changes** _are_ expected in its API without notice. Therefore, as for now, it’s recommended to use the npm package and pin the version in your `package.json` to ensure the stability of your project.
-
 ## Examples
 
 hkt-core introduces some concepts that might take a little time to fully grasp. To get the most out of it, we recommend following the [quickstart guide](#quickstart) from start to finish. However, if you’re eager to jump straight into examples, we’ve provided a few here as TypeScript playground links. These examples will give you a quick overview of what hkt-core can do:
