@@ -12,7 +12,7 @@
     <img src="https://img.shields.io/npm/v/hkt-core.svg?style=flat&colorA=000000&colorB=000000" alt="npm version" height="18">
   </a>
   <a href="https://github.com/Snowflyt/hkt-core/actions/workflows/test.yml">
-    <img src="https://img.shields.io/github/actions/workflow/status/Snowflyt/hkt-core/test.yml?label=test&style=flat&colorA=000000&colorB=000000" alt="test status" height="18">
+    <img src="https://img.shields.io/github/actions/workflow/status/Snowflyt/hkt-core/ci.yml?label=test&style=flat&colorA=000000&colorB=000000" alt="test status" height="18">
   </a>
   <a href="https://github.com/Snowflyt/hkt-core">
     <img src="https://img.shields.io/npm/l/hkt-core.svg?style=flat&colorA=000000&colorB=000000" alt="MIT license" height="18">
