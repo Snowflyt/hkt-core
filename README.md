@@ -61,7 +61,7 @@ To install **hkt-core** via npm (or any other package manager you prefer):
 npm install hkt-core
 ```
 
-Alternatively, if you prefer a zero-dependency approach, you can directly _copy-and-paste_ **`src/HKT.ts`** into your project, which contains all **hkt-core**’s code in a single file. We guarantee **_no_ breaking changes** in **releases** _without_ a major version bump.
+Alternatively, if you prefer a zero-dependency approach, you can directly _copy-and-paste_ **`src/index.ts`** into your project, which contains all **hkt-core**’s code in a single file. We guarantee **_no_ breaking changes** in **releases** _without_ a major version bump.
 
 > [!WARNING]
 >
