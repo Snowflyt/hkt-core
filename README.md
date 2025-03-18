@@ -79,7 +79,7 @@ This section demonstrates how to use hkt-core in two common scenarios: **classic
 
 > [!TIP]
 >
-> This section assumes familiarity with **monads** and **type classes**. If you’re new to these concepts, we recommend checking out the [Effect documentation](https://github.com/Effect-TS/website/blob/269d5065c5b548bc7fccc40b164dffcdb61b16bb/content/limbo/hkt.mdx) first — or feel free to skip to the next section, which is more beginner-friendly.
+> This section assumes familiarity with **monads** and **type classes**. If you’re new to these concepts, we recommend checking out the [Effect documentation](https://github.com/Effect-TS/effect/blob/566236361e270e575ef1cbf308ad1967c82a362c/packages/typeclass/README.md) or the [fp-ts documentation](https://gcanti.github.io/fp-ts/) first — or feel free to skip to the next section, which is more beginner-friendly.
 
 Let’s start with a **monad** example. A monad is a container type that supports `flatMap` (also known as `chain`) and `of` (also known as `pure` or `return`). For example, both `Array` and `Option` are monads because they support these operations. Since TypeScript doesn’t have a built-in `Option` type, let’s define one first:
 
