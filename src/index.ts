@@ -12,8 +12,7 @@
 ║    A micro Higher-Kinded Type implementation for TypeScript,    ║
 ║    with type safety elegantly guaranteed.                       ║
 ║                                                                 ║
-║    Licensed under MPL 2.0                                       ║
-║    Commercial License Available Upon Request                    ║
+║    Licensed under MIT                                           ║
 ║                                                                 ║
 ║    Ge Gao (Snowflyt) <gaoge011022@gmail.com>                    ║
 ║                                                                 ║

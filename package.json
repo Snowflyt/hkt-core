@@ -21,7 +21,7 @@
     "type": "git",
     "url": "https://github.com/Snowflyt/hkt-core"
   },
-  "license": "MPL-2.0",
+  "license": "MIT",
   "author": "Ge Gao (Snowflyt) <gaoge011022@gmail.com>",
   "type": "module",
   "types": "./index.d.ts",
@@ -30,7 +30,7 @@
   ],
   "scripts": {
     "prebuild": "npm run clean",
-    "build": "tsc --noEmit && cpy \"src/**/*\" dist && rimraf --glob \"dist/**/*.test.ts\" && renamer --find .ts --replace .d.ts \"dist/**\" && replace-in-file \"/^\\s*\\/\\/ eslint-disable-next-line .+$/mg\" \"\" \"dist/**/*.d.ts\" --isRegex && replace-in-file \"/^\\s*\\/\\*\\s+eslint-disable\\s+(\\S+\\s+)?\\*\\/$/mg\" \"\" \"dist/**/*.d.ts\" --isRegex && prettier --log-level=silent --write \"dist/**/*\" --ignore-path !dist/ && cpy package.json dist && json -I -f dist/package.json -e \"delete this.private; delete this.workspaces; delete this.scripts; delete this.devDependencies\" && cpy LICENSE dist && cpy COMMERCIAL_LICENSE.md dist && cpy README.md dist",
+    "build": "tsc --noEmit && cpy \"src/**/*\" dist && rimraf --glob \"dist/**/*.test.ts\" && renamer --find .ts --replace .d.ts \"dist/**\" && replace-in-file \"/^\\s*\\/\\/ eslint-disable-next-line .+$/mg\" \"\" \"dist/**/*.d.ts\" --isRegex && replace-in-file \"/^\\s*\\/\\*\\s+eslint-disable\\s+(\\S+\\s+)?\\*\\/$/mg\" \"\" \"dist/**/*.d.ts\" --isRegex && prettier --log-level=silent --write \"dist/**/*\" --ignore-path !dist/ && cpy package.json dist && json -I -f dist/package.json -e \"delete this.private; delete this.workspaces; delete this.scripts; delete this.devDependencies\" && cpy LICENSE dist && cpy README.md dist",
     "clean": "rimraf dist",
     "format": "prettier --no-error-on-unmatched-pattern --write **/*.{js,ts,json,md} *.{cjs,mjs,cts,mts}",
     "lint": "eslint **/*.{js,ts} *.{cjs,mjs,cts,mts} --no-error-on-unmatched-pattern --report-unused-disable-directives-severity error --max-warnings 0",

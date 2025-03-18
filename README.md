@@ -71,9 +71,9 @@ Alternatively, if you prefer a zero-dependency approach, you can directly _copy-
 
 hkt-core introduces some concepts that might take a little time to fully grasp. To get the most out of it, we recommend following the [quickstart guide](#quickstart) from start to finish. However, if you’re eager to jump straight into examples, we’ve provided a few here as TypeScript playground links. These examples will give you a quick overview of what hkt-core can do:
 
-- [Create a monad typeclass with HKT](https://tsplay.dev/mLjKbw) (like in [@effect/typeclass](https://github.com/Effect-TS/effect/tree/596e051b0ced130899d35b32ed740e78326fd9a3/packages/typeclass) or [fp-ts](https://github.com/gcanti/fp-ts))
-- [Composable type-level function programming with HKTs](https://tsplay.dev/w1Xz2W) (like in [HOTScript](https://github.com/gvergnaud/HOTScript), but in a type-safe way)
-- [A type-level JSON parser with parser combinators](https://tsplay.dev/WKJ1om) (like in Haskell [Parsec](https://hackage.haskell.org/package/parsec))
+- [Create a monad typeclass with HKT](https://tsplay.dev/w2ypbW) (like in [@effect/typeclass](https://github.com/Effect-TS/effect/tree/596e051b0ced130899d35b32ed740e78326fd9a3/packages/typeclass) or [fp-ts](https://github.com/gcanti/fp-ts))
+- [Composable type-level function programming with HKTs](https://tsplay.dev/NB94zw) (like in [HOTScript](https://github.com/gvergnaud/HOTScript), but in a type-safe way)
+- [A type-level JSON parser with parser combinators](https://tsplay.dev/mbbKdm) (like in Haskell [Parsec](https://hackage.haskell.org/package/parsec))
 
 ## Quickstart
 
@@ -1456,13 +1456,3 @@ type TestVariance = IsSubtype<TypeLambda<[string], number>, TypeLambda<[never], 
 If we remove the `args: Params` from the code above, we get the standard `TypeLambda` implementation as it is defined in `hkt-core`, and the result of `TestVariance` will be `true` as expected. However, by adding `args: Params` back, `Params` now appears in both a contravariant position (as function parameters in the `signature` property) and a covariant position (as the `args` property). This makes `Params` invariant and breaks the variance rules.
 
 Now, you might wonder, what if we use a contravariant **`args`** property, like `args: (_: Params) => void`? While this would work, it forces the user to access the arguments using the more complex syntax `Parameters<this["args"]>[0]`, which doesn’t provide much benefit over the standard **`Args`** utility in **hkt-core**.
-
-## License
-
-This project is licensed under the Mozilla Public License Version 2.0 (MPL 2.0).
-For details, please refer to the `LICENSE` file.
-
-In addition to the open-source license, a commercial license is available for proprietary use.
-If you modify this library and do not wish to open-source your modifications, or if you wish to use the modified library as part of a closed-source or proprietary project, you must obtain a commercial license.
-
-For details, see `COMMERCIAL_LICENSE.md`.
