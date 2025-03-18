@@ -1,5 +1,6 @@
-import { beOfSig } from "@hkt-core/typroof-plugin";
 import { equal, expect, test } from "typroof";
+
+import { beOfSig } from "@hkt-core/typroof-plugin";
 
 import type { Apply, Arg0, TArg, TypeLambdaG, Untupled } from "../src";
 

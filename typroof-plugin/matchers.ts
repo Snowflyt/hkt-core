@@ -4,6 +4,7 @@ import { match } from "typroof/plugin";
  * [Matcher] Check if a TypeLambda’s signature matches a given signature.
  *
  * Note: Parameter labels are also checked.
+ * @returns
  */
 export const beOfSig = <S extends (...args: any) => any>(
   // @ts-expect-error - `sig` is unused.
@@ -12,6 +13,7 @@ export const beOfSig = <S extends (...args: any) => any>(
 
 /**
  * [Matcher] Check if a type equals one of the given types.
+ * @returns
  */
 export const beOneOf = <
   A = Placeholder,
@@ -71,6 +73,7 @@ type _ExcludePlaceholders<TS extends readonly unknown[]> =
  * [Matcher] Check if a type exactly equals another type.
  *
  * Note: Tuple labels are also checked.
+ * @returns
  */
 export const exactEqual = <U>(
   // @ts-expect-error - `y` is unused.

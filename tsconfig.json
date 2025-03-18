@@ -25,5 +25,5 @@
     /* Type */
     "declaration": true
   },
-  "include": ["src"]
+  "include": ["src", "test", "typroof-plugin"]
 }

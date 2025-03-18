@@ -36,23 +36,23 @@
     "lint": "eslint **/*.{js,ts} *.{cjs,mjs,cts,mts} --no-error-on-unmatched-pattern --report-unused-disable-directives-severity error --max-warnings 0",
     "lint:fix": "eslint --fix **/*.{js,ts} *.{cjs,mjs,cts,mts} --no-error-on-unmatched-pattern --report-unused-disable-directives-severity error --max-warnings 0",
     "prepare": "node -e \"import fs from 'node:fs'; import path from 'node:path'; const hooksDir = path.join(process.cwd(), '.githooks'); const gitHooksDir = path.join(process.cwd(), '.git/hooks'); if (!fs.existsSync(gitHooksDir)) { console.error('Git hooks directory not found, please run this in a git repository.'); process.exit(1); } fs.readdirSync(hooksDir).forEach(file => { const srcFile = path.join(hooksDir, file); const destFile = path.join(gitHooksDir, file); fs.copyFileSync(srcFile, destFile); if (process.platform !== 'win32' && !file.endsWith('.cmd')) { fs.chmodSync(destFile, 0o755); } })\"",
-    "test": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json && typroof"
+    "test": "tsc --noEmit && typroof"
   },
   "devDependencies": {
-    "@types/eslint": "^8.56.12",
-    "@typescript-eslint/eslint-plugin": "^8.23.0",
     "@typescript-eslint/parser": "^8.23.0",
     "chalk": "^5.4.1",
     "commitlint": "^19.7.1",
     "cpy-cli": "^5.0.0",
-    "eslint": "^8.57.1",
-    "eslint-config-prettier": "^10.0.1",
-    "eslint-import-resolver-typescript": "^3.7.0",
-    "eslint-plugin-import": "^2.31.0",
+    "eslint": "^9.22.0",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-import-resolver-typescript": "^4.0.0",
+    "eslint-plugin-import-x": "^4.8.0",
+    "eslint-plugin-jsdoc": "^50.6.6",
     "eslint-plugin-prettier": "^5.2.3",
-    "eslint-plugin-sonarjs": "^0.25.1",
+    "eslint-plugin-sonarjs": "^3.0.2",
     "eslint-plugin-sort-destructure-keys": "^2.0.0",
     "fp-ts": "^2.16.9",
+    "globals": "^16.0.0",
     "json": "^11.0.0",
     "prettier": "^3.5.0",
     "prettier-plugin-packagejson": "^2.5.8",
@@ -60,6 +60,7 @@
     "replace-in-file": "^8.3.0",
     "rimraf": "^6.0.1",
     "typescript": "latest",
+    "typescript-eslint": "^8.26.1",
     "typroof": "^0.4.1"
   }
 }

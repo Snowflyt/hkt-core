@@ -1,5 +1,4 @@
 import chalk from "chalk";
-
 import type { Plugin } from "typroof/plugin";
 
 /**

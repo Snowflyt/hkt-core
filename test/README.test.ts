@@ -1,7 +1,8 @@
-import { beOfSig } from "@hkt-core/typroof-plugin";
 import { filter, map } from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import { beNever, equal, error, expect, test } from "typroof";
+
+import { beOfSig } from "@hkt-core/typroof-plugin";
 
 import type {
   Always,

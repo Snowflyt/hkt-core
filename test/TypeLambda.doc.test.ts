@@ -1,5 +1,6 @@
-import { beOfSig } from "@hkt-core/typroof-plugin";
 import { describe, equal, error, expect, it } from "typroof";
+
+import { beOfSig } from "@hkt-core/typroof-plugin";
 
 import type { Apply, Arg0, Arg1, TypeLambda } from "../src";
 

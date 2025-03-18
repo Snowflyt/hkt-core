@@ -707,7 +707,7 @@ type _RefinedSigByTypeArgsTuple<F extends TypeLambdaG, Types extends unknown[]> 
  * The identifier use internally for a type parameter.
  * @private
  */
-type TypeParameterIdentifier = `${Capitalize<string>}`;
+type TypeParameterIdentifier = Capitalize<string>;
 /**
  * A type parameter identifier with an upper bound.
  * @private
@@ -1445,8 +1445,10 @@ interface Flip1Generic<F extends TypeLambdaG & TypeLambda1<never, TypeLambda1<ne
 interface _Flip1Generic<F extends TypeLambdaG & TypeLambda1<never, TypeLambda1<never, unknown>>, A1>
   extends TypeLambda<
     // `any` in `TypeLambda1<In<A1>, any>` here is intentional to avoid variance issues
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-arguments
     Params<_FlipIntermediateParameterVarianceForCurried2<F>, { r: TypeLambda1<In<A1>, any> }>,
     RetTypeW<
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-arguments
       RetType<_FlipIntermediateParameterVarianceForCurried2<F>, { r: TypeLambda1<In<A1>, any> }>
     >
   > {
@@ -1472,11 +1474,11 @@ type _WrapInForIntermediateParameterOfCurried2<S> = (
  * Curry a {@linkcode TypeLambda} to a {@linkcode TypeLambda1}.
  *
  * Only support currying up to 3 arguments.
-
+ *
  * Sig1: `<T, U, V>(f: (x: T, y: U) => V) => (x: T) => (y: U) => V`
  *
  * Sig2: `<T, U, V, W>(f: (x: T, y: U, z: V) => W) => (x: T) => (y: U) => (z: V) => W`
- * 
+ *
  * @example
  * ```typescript
  * // Curry a binary type-level function
@@ -1497,7 +1499,7 @@ type _WrapInForIntermediateParameterOfCurried2<S> = (
  * type CurriedMapSig = Sig<CurriedMap>; // => <T, U>(f: (x: T) => U) => (xs: T[]) => U[]
  * type _2 = Apply<Apply<CurriedMap, [Append<"!">]>, [["foo", "bar"]]>; // => ["foo!", "bar!"]
  * ```
- * 
+ *
  * @example
  * ```typescript
  * interface Concat extends TypeLambda<[s1: string, s2: string], string> {
@@ -1515,10 +1517,10 @@ type _WrapInForIntermediateParameterOfCurried2<S> = (
  * type _Reduce<F, Acc, TS> =
  *   TS extends readonly [infer Head, ...infer Tail] ? _Reduce<F, Call2W<F, Acc, Head>, Tail>
  *   : Acc;
- * 
+ *
  * type ReduceSig = Sig<Reduce>; // => <T, U>(f: (acc: U, x: T) => U, init: U, xs: T[]) => U
  * type _1 = Apply<Reduce, [Concat, "", ["foo", "bar", "baz"]]>; // => "foobarbaz"
- * 
+ *
  * type CurriedReduce = Curry<Reduce>;
  * type CurriedReduceSig = Sig<CurriedReduce>;
  * // => <T, U>(f: (acc: U, x: T) => U) => (init: U) => (xs: T[]) => U

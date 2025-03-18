@@ -1,5 +1,6 @@
-import type { Sig } from "../src";
 import type { Actual, Expected, IsNegated, Stringify, ToAnalyze, Validator } from "typroof/plugin";
+
+import type { Sig } from "../src";
 
 /**
  * Checks whether `T` exactly equals `U`.
