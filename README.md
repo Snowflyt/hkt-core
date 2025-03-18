@@ -49,27 +49,27 @@ type _ = ConcatNames<["alice", "bob", "i"]>; // => "Alice, Bob"
 
 **Higher-Kinded Types (HKT)** are a powerful concept used in many popular TypeScript libraries, including [fp-ts](https://github.com/gcanti/fp-ts/blob/669cd3ed7cb5726024331a7a1cf35125669feb30/src/HKT.ts#L7-L70), [Effect](https://github.com/Effect-TS/website/blob/115da7cebb6ff3e4a266d47c8cbd37900219479b/content/limbo/hkt.mdx), [TypeBox](https://github.com/sinclairzx81/typebox/blob/870ab417fb69775e3b490d4457aa5963b6f16673/src/type/schema/schema.ts#L52-L58) and [HOTScript](https://github.com/gvergnaud/hotscript/blob/0bc205286bd5eea0b89fa903c411df9aca95923c/src/internals/core/Core.ts#L29-L37). While these libraries share the core idea of HKTs, their detailed implementations differ, making it difficult to share HKTs across libraries seamlessly.
 
-**hkt-core** solves this problem by providing a **standardized** and **type-safe** HKT implementation that works for **both classical HKT use cases** (like fp-ts) and **type-level functions** (like HOTScript). Designed for easy integration with other libraries, it’s a **micro-library** that focuses solely on core HKT functionality without unnecessary extras.
+hkt-core solves this problem by providing a **standardized** and **type-safe** HKT implementation that works for **both classical HKT use cases** (like fp-ts) and **type-level functions** (like HOTScript). Designed for easy integration with other libraries, it’s a **micro-library** that focuses solely on core HKT functionality without unnecessary extras.
 
-Regarding the type-level functions use case, **hkt-core** also aims for **_zero-cost_ abstractions** — the type computations are **optimized** to be as efficient as possible. By using **hkt-core**, you get a more concise way to write type-level code without worrying about slowing down TypeScript's compilation.
+Regarding the type-level functions use case, hkt-core also aims for **_zero-cost_ abstractions** — the type computations are **optimized** to be as efficient as possible. By using hkt-core, you get a more concise way to write type-level code without worrying about slowing down TypeScript's compilation.
 
 ## Installation
 
-To install **hkt-core** via npm (or any other package manager you prefer):
+To install hkt-core via npm (or any other package manager you prefer):
 
 ```shell
 npm install hkt-core
 ```
 
-Alternatively, if you prefer a zero-dependency approach, you can directly _copy-and-paste_ **`src/index.ts`** into your project, which contains all **hkt-core**’s code in a single file. We guarantee **_no_ breaking changes** in **releases** _without_ a major version bump.
+Alternatively, if you prefer a zero-dependency approach, you can directly _copy-and-paste_ `src/index.ts` into your project, which contains all hkt-core’s code in a single file. We guarantee **_no_ breaking changes** in **releases** _without_ a major version bump.
 
 > [!WARNING]
 >
-> However, currently **hkt-core** is still a work-in-progress project, so **breaking changes** _are_ expected in its API without notice. Therefore, as for now, it’s recommended to use the npm package and pin the version in your `package.json` to ensure the stability of your project.
+> However, currently hkt-core is still a work-in-progress project, so **breaking changes** _are_ expected in its API without notice. Therefore, as for now, it’s recommended to use the npm package and pin the version in your `package.json` to ensure the stability of your project.
 
 ## Examples
 
-**hkt-core** introduces some concepts that might take a little time to fully grasp. To get the most out of it, we recommend following the [quickstart guide](#quickstart) from start to finish. However, if you’re eager to jump straight into examples, we’ve provided a few here as TypeScript playground links. These examples will give you a quick overview of what **hkt-core** can do:
+hkt-core introduces some concepts that might take a little time to fully grasp. To get the most out of it, we recommend following the [quickstart guide](#quickstart) from start to finish. However, if you’re eager to jump straight into examples, we’ve provided a few here as TypeScript playground links. These examples will give you a quick overview of what hkt-core can do:
 
 - [Create a monad typeclass with HKT](https://tsplay.dev/mLjKbw) (like in [fp-ts](https://github.com/gcanti/fp-ts))
 - [Composable type-level function programming with HKTs](https://tsplay.dev/w1Xz2W) (like in [HOTScript](https://github.com/gvergnaud/HOTScript), but in a type-safe way)
@@ -77,7 +77,7 @@ Alternatively, if you prefer a zero-dependency approach, you can directly _copy-
 
 ## Quickstart
 
-This section demonstrates how to use **hkt-core** in two common scenarios: **classical HKTs** (like in fp-ts) and **type-level functions** (like in HOTScript).
+This section demonstrates how to use hkt-core in two common scenarios: **classical HKTs** (like in fp-ts) and **type-level functions** (like in HOTScript).
 
 ### Use as classical HKTs 🐱
 
@@ -85,7 +85,7 @@ This section demonstrates how to use **hkt-core** in two common scenarios: **cla
 >
 > This section assumes familiarity with **monads** and **type classes**. If you’re new to these concepts, we recommend checking out the [fp-ts documentation](https://gcanti.github.io/fp-ts/) first — or feel free to skip to the next section, which is more beginner-friendly.
 
-Let’s start with a **monad** example. A monad is a container type that supports **`flatMap`** (also known as **`chain`**) and **`of`** (also known as **`pure`** or **`return`**). For example, both **`Array`** and **`Option`** are monads because they support these operations. Since TypeScript doesn’t have a built-in **`Option`** type, let’s define one first:
+Let’s start with a **monad** example. A monad is a container type that supports `flatMap` (also known as `chain`) and `of` (also known as `pure` or `return`). For example, both `Array` and `Option` are monads because they support these operations. Since TypeScript doesn’t have a built-in `Option` type, let’s define one first:
 
 ```typescript
 type Option<T> = { _tag: "Some"; value: T } | { _tag: "None" };
@@ -93,7 +93,7 @@ const some = <T>(value: T): Option<T> => ({ _tag: "Some", value });
 const none: Option<never> = { _tag: "None" };
 ```
 
-Next, let’s define **`of`** and **`flatMap`** for both **`Array`** and **`Option`**. We’ll use an object to represent a monad (a monad type class):
+Next, let’s define `of` and `flatMap` for both `Array` and `Option`. We’ll use an object to represent a monad (a monad type class):
 
 ```typescript
 const arrayMonad = {
@@ -108,14 +108,14 @@ const optionMonad = {
 };
 ```
 
-Now, let’s define a **`flatten`** function for a monad. Notice that **`flatten`** can be derived from **`flatMap`**:
+Now, let’s define a `flatten` function for a monad. Notice that `flatten` can be derived from `flatMap`:
 
 ```typescript
 const flattenArray = <T>(ffa: T[][]): T[] => arrayMonad.flatMap(ffa, (x) => x);
 const flattenOption = <T>(ffa: Option<Option<T>>): Option<T> => optionMonad.flatMap(ffa, (x) => x);
 ```
 
-To avoid writing separate **`flatten`** functions for each monad, we can create a **`createFlatten`** function that generates a **`flatten`** function from a monad:
+To avoid writing separate `flatten` functions for each monad, we can create a `createFlatten` function that generates a `flatten` function from a monad:
 
 ```typescript
 const createFlatten = (monad) => (ffa) => monad.flatMap(ffa, (x) => x);
@@ -124,7 +124,7 @@ const flattenArray = createFlatten(arrayMonad);
 const flattenOption = createFlatten(optionMonad);
 ```
 
-The challenge is how to type **`createFlatten`** correctly. Ideally, **`createFlatten`** should accept a monad type class for a generic monad type **`F<~>`**, where **`F`** is a higher-kinded type. If TypeScript supported higher-kinded types natively, we could write something like this:
+The challenge is how to type `createFlatten` correctly. Ideally, `createFlatten` should accept a monad type class for a generic monad type `F<~>`, where `F` is a higher-kinded type. If TypeScript supported higher-kinded types natively, we could write something like this:
 
 ```typescript
 interface MonadTypeClass<F<~>> {
@@ -141,17 +141,17 @@ const createFlatten =
     monad.flatMap(ffa, (x) => x);
 ```
 
-We can think of **HKTs** as functions that operate on types, or as type constructors in Haskell terms (represented as **`* -> *`**). For example:
+We can think of **HKTs** as functions that operate on types, or as type constructors in Haskell terms (represented as `* -> *`). For example:
 
-- In Haskell, **`Maybe`** is a type constructor of kind **`* -> *`**. It takes a type **`a`** (like **`Int`**) and returns a new type **`Maybe a`** (like **`Maybe Int`**).
-- Similarly, **`List`** is a type constructor of kind **`* -> *`**. It takes a type **`a`** and returns a new type **`[a]`** (a list of **`a`**).
+- In Haskell, `Maybe` is a type constructor of kind `* -> *`. It takes a type `a` (like `Int`) and returns a new type `Maybe a` (like `Maybe Int`).
+- Similarly, `List` is a type constructor of kind `* -> *`. It takes a type `a` and returns a new type `[a]` (a list of `a`).
 
-In the code above, **`F<~>`** represents such a type constructor. The **`MonadTypeClass`** accepts a type constructor **`F`** and uses **`F<T>`** to map a type **`T`** to a new type **`F<T>`**. For example:
+In the code above, `F<~>` represents such a type constructor. The `MonadTypeClass` accepts a type constructor `F` and uses `F<T>` to map a type `T` to a new type `F<T>`. For example:
 
-- If **`F`** is **`Array`**, then **`F<number>`** is **`Array<number>`**.
-- If **`F`** is **`Option`**, then **`F<string>`** is **`Option<string>`**.
+- If `F` is `Array`, then `F<number>` is `Array<number>`.
+- If `F` is `Option`, then `F<string>` is `Option<string>`.
 
-We have seen the power of HKTs in action. Unfortunately, TypeScript doesn’t natively support this syntax. However, **hkt-core** provides a way to simulate it:
+We have seen the power of HKTs in action. Unfortunately, TypeScript doesn’t natively support this syntax. However, hkt-core provides a way to simulate it:
 
 ```typescript
 import { Apply, Arg0, TypeLambda1, Call1 } from "hkt-core";
@@ -169,11 +169,11 @@ type NumberArray = Apply<ArrayHKT, [number]>; // => Array<number>
 type StringOption = Call1<OptionHKT, string>; // => Option<string>
 ```
 
-<strong><code>TypeLambda</code></strong>s are the core building blocks of **hkt-core**. They represent **type-level functions** that operate on types. Here, we use **`TypeLambda1`** because both **`Array`** and **`Option`** are type constructors that take **one type argument**. To extract the type arguments passed to a **`TypeLambda`**, we use utility types like **`Args`**, **`Arg0`**, **`Arg1`**, etc.
+`TypeLambda`s are the core building blocks of hkt-core. They represent **type-level functions** that operate on types. Here, we use `TypeLambda1` because both `Array` and `Option` are type constructors that take **one type argument**. To extract the type arguments passed to a `TypeLambda`, we use utility types like `Args`, `Arg0`, `Arg1`, etc.
 
-As shown above, we can “invoke” a **`TypeLambda`** with type arguments using **`Apply`** or its aliases like **`Call1`**, **`Call2`**, etc, which correspond to type-level functions that take exactly one, two, or more type arguments. These work similarly to **`Function.prototype.apply`** and **`Function.prototype.call`** in JavaScript.
+As shown above, we can “invoke” a `TypeLambda` with type arguments using `Apply` or its aliases like `Call1`, `Call2`, etc, which correspond to type-level functions that take exactly one, two, or more type arguments. These work similarly to `Function.prototype.apply` and `Function.prototype.call` in JavaScript.
 
-For classical HKT use cases, **hkt-core** provides concise aliases like **`HKT`** and **`Kind`**, which can be seen as aliases for **`TypeLambda1`** and **`Call1`** (**`Kind`** is actually an alias for **`Call1W`**, see the [Aliases for classical HKT use cases](#aliases-for-classical-hkt-use-cases) section for details). Using these aliases, we can define a **`MonadTypeClass`** and **`createFlatten`** function like this:
+For classical HKT use cases, hkt-core provides concise aliases like `HKT` and `Kind`, which can be seen as aliases for `TypeLambda1` and `Call1` (`Kind` is actually an alias for `Call1W`, see the [Aliases for classical HKT use cases](#aliases-for-classical-hkt-use-cases) section for details). Using these aliases, we can define a `MonadTypeClass` and `createFlatten` function like this:
 
 ```typescript
 import { Arg0, HKT, Kind } from "hkt-core";
@@ -210,15 +210,15 @@ const flattenOption = createFlatten(optionMonad);
 //    ^?: <T>(ffa: Option<Option<T>>) => Option<T>
 ```
 
-This code achieves the same functionality as the imaginary syntax above, but it works in real TypeScript. By defining **`ArrayHKT`** and **`OptionHKT`** and using **`HKT`** and **`Kind`**, we can simulate higher-kinded types effectively.
+This code achieves the same functionality as the imaginary syntax above, but it works in real TypeScript. By defining `ArrayHKT` and `OptionHKT` and using `HKT` and `Kind`, we can simulate higher-kinded types effectively.
 
 ### Use as type-level functions ✨
 
-**hkt-core** isn’t just for type constructors — it also supports **_typed_ type-level functions**, which go beyond **`* -> *`** to enable **`TypeA -> TypeB`** transformations. This makes it possible to combine _type-level_ functions with **type-safety**, including **_generic_ type-level functions**!
+hkt-core isn’t just for type constructors — it also supports **_typed_ type-level functions**, which go beyond `* -> *` to enable `TypeA -> TypeB` transformations. This makes it possible to combine _type-level_ functions with **type-safety**, including **_generic_ type-level functions**!
 
 > [!TIP]
 >
-> **_Generic_ type-level functions** are a powerful feature and make up almost half of **hkt-core**’s codebase. However, due to their complexity, they are not covered in this quickstart guide. If you are curious, check out the [Generic type-level functions](#generic-type-level-functions) section after finishing this guide.
+> **_Generic_ type-level functions** are a powerful feature and make up almost half of hkt-core’s codebase. However, due to their complexity, they are not covered in this quickstart guide. If you are curious, check out the [Generic type-level functions](#generic-type-level-functions) section after finishing this guide.
 
 Let’s start with a JavaScript example: suppose we have an array of employee names, and we want to filter out names that are too short (which might be a bug in the data), capitalize the first letter of each name, and then join the names with a comma. We can write a function like this:
 
@@ -249,7 +249,7 @@ const concatNames = (names: string[]) =>
   );
 ```
 
-Here, **`filter`**, **`map`**, and **`join`** are higher-order functions that return new unary functions, and **`pipe`** chains them together. For example, **`pipe(value, f, g, h)`** is equivalent to **`h(g(f(value)))`**. Similarly, **`flow`** can be used to create a composed function in **fp-ts**, e.g., **`flow(f, g, h)`** is equivalent to **`(value) => h(g(f(value)))`**.
+Here, `filter`, `map`, and `join` are higher-order functions that return new unary functions, and `pipe` chains them together. For example, `pipe(value, f, g, h)` is equivalent to `h(g(f(value)))`. Similarly, `flow` can be used to create a composed function in **fp-ts**, e.g., `flow(f, g, h)` is equivalent to `(value) => h(g(f(value)))`.
 
 But how can we implement such a function at **type level**? While the employee names example might seem trivial at type level, consider a real-world use case: replacing names with route paths, the predicate with a route prefix, and the join function with a router builder. This becomes a type-safe routing system! For now, let’s focus on the employee names example.
 
@@ -281,13 +281,13 @@ type ConcatNames<Names extends string[]> = JoinNames<CapitalizeNames<FilterOutSh
 
 While this works, it’s **_not_ reusable**. We can identify several common patterns here:
 
-- **Filter tuple elements:** Recursive types with predicates, like **`FilterOutShortNames`**.
-- **Map tuple elements:** Mapped types, like **`CapitalizeNames`**.
-- **Reduce tuple elements:** Recursive types to reduce a tuple to a single value, like **`JoinNames`**.
+- **Filter tuple elements:** Recursive types with predicates, like `FilterOutShortNames`.
+- **Map tuple elements:** Mapped types, like `CapitalizeNames`.
+- **Reduce tuple elements:** Recursive types to reduce a tuple to a single value, like `JoinNames`.
 
-If we continue writing such code, we’ll end up with a lot of boilerplate. Just as higher-order functions like **`filter`**, **`map`**, and **`reduce`** simplify JavaScript code, **hkt-core** enables us to implement these patterns with **type-level functions** in TypeScript. But before diving into implementing these familiar functions, let’s first explore how **type-level functions** work in **hkt-core**.
+If we continue writing such code, we’ll end up with a lot of boilerplate. Just as higher-order functions like `filter`, `map`, and `reduce` simplify JavaScript code, hkt-core enables us to implement these patterns with **type-level functions** in TypeScript. But before diving into implementing these familiar functions, let’s first explore how type-level functions work in hkt-core.
 
-<strong><code>TypeLambda</code></strong>s are the core building blocks of **hkt-core**. They represent **type-level functions** that operate on types. To define a type-level function, we can create an interface extending **`TypeLambda`** and specify the **`return`** property, which describes how the input type is transformed:
+`TypeLambda`s are the core building blocks of hkt-core. They represent type-level functions that operate on types. To define a type-level function, we can create an interface extending `TypeLambda` and specify the `return` property, which describes how the input type is transformed:
 
 ```typescript
 import { Apply, Arg0, Arg1, Call2, Sig, TypeLambda } from "hkt-core";
@@ -303,9 +303,9 @@ type _1 = Apply<Concat, ["Hello", "World"]>; // => "HelloWorld"
 type _2 = Call2<Concat, "foo", "bar">; // => "foobar"
 ```
 
-Inside a **`TypeLambda`**, we can access the input types using **`Args<this>`** and its variants like **`Arg0<this>`**, **`Arg1<this>`**, etc. To “invoke” a **`TypeLambda`**, we use **`Apply`** or its aliases like **`Call1`**, **`Call2`**, etc., which correspond to type-level functions that take exactly one, two, or more type arguments. These utilities work similarly to **`Function.prototype.apply`** and **`Function.prototype.call`** in JavaScript.
+Inside a `TypeLambda`, we can access the input types using `Args<this>` and its variants like `Arg0<this>`, `Arg1<this>`, etc. To “invoke” a `TypeLambda`, we use `Apply` or its aliases like `Call1`, `Call2`, etc., which correspond to type-level functions that take exactly one, two, or more type arguments. These utilities work similarly to `Function.prototype.apply` and `Function.prototype.call` in JavaScript.
 
-It’s worth noting that the **`Concat`** type-level function we created above is **`typed`**, meaning the input types are strictly checked. We declared the parameters as **`[s1: string, s2: string]`** and the return type as **`string`**. The parameters are represented as a [labeled tuple](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-0.html#labeled-tuple-elements) — these labels are just used by **`Sig`** to generate a human-readable signature and do not affect type checking or validation. You can remove them if you prefer.
+It’s worth noting that the `Concat` type-level function we created above is `typed`, meaning the input types are strictly checked. We declared the parameters as `[s1: string, s2: string]` and the return type as `string`. The parameters are represented as a [labeled tuple](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-0.html#labeled-tuple-elements) — these labels are just used by `Sig` to generate a human-readable signature and do not affect type checking or validation. You can remove them if you prefer.
 
 If the input types don’t match the expected types, TypeScript will issue an error:
 
@@ -323,7 +323,7 @@ type ConcatWrong2 = Call2<Concat, "foo", 42>;
 
 For more details on type checking and validation (e.g., how incompatible arguments are handled and how to bypass strict type checking), check out the [Type checking and validation in Detail](#type-checking-and-validation-in-detail) section.
 
-**hkt-core** also provides type-level **`Flow`** and **`Pipe`** utility types to compose unary type-level functions. These types work similarly to **`pipe`** and **`flow`** in **fp-ts**:
+hkt-core also provides type-level `Flow` and `Pipe` utility types to compose unary type-level functions. These types work similarly to `pipe` and `flow` in **fp-ts**:
 
 ```typescript
 interface ConcatFoo extends TypeLambda<[s: string], string> {
@@ -341,7 +341,7 @@ type ConcatFooBar<S extends string> = Pipe<S, ConcatFoo, ConcatBar>;
 type _2 = ConcatFooBar<"hello">; // => "hellofoobar"
 ```
 
-<strong><code>Flow</code></strong> and **`Pipe`** supports up to 16 variadic type arguments, which should be sufficient for most use cases. Type checking is also performed on these utility types, ensuring that the input and output types match the expected types:
+`Flow` and `Pipe` supports up to 16 variadic type arguments, which should be sufficient for most use cases. Type checking is also performed on these utility types, ensuring that the input and output types match the expected types:
 
 ```typescript
 interface Add1 extends TypeLambda<[n: number], number> {
@@ -371,7 +371,7 @@ type ConcatFooBarWrong<S extends string> = Pipe<S, ConcatFoo, ConcatBar, Add1>;
 
 While strict type checking on type-level functions might seem restrictive in simple examples, it becomes a powerful tool for catching errors early when working with more complex types.
 
-Now let’s revisit the employee names example. With the knowledge we’ve gained, we can implement the type-level functions **`Filter`**, **`Map`**, and **`Join`**, and then compose them into a **`ConcatNames`** type-level function
+Now let’s revisit the employee names example. With the knowledge we’ve gained, we can implement the type-level functions `Filter`, `Map`, and `Join`, and then compose them into a `ConcatNames` type-level function
 
 ```typescript
 /* Define utility type-level functions */
@@ -437,18 +437,18 @@ type _2 = ConcatNames<Names>; // => "Alice, "Bob", Charlie"
 
 Some unfamiliar utility types are used in the example above:
 
-- **`Params`** and its variants (**`Param0`**, **`Param1`**, etc.) are used to extract the **_declared_ parameters** of a **`TypeLambda`**.
-- **`RetType`** is used to extract the **_declared_ return type** of a **`TypeLambda`**.
+- `Params` and its variants (`Param0`, `Param1`, etc.) are used to extract the **_declared_ parameters** of a `TypeLambda`.
+- `RetType` is used to extract the **_declared_ return type** of a `TypeLambda`.
 
-Don’t confuse these with the actual arguments passed to a **`TypeLambda`**, which are accessed using **`Args`** and its variants. You might notice that these type names are similar to **`Parameters`** and **`ReturnType`** in TypeScript — this is intentional to make them easier to remember.
+Don’t confuse these with the actual arguments passed to a `TypeLambda`, which are accessed using `Args` and its variants. You might notice that these type names are similar to `Parameters` and `ReturnType` in TypeScript — this is intentional to make them easier to remember.
 
-We also use an interesting pattern to define types that “return” a type-level function. For example, **`Filter`** and **`JoinBy`** are just simple type-level functions, but by using generic type parameters, we can “invoke” them with different types to create different type-level functions.
+We also use an interesting pattern to define types that “return” a type-level function. For example, `Filter` and `JoinBy` are just simple type-level functions, but by using generic type parameters, we can “invoke” them with different types to create different type-level functions.
 
-In the following sections, we’ll refer to these simple type-level functions with generic type parameters (like **`Filter`**, **`Map`**, and **`JoinBy`**) as “**type-level function templates**”. We’ll represent their signatures as:
+In the following sections, we’ll refer to these simple type-level functions with generic type parameters (like `Filter`, `Map`, and `JoinBy`) as “**type-level function templates**”. We’ll represent their signatures as:
 
-- **`Filter`**: `<T>[predicate: (value: T) => boolean](values: T[]) => T[]`
-- **`Map`**: `<T>[f: (value: T) => U](values: T[]) => U[]`
-- **`JoinBy`**: `[sep: string](strings: string[]) => string`
+- `Filter`: `<T>[predicate: (value: T) => boolean](values: T[]) => T[]`
+- `Map`: `<T>[f: (value: T) => U](values: T[]) => U[]`
+- `JoinBy`: `[sep: string](strings: string[]) => string`
 
 Here, the part wrapped with `[...]` represents the generic type parameters, and the part wrapped with `(...)` represents the actual parameters. If you’re looking for a truly **_generic_ type-level function**, check out the [Generic Type-Level Functions](#generic-type-level-functions) section
 
@@ -458,7 +458,7 @@ Here, the part wrapped with `[...]` represents the generic type parameters, and 
 
 While the “**type-level function templates**” technique as described at the end of the [quickstart guide](#use-as-type-level-functions-) is useful in some cases, it has limitations. There’re times when a _truly_ **_generic_ type-level functions** is still unavoidable.
 
-Let’s continue with the employee names example from the quickstart guide. Sometimes, the number of employees might be too large, and we only want to display the first 3 names. In common functional programming libraries, this can be achieved by using a function typically called **`take`**, which accepts a number `n` and a list of values, and returns the first `n` values of the list. We can define a type-level function **`Take`** as follows:
+Let’s continue with the employee names example from the quickstart guide. Sometimes, the number of employees might be too large, and we only want to display the first 3 names. In common functional programming libraries, this can be achieved by using a function typically called `take`, which accepts a number `n` and a list of values, and returns the first `n` values of the list. We can define a type-level function `Take` as follows:
 
 ```typescript
 interface Take<N extends number> extends TypeLambda<[values: any[]], any[]> {
@@ -474,7 +474,7 @@ type _Take<TS extends unknown[], N extends number, Counter extends void[] = []> 
 type TakeSig = Sig<Take<3>>; // => (values: any[]) => any[]
 ```
 
-Since we haven’t yet introduced the concept of _generic_ type-level functions, we simply declare the signature of **`Take`** as `[n: number](values: any[]) => any[]`. Let’s use it to enhance the **`ConcatNames`** example:
+Since we haven’t yet introduced the concept of _generic_ type-level functions, we simply declare the signature of `Take` as `[n: number](values: any[]) => any[]`. Let’s use it to enhance the `ConcatNames` example:
 
 ```typescript
 interface Append<Suffix extends string> extends TypeLambda<[s: string], string> {
@@ -493,7 +493,7 @@ type Names = ["alice", "bob", "i", "charlie", "david"];
 type _ = Call1<ConcatNames, Names>; // => "Alice, Bob, Charlie, ..."
 ```
 
-This version works as expected, but we lose some type safety since the return type of **`Take`** is **`any[]`**. If we change `Map<CapitalizeString>` to something like `Map<RepeatString<"foo">>`, TypeScript will not catch the error:
+This version works as expected, but we lose some type safety since the return type of `Take` is `any[]`. If we change `Map<CapitalizeString>` to something like `Map<RepeatString<"foo">>`, TypeScript will not catch the error:
 
 ```typescript
 interface RepeatString<S extends string> extends TypeLambda<[n: number], string> {
@@ -516,7 +516,7 @@ type ConcatNames = Flow<
 type _ = Call1<ConcatNames, Names>; // => "${string}, ..."
 ```
 
-We can declare **`Take`** as a **_generic_ type-level function** to ensure type safety:
+We can declare `Take` as a **_generic_ type-level function** to ensure type safety:
 
 ```typescript
 import type { Arg0, Sig, TArg, TypeLambdaG } from "hkt-core";
@@ -529,9 +529,9 @@ interface Take<N extends number> extends TypeLambdaG<["T"]> {
 type TakeSig = Sig<Take<3>>; // => <T>(values: T[]) => T[]
 ```
 
-Here, instead of extending `TypeLambda`, we extend **`TypeLambdaG`**, where the **`G`** suffix stands for “**generic**”. Instead of directly declaring the signature in `TypeLambda`, we declare the **type parameter list** in **`TypeLambdaG`** and use the **`signature`** property inside the function body to define the signature. All declared type parameters can be accessed using the **`TArg<this, "Name">`** syntax within the **`TypeLambdaG`** body.
+Here, instead of extending `TypeLambda`, we extend `TypeLambdaG`, where the `G` suffix stands for “**generic**”. Instead of directly declaring the signature in `TypeLambda`, we declare the **type parameter list** in `TypeLambdaG` and use the `signature` property inside the function body to define the signature. All declared type parameters can be accessed using the `TArg<this, "Name">` syntax within the `TypeLambdaG` body.
 
-By defining **`Take`** as a _generic_ type-level function, TypeScript can now catch the error:
+By defining `Take` as a _generic_ type-level function, TypeScript can now catch the error:
 
 ```typescript
 type ConcatNames = Flow<
@@ -550,15 +550,15 @@ type ConcatNames = Flow<
 >;
 ```
 
-How does this work? Similar to generic functions in TypeScript, the **inference mechanism** of **\*generic\* type-level functions** in **hkt-core** also relies on **type parameters**, which works as follows:
+How does this work? Similar to generic functions in TypeScript, the **inference** mechanism of _generic_ type-level functions in hkt-core also relies on **type parameters**, which works as follows:
 
 1. Try to infer the type parameters from all the parameter types or return types that are already known.
-2. If a type parameter cannot be inferred, it defaults to its upper bound (**`unknown`** by default).
+2. If a type parameter cannot be inferred, it defaults to its upper bound (`unknown` by default).
 3. Replace all occurrences of type parameters in the signature with their actual types.
 
-In the example above, we already know the type of the first parameter of **`Take<3>`** is **`string[]`** (from the previous type-level function `Filter<Flow<StringLength, NotExtend<1 | 2>>>`), so we can infer the type parameter **`T`** in **`Take`** as **`string`**. Then, we replace **`TArg<this, "T">`** with **`string`** in the signature of **`Take`**, inferring the return type as **`string[]`**. This allows TypeScript to catch the error when the next type-level function **`Map`** expects **`number[]`** but receives **`string[]`**.
+In the example above, we already know the type of the first parameter of `Take<3>` is `string[]` (from the previous type-level function `Filter<Flow<StringLength, NotExtend<1 | 2>>>`), so we can infer the type parameter `T` in `Take` as `string`. Then, we replace `TArg<this, "T">` with `string` in the signature of `Take`, inferring the return type as `string[]`. This allows TypeScript to catch the error when the next type-level function `Map` expects `number[]` but receives `string[]`.
 
-How can **`Flow`** pass the “known” types to **`Take`** in order to return the correct type? Internally, it involves a utility type called **`TypeArgs`**, which accepts the second argument, **`Known`**, as the known types, and then gives the inferred type parameters:
+How can `Flow` pass the “known” types to `Take` in order to return the correct type? Internally, it involves a utility type called `TypeArgs`, which accepts the second argument, `Known`, as the known types, and then gives the inferred type parameters:
 
 ```typescript
 import type { TypeArgs } from "hkt-core";
@@ -569,18 +569,18 @@ type InferredTypeArgs3 = TypeArgs<Take<3>, { r: boolean[] }>; // => { readonly "
 type InferredTypeArgs3 = TypeArgs<Take<3>, { 0: string[]; r: number[] }>; // => { readonly "~T": string | number }
 ```
 
-Here, **`Known`** can be an object with integer keys and a special key **`"r"`** (tuples are also supported since they satisfy this condition), where the integer keys represent known parameter types at specific indexes, and **`"r"`** represents the known return type.
+Here, `Known` can be an object with integer keys and a special key `"r"` (tuples are also supported since they satisfy this condition), where the integer keys represent known parameter types at specific indexes, and `"r"` represents the known return type.
 
-Utility types like **`Params`**, **`RetType`**, and their variants also support **`Known`** to provide a more precise result based on the known types:
+Utility types like `Params`, `RetType`, and their variants also support `Known` to provide a more precise result based on the known types:
 
 ```typescript
 type InferredParams = Params<Take<3>, { r: string[] }>; // => [values: string[]]
 type InferredRetType = RetType<Take<3>, { 0: string[] }>; // => string[]
 ```
 
-The implementation of **`Flow`** relies on the second argument of **`RetType`** to compute a more precise return type of a type-level function based on the return type of the previous one, which is how type safety is achieved.
+The implementation of `Flow` relies on the second argument of `RetType` to compute a more precise return type of a type-level function based on the return type of the previous one, which is how type safety is achieved.
 
-Now that we’ve explored how the **_generic_ type system** works in **hkt-core**, let’s look at the format of **_generic_ type parameters** in more detail:
+Now that we’ve explored how the **_generic_ type system** works in hkt-core, let’s look at the format of **_generic_ type parameters** in more detail:
 
 ```typescript
 type GenericTypeParams = Array<SimpleTypeParam | TypeParamWithUpperBound>;
@@ -631,14 +631,14 @@ type _ = Call1<FromEntries, [["name", string], ["age", number]]>; // => { name: 
 
 ### Aliases for classical HKT use cases
 
-**hkt-core** provide the following aliases for **type constructors**:
+hkt-core provide the following aliases for **type constructors**:
 
-- **`HKT`**, **`HKT2`**, **`HKT3`** and **`HKT4`** are aliases for **`TypeLambda1`**, **`TypeLambda2`**, **`TypeLambda3`** and **`TypeLambda4`**, respectively.
-- **`Kind`**, **`Kind2`**, **`Kind3`** and **`Kind4`** are aliases for **`Call1W`**, **`Call2W`**, **`Call3W`** and **`Call4W`**, respectively.
+- `HKT`, `HKT2`, `HKT3` and `HKT4` are aliases for `TypeLambda1`, `TypeLambda2`, `TypeLambda3` and `TypeLambda4`, respectively.
+- `Kind`, `Kind2`, `Kind3` and `Kind4` are aliases for `Call1W`, `Call2W`, `Call3W` and `Call4W`, respectively.
 
-The aliases for higher-arity type constructors allow you to work with type constructors that take multiple type arguments, such as **`Either<L, R>`** or **`State<S, A>`**.
+The aliases for higher-arity type constructors allow you to work with type constructors that take multiple type arguments, such as `Either<L, R>` or `State<S, A>`.
 
-The **`W`** suffix in **`Call*W`** stands for “**widening**”, meaning type checking and validation are relaxed for arguments passed to the type-level function. For more details, see the [Bypass strict type checking and validation](#bypass-strict-type-checking-and-validation) sections.
+The `W` suffix in `Call*W` stands for “**widening**”, meaning type checking and validation are relaxed for arguments passed to the type-level function. For more details, see the [Bypass strict type checking and validation](#bypass-strict-type-checking-and-validation) sections.
 
 ### Type checking and validation in detail
 
@@ -648,19 +648,19 @@ Just like in plain TypeScript, **type checking** and **type validation** are two
 
 In plain TypeScript, **type checking** refers to the _compile-time_ verification that ensures variables, function parameters, and return values match their _declared_ types. Meanwhile, **(runtime) type validation** is the _run-time_ process that confirms actual values conform to the declared types. **Type checking** is handled by the TypeScript compiler, whereas **type validation** is usually performed by custom code or 3rd-party libraries such as [Zod](https://github.com/colinhacks/zod), [TypeBox](https://github.com/sinclairzx81/typebox) and [Arktype](https://github.com/arktypeio/arktype).
 
-Although **hkt-core** is a _type-only_ library operating solely at _compile-time_, the distinction still applies. In **hkt-core**, **type checking** verifies that the input types provided to a type-level function are compatible with the _declared_ types, e.g., the TypeScript compiler will emit errors for signature mismatches in utilities like `Flow` or `Pipe`.
+Although hkt-core is a _type-only_ library operating solely at _compile-time_, the distinction still applies. In hkt-core, **type checking** verifies that the input types provided to a type-level function are compatible with the _declared_ types, e.g., the TypeScript compiler will emit errors for signature mismatches in utilities like `Flow` or `Pipe`.
 
-On the other hand, **type validation** in **hkt-core** ensures that the actual arguments passed or the computed return result match the _declared_ types, typically using utilities like `Args`, `Apply` and `Call*`. For example, if a `Concat` type-level function declared to return a `string` accidentally returns a `number`, the utility will yield **`never`** as the result without triggering a TypeScript error.
+On the other hand, **type validation** in hkt-core ensures that the actual arguments passed or the computed return result match the _declared_ types, typically using utilities like `Args`, `Apply` and `Call*`. For example, if a `Concat` type-level function declared to return a `string` accidentally returns a `number`, the utility will yield `never` as the result without triggering a TypeScript error.
 
 #### Bypass strict type checking and validation
 
-There are cases where you might want to bypass strict type checking or validation, such as when working with complex generic types or when you need to handle incompatible types. **hkt-core** provides a set of utilities to help you handle these cases:
+There are cases where you might want to bypass strict type checking or validation, such as when working with complex generic types or when you need to handle incompatible types. hkt-core provides a set of utilities to help you handle these cases:
 
-- **`ApplyW`**, **`Call1W`**, **`Call2W`**, etc. are the “**widening**” versions of **`Apply`**, **`Call1`**, **`Call2`**, etc. They relax both type _checking_ for arguments passed to the type-level function **and type _validation_ for the return type**.
-- **`RawArgs`** and its variants (**`RawArg0`**, **`RawArg1`**, etc.) are used to access the original arguments passed to a **`TypeLambda`**, regardless of whether they are compatible with the parameters.
-- **`Params`**, **`RetType`**, **`Args`** and **`RawArgs`** all provide their **widening** versions (e.g., **`RetTypeW`**, **`Args0W`**, **`RawArgs1W`**, etc.) to bypass strict type checking. Unlike **`ApplyW`** and its variants, which relax both type _checking_ for arguments and type _validation_ for return types, these widening utilities are simple aliases for their strict counterparts that relaxes type checking. They return **`never`** when the input type is not a **`TypeLambda`**, and do not perform additional checks or relaxations.
+- `ApplyW`, `Call1W`, `Call2W`, etc. are the “**widening**” versions of `Apply`, `Call1`, `Call2`, etc. They relax both type _checking_ for arguments passed to the type-level function **and type _validation_ for the return type**.
+- `RawArgs` and its variants (`RawArg0`, `RawArg1`, etc.) are used to access the original arguments passed to a `TypeLambda`, regardless of whether they are compatible with the parameters.
+- `Params`, `RetType`, `Args` and `RawArgs` all provide their **widening** versions (e.g., `RetTypeW`, `Args0W`, `RawArgs1W`, etc.) to bypass strict type checking. Unlike `ApplyW` and its variants, which relax both type _checking_ for arguments and type _validation_ for return types, these widening utilities are simple aliases for their strict counterparts that relaxes type checking. They return `never` when the input type is not a `TypeLambda`, and do not perform additional checks or relaxations.
 
-Note that using **`ApplyW`** and its variants alone does not fully bypass strict type checking and validation if the body of a type-level function is still defined using **`Args`** and its variants. **`ApplyW`** and its variants only relax type _checking_ for arguments _passed_ to the type-level function and the return type, but they do not suppress type _validation_ performed by **`Args`** in the type-level function’s body. For example:
+Note that using `ApplyW` and its variants alone does not fully bypass strict type checking and validation if the body of a type-level function is still defined using `Args` and its variants. `ApplyW` and its variants only relax type _checking_ for arguments _passed_ to the type-level function and the return type, but they do not suppress type _validation_ performed by `Args` in the type-level function’s body. For example:
 
 ```typescript
 interface Concat extends TypeLambda<[s1: string, s2: string], string> {
@@ -670,7 +670,7 @@ interface Concat extends TypeLambda<[s1: string, s2: string], string> {
 type ConcatWrong = ApplyW<Concat, ["foo", 42]>; // => never
 ```
 
-Here, `ApplyW<Concat, ["foo", 42]>` still returns **`never`** because `42` is not compatible with `string`. To handle incompatible types, you can use **`RawArgs`** and its variants to access the original arguments:
+Here, `ApplyW<Concat, ["foo", 42]>` still returns `never` because `42` is not compatible with `string`. To handle incompatible types, you can use `RawArgs` and its variants to access the original arguments:
 
 ```typescript
 type Stringifiable = string | number | bigint | boolean | null | undefined;
@@ -697,7 +697,7 @@ interface Concat extends TypeLambda<[s1: string, s2: string], string> {
 }
 ```
 
-While **`ApplyW`** might seem less useful in this example, it can be helpful in specific scenarios, such as when relaxing the return type of a type-level function:
+While `ApplyW` might seem less useful in this example, it can be helpful in specific scenarios, such as when relaxing the return type of a type-level function:
 
 ```typescript
 interface Concat extends TypeLambda<[s1: string, s2: string], number> {
@@ -709,13 +709,13 @@ type _1 = Apply<Concat, ["foo", "bar"]>; // => never, since the declared return 
 type _2 = ApplyW<Concat, ["foo", "bar"]>; // => "foobar", since the return type is relaxed
 ```
 
-As we can see, bypassing strict type checking doesn’t always simplify things and can introduce additional complexity. These widening utilities are primarily intended for handling complex scenarios, such as when dealing with intricate variance or type constraints, and are not meant for common use cases. For example, they are useful when defining a **`Flip`** type-level function (already built into **hkt-core**) that swaps the order of two types.
+As we can see, bypassing strict type checking doesn’t always simplify things and can introduce additional complexity. These widening utilities are primarily intended for handling complex scenarios, such as when dealing with intricate variance or type constraints, and are not meant for common use cases. For example, they are useful when defining a `Flip` type-level function (already built into hkt-core) that swaps the order of two types.
 
-In most cases, you don’t need these widening utilities if you skip declaring your type-level function’s signatures (i.e., use _untyped_ type-level functions). The parameters and return type of **`TypeLambda`** already default to **`any`**, so these widening utilities and their strict counterparts behave the same in such cases, as shown in the [Use as classical HKTs](#use-as-classical-hkts-) section.
+In most cases, you don’t need these widening utilities if you skip declaring your type-level function’s signatures (i.e., use _untyped_ type-level functions). The parameters and return type of `TypeLambda` already default to `any`, so these widening utilities and their strict counterparts behave the same in such cases, as shown in the [Use as classical HKTs](#use-as-classical-hkts-) section.
 
 #### Type validation in `Args`
 
-<strong><code>Args</code></strong> and its variants (**`Arg0`**, **`Arg1`**, etc.) enforce strict type validation inside the **`TypeLambda`** definition. By using them, TypeScript can infer the types of the arguments against the **_declared_ parameters** correctly — meaning you don’t need to manually check the types of the arguments inside the **`TypeLambda`**, they just work!
+`Args` and its variants (`Arg0`, `Arg1`, etc.) enforce strict type validation inside the `TypeLambda` definition. By using them, TypeScript can infer the types of the arguments against the **_declared_ parameters** correctly — meaning you don’t need to manually check the types of the arguments inside the `TypeLambda`, they just work!
 
 ```typescript
 type JoinString<S1 extends string, S2 extends string> = `${S1}${S2}`;
@@ -748,7 +748,7 @@ interface ConcatMismatch extends TypeLambda<[s1: string, s2: string], string> {
 }
 ```
 
-What happens if you force-call a _typed_ type-level function with incompatible types? In such cases, incompatible arguments are replaced with **`never`**:
+What happens if you force-call a _typed_ type-level function with incompatible types? In such cases, incompatible arguments are replaced with `never`:
 
 ```typescript
 interface Concat extends TypeLambda<[s1: string, s2: string], string> {
@@ -760,9 +760,9 @@ type ConcatWrong = Call2W<Concat, "foo", 42>; // => ["foo", never]
 
 The rules for handling incompatible arguments are as follows:
 
-- If an argument is not compatible with the corresponding parameter, it is cast to **`never`**.
+- If an argument is not compatible with the corresponding parameter, it is cast to `never`.
 - Redundant arguments are truncated.
-- Missing arguments are filled with **`never`**.
+- Missing arguments are filled with `never`.
 
 Here’s an example to demonstrate these rules:
 
@@ -779,11 +779,11 @@ type _2 = ApplyW<PrintArgs, ["foo", "bar", "baz"]>; // => ["foo", "bar"]
 type _3 = ApplyW<PrintArgs, ["foo"]>; // => ["foo", never]
 ```
 
-If you want to access the original arguments passed to a **`TypeLambda`**, regardless of whether they are compatible with the parameters, use **`RawArgs`** or its variants instead (see the [Bypass strict type checking and validation](#bypass-strict-type-checking-and-validation) section for more details).
+If you want to access the original arguments passed to a `TypeLambda`, regardless of whether they are compatible with the parameters, use `RawArgs` or its variants instead (see the [Bypass strict type checking and validation](#bypass-strict-type-checking-and-validation) section for more details).
 
 #### Type checking and validation in `Apply` and `Call*`
 
-Just like **`Args`** and its variants, which coerce the arguments to match the declared parameters, **`Apply`** and its variants (**`Call1`**, **`Call2`**, etc.) coerce the returned value of a type-level function to match the declared return type. If the returned value is not compatible with the declared return type, it is cast to **`never`**:
+Just like `Args` and its variants, which coerce the arguments to match the declared parameters, `Apply` and its variants (`Call1`, `Call2`, etc.) coerce the returned value of a type-level function to match the declared return type. If the returned value is not compatible with the declared return type, it is cast to `never`:
 
 ```typescript
 interface Concat extends TypeLambda<[s1: string, s2: string], string> {
@@ -800,11 +800,11 @@ type _2 = Apply<ConcatWrong, ["foo", "bar"]>; // => never
 type _3 = Call2<ConcatWrong, "foo", "bar">; // => never
 ```
 
-In the example above, **`ConcatWrong`** returns a number, which is incompatible with the declared return type **`string`**. Even though **`ConcatWrong`** returns a value that is not **`never`** (i.e., `42`), **`Apply`** still coerces the returned value to **`never`** because it is not compatible with the declared return type. The same applies to the variants of **`Apply`**, such as **`Call2`** in this case.
+In the example above, `ConcatWrong` returns a number, which is incompatible with the declared return type `string`. Even though `ConcatWrong` returns a value that is not `never` (i.e., `42`), `Apply` still coerces the returned value to `never` because it is not compatible with the declared return type. The same applies to the variants of `Apply`, such as `Call2` in this case.
 
-As is already mentioned in the [Bypass strict type checking and validation](#bypass-strict-type-checking-and-validation) section, you can use **`ApplyW`** and its variants if you don’t want the return value to be coerced to **`never`** when it’s incompatible with the declared return type.
+As is already mentioned in the [Bypass strict type checking and validation](#bypass-strict-type-checking-and-validation) section, you can use `ApplyW` and its variants if you don’t want the return value to be coerced to `never` when it’s incompatible with the declared return type.
 
-While the return type coercion behavior of **`Apply`** and its variants might cause confusion in some cases, it is useful for making TypeScript aware of type incompatibilities early on. For example, let’s revisit the **`JoinBy`** function from the **`JoinBy`** function from the [Generic type-level functions](#generic-type-level-functions) section. However, instead of using `Arg0<this> extends [infer S extends string]` in the body, let’s remove the `extends string` constraint and use `Arg0<this> extends [infer S]`:
+While the return type coercion behavior of `Apply` and its variants might cause confusion in some cases, it is useful for making TypeScript aware of type incompatibilities early on. For example, let’s revisit the `JoinBy` function from the `JoinBy` function from the [Generic type-level functions](#generic-type-level-functions) section. However, instead of using `Arg0<this> extends [infer S extends string]` in the body, let’s remove the `extends string` constraint and use `Arg0<this> extends [infer S]`:
 
 ```typescript
 interface JoinBy<Sep extends string> extends TypeLambda<[strings: string[]], string> {
@@ -815,7 +815,7 @@ interface JoinBy<Sep extends string> extends TypeLambda<[strings: string[]], str
 }
 ```
 
-In this case, TypeScript cannot ensure that the return type of **`JoinBy`** is always **`string`**, because it cannot infer the type of **`S`** in the first condition, even though we know **`S`** can only be **`string`**. If we replace **`Call1`** with **`Call1W`**, we’ll actually get an error:
+In this case, TypeScript cannot ensure that the return type of `JoinBy` is always `string`, because it cannot infer the type of `S` in the first condition, even though we know `S` can only be `string`. If we replace `Call1` with `Call1W`, we’ll actually get an error:
 
 ```typescript
 interface JoinBy<Sep extends string> extends TypeLambda<[strings: string[]], string> {
@@ -829,7 +829,7 @@ interface JoinBy<Sep extends string> extends TypeLambda<[strings: string[]], str
 }
 ```
 
-However, because we use **`Call1`** in the original implementation, TypeScript doesn’t report such an issue in the function. This is because **`Call1`** always coerces the return value to match the declared return type **`string`**, allowing TypeScript to ensure that the type of `Call1<JoinBy<Sep>, Tail>` must be **`string`**, and thus no issue arises.
+However, because we use `Call1` in the original implementation, TypeScript doesn’t report such an issue in the function. This is because `Call1` always coerces the return value to match the declared return type `string`, allowing TypeScript to ensure that the type of `Call1<JoinBy<Sep>, Tail>` must be `string`, and thus no issue arises.
 
 #### Type checking and validation in _generic_ type-level functions
 
@@ -839,7 +839,7 @@ However, because we use **`Call1`** in the original implementation, TypeScript d
 
 When it comes to **_generic_ type-level functions**, the type checking/validation behavior is slightly different. The general rule is _still the same_ as in previous sections, but here we have to address an issue that can often break type checking in many libraries: **variance**.
 
-Consider the generic **`Map`** example we skimmed at the end of the [Generic type-level functions](#generic-type-level-functions) section:
+Consider the generic `Map` example we skimmed at the end of the [Generic type-level functions](#generic-type-level-functions) section:
 
 ```typescript
 interface Map extends TypeLambdaG<["T", "U"]> {
@@ -852,13 +852,13 @@ interface Map extends TypeLambdaG<["T", "U"]> {
 type _Map<F, TS> = { [K in keyof TS]: Call1W<F, TS[K]> };
 ```
 
-Let’s try to implement a “type-safe” **`MyApply`** based on **`ApplyW`**, which you might initially write like this:
+Let’s try to implement a “type-safe” `MyApply` based on `ApplyW`, which you might initially write like this:
 
 ```typescript
 type MyApply<F extends TypeLambda, Args extends Params<F>> = ApplyW<F, Args>;
 ```
 
-This works well for simple non-generic type-level functions, such as **`Concat`**, **`Add`**, or even type-level function templates like **`JoinBy`**. But when we apply it to **`Map`**, an issue arises:
+This works well for simple non-generic type-level functions, such as `Concat`, `Add`, or even type-level function templates like `JoinBy`. But when we apply it to `Map`, an issue arises:
 
 ```typescript
 type _ = MyApply<Map, [Append<"baz">, ["foo", "bar"]]>;
@@ -871,15 +871,15 @@ type _ = MyApply<Map, [Append<"baz">, ["foo", "bar"]]>;
 //           Type 'unknown' is not assignable to type 'string'.
 ```
 
-This issue arises due to TypeScript's generic instantiation mechanism: when TypeScript cannot infer the type of a type parameter, it defaults to its upper bound (**`unknown`** by default). For those familiar with variance handling in TypeScript, this behavior may seem unintuitive: for covariant type parameters, this is expected, but for contravariant type parameters (like those in function parameters), they should default to **`never`**. This mismatch is why the issue occurs.
+This issue arises due to TypeScript's generic instantiation mechanism: when TypeScript cannot infer the type of a type parameter, it defaults to its upper bound (`unknown` by default). For those familiar with variance handling in TypeScript, this behavior may seem unintuitive: for covariant type parameters, this is expected, but for contravariant type parameters (like those in function parameters), they should default to `never`. This mismatch is why the issue occurs.
 
-Let’s take a look at the result of **`Params<Map>`** to better understand the root cause:
+Let’s take a look at the result of `Params<Map>` to better understand the root cause:
 
 ```typescript
 type ParamsOfMap = Params<Map>; // => [f: TypeLambda<[x: unknown], unknown>, xs: unknown[]]
 ```
 
-The signature of **`Append<"baz">`** is `(s: string) => string`, whereas the expected signature is `(x: unknown) => unknown`. Because of the covariant nature of function parameters in TypeScript, **`(s: string) => string`** is not considered a subtype of **`(x: unknown) => unknown`**. This is because **`unknown`** is not assignable to **`string`**, which causes the type checking error.
+The signature of `Append<"baz">` is `(s: string) => string`, whereas the expected signature is `(x: unknown) => unknown`. Because of the covariant nature of function parameters in TypeScript, `(s: string) => string` is not considered a subtype of `(x: unknown) => unknown`. This is because `unknown` is not assignable to `string`, which causes the type checking error.
 
 Similar issues also occur in non-type-level functions in TypeScript. For example:
 
@@ -896,18 +896,18 @@ apply(map, [(s: string) => s + "baz", ["foo", "bar"]]);
 //              Type 'unknown' is not assignable to type 'string'.
 ```
 
-This explains why the signature of `Function.prototype.apply` in TypeScript is `(thisArg: any, argArray?: any) => any`: TypeScript cannot correctly handle the variance of function parameters, so it uses **`any`** to bypass strict type checking.
+This explains why the signature of `Function.prototype.apply` in TypeScript is `(thisArg: any, argArray?: any) => any`: TypeScript cannot correctly handle the variance of function parameters, so it uses `any` to bypass strict type checking.
 
-However, in **hkt-core**, we need a solution for this problem because the only way to invoke a type-level function is through utilities like **`Apply`** and **`Call*`**. That’s where **`TolerantParams`** and **`TolerantRetType`** come in. They work as follows:
+However, in hkt-core, we need a solution for this problem because the only way to invoke a type-level function is through utilities like `Apply` and `Call*`. That’s where `TolerantParams` and `TolerantRetType` come in. They work as follows:
 
 1. Test the variance of each type parameter (using dummy types):
    - If a type parameter is **covariant**, it is replaced with its **upper bound**.
-   - If a type parameter is **contravariant**, it is replaced with **`never`**.
-   - If a type parameter is **invariant**, it is replaced with **`any`**.
+   - If a type parameter is **contravariant**, it is replaced with `never`.
+   - If a type parameter is **invariant**, it is replaced with `any`.
 2. Replace the type parameters in the signature with the corresponding types.
 3. Extract the parameters or return type from the signature.
 
-By applying these rules, **`TolerantParams`** and **`TolerantRetType`** yield more precise results than **`Params`** and **`RetType`** when used with generic type-level functions:
+By applying these rules, `TolerantParams` and `TolerantRetType` yield more precise results than `Params` and `RetType` when used with generic type-level functions:
 
 ```typescript
 import type { TolerantParams, TolerantRetType } from "hkt-core";
@@ -916,17 +916,17 @@ type TolerantParamsOfMap = TolerantParams<Map>; // => [f: TypeLambda<[x: never],
 type TolerantRetTypeOfMap = TolerantRetType<Map>; // => unknown[]
 ```
 
-With **`TolerantParams`** replacing **`Params`**, TypeScript no longer throws errors about incompatible types — and that’s how type checking for parameters is handled in **`Apply`** and its variants.
+With `TolerantParams` replacing `Params`, TypeScript no longer throws errors about incompatible types — and that’s how type checking for parameters is handled in `Apply` and its variants.
 
-The same principles apply to **`Args`** and its variants. **`TolerantParams`** is used instead of **`Params`** to ensure correct type validation, and we’ll skip the details here since they work in much the same way.
+The same principles apply to `Args` and its variants. `TolerantParams` is used instead of `Params` to ensure correct type validation, and we’ll skip the details here since they work in much the same way.
 
 ### Common Utilities
 
-There are many utilities commonly used in functional programming libraries. Some are very simple but are used frequently, while others may be used less often but can be quite complex to implement at the type level, especially to work well with _generic_ type-level functions. Some of these utilities are already built into **hkt-core** and can be seamlessly composed with your own type-level functions.
+There are many utilities commonly used in functional programming libraries. Some are very simple but are used frequently, while others may be used less often but can be quite complex to implement at the type level, especially to work well with _generic_ type-level functions. Some of these utilities are already built into hkt-core and can be seamlessly composed with your own type-level functions.
 
 #### `Always`, `Identity` and `Ask`
 
-These utilities are simple but frequently used in functional programming libraries. Let's start with **`Always`**, which creates a type-level function that accepts zero arguments and always returns a constant value (this function is often called **`constant`** in some libraries):
+These utilities are simple but frequently used in functional programming libraries. Let's start with `Always`, which creates a type-level function that accepts zero arguments and always returns a constant value (this function is often called `constant` in some libraries):
 
 ```typescript
 interface Always<T> extends TypeLambda<[], T> {
@@ -934,7 +934,7 @@ interface Always<T> extends TypeLambda<[], T> {
 }
 ```
 
-This utility is useful when a type-level function accepts a transformer function, like **`TypeLambda1`**, to transform the input type, but you don’t actually need to transform the input type and just want to return a constant value:
+This utility is useful when a type-level function accepts a transformer function, like `TypeLambda1`, to transform the input type, but you don’t actually need to transform the input type and just want to return a constant value:
 
 ```typescript
 // Suppose we have a Rust-like `Result` type
@@ -950,7 +950,7 @@ namespace Result {
 type _ = Pipe<Ok<"Bob">, Result.Match<Prepend<"Mr. ">, Always<"Oops!">>>; // => "Mr. Bob"
 ```
 
-Next is **`Identity`**, a **_generic_ type-level function** that accepts a single argument and returns the same value:
+Next is `Identity`, a **_generic_ type-level function** that accepts a single argument and returns the same value:
 
 ```typescript
 interface Identity extends TypeLambdaG<["T"]> {
@@ -959,15 +959,15 @@ interface Identity extends TypeLambdaG<["T"]> {
 }
 ```
 
-**`Identity`** serves a similar role to **`Always`**, useful when you need to pass a transformer function but don’t want to transform the input type:
+`Identity` serves a similar role to `Always`, useful when you need to pass a transformer function but don’t want to transform the input type:
 
 ```typescript
 type MatchResult = Pipe<Err<"Oops!">>, Result.Match<Prepend<"Mr. ">, Identity>>;
 ```
 
-Another interesting use case of **`Identity`** is converting a **`FlatMap`** operation to **`Flatten`** by passing **`Identity`** as the transformer, and you can find even more use cases in practice
+Another interesting use case of `Identity` is converting a `FlatMap` operation to `Flatten` by passing `Identity` as the transformer, and you can find even more use cases in practice
 
-Lastly, we have **`Ask`**, which behaves similarly to **`Identity`**, but instead of being a _generic_ type-level function, it is defined as a **type-level function template**:
+Lastly, we have `Ask`, which behaves similarly to `Identity`, but instead of being a _generic_ type-level function, it is defined as a **type-level function template**:
 
 ```typescript
 interface Ask<T> extends TypeLambda<[value: T], T> {
@@ -975,7 +975,7 @@ interface Ask<T> extends TypeLambda<[value: T], T> {
 }
 ```
 
-**`Ask`** might be the most useful utility among these three. It is commonly used with **`Flow`** or **`Compose`** to “pin” the signature of a type-level function to a specific type. For example:
+`Ask` might be the most useful utility among these three. It is commonly used with `Flow` or `Compose` to “pin” the signature of a type-level function to a specific type. For example:
 
 ```typescript
 import type { Ask, Compose, Flow, Identity } from "hkt-core";
@@ -987,11 +987,11 @@ type IdentityStringSig = Sig<Flow<Ask<string>, Identity>>; // => (value: string)
 type IdentityNumberSig = Sig<Compose<Identity, Ask<number>>>; // => (value: number) => number
 ```
 
-When composing multiple type-level functions via **`Flow`**, if the first function is a _generic_ type-level function, you can use **`Ask`** to “pin” the first type-level function to avoid type errors about incompatible types.
+When composing multiple type-level functions via `Flow`, if the first function is a _generic_ type-level function, you can use `Ask` to “pin” the first type-level function to avoid type errors about incompatible types.
 
 #### `Tupled` and `Untupled`
 
-**`Flow`** and **`Pipe`** are incredibly useful for composing multiple type-level functions together, but they only work with functions that accept a single argument. If you have a type-level function that accepts multiple arguments, you can use **`Tupled`** to convert it into a function that accepts a single tuple argument:
+`Flow` and `Pipe` are incredibly useful for composing multiple type-level functions together, but they only work with functions that accept a single argument. If you have a type-level function that accepts multiple arguments, you can use `Tupled` to convert it into a function that accepts a single tuple argument:
 
 ```typescript
 interface Concat extends TypeLambda<[s1: string, s2: string], string> {
@@ -1005,7 +1005,7 @@ type TupledConcatSig = Sig<TupledConcat>; // => (args: [s1: string, s2: string])
 type _2 = Call1<TupledConcat, ["foo", "bar"]>; // => "foobar"
 ```
 
-The inverse of **`Tupled`** is **`Untupled`**, which converts a function that accepts a single tuple argument back into a function that accepts multiple arguments:
+The inverse of `Tupled` is `Untupled`, which converts a function that accepts a single tuple argument back into a function that accepts multiple arguments:
 
 ```typescript
 interface First extends TypeLambdaG<["T"]> {
@@ -1022,7 +1022,7 @@ type _2 = Call2<UntupledFirst, 42, "foo">; // => 42
 
 #### `Flip`
 
-**`Flip`** is useful when you need to swap the order of the arguments in a **`TypeLambda2`**. It is already built into **hkt-core** and can be used as follows:
+`Flip` is useful when you need to swap the order of the arguments in a `TypeLambda2`. It is already built into hkt-core and can be used as follows:
 
 ```typescript
 interface Map extends TypeLambdaG<["T", "U"]> {
@@ -1042,9 +1042,9 @@ type FlippedMapSig = Sig<FlippedMap>; // => <U, T>(xs: U[], f: (x: U) => T) => T
 type _2 = Call2<FlippedMap, ["foo", "bar"], Append<"baz">>; // => ["foobaz", "barbaz"]
 ```
 
-As you can see, **`Flip`** swaps the order of the arguments in the function. In this example, the **`Map`** function originally expects the function (`f`) to be the first argument, and the array (`xs`) to be the second. After using **`Flip`**, the arguments are reversed so that the array comes first, followed by the function.
+As you can see, `Flip` swaps the order of the arguments in the function. In this example, the `Map` function originally expects the function (`f`) to be the first argument, and the array (`xs`) to be the second. After using `Flip`, the arguments are reversed so that the array comes first, followed by the function.
 
-**`Flip`** also works with **curried** binary type-level functions (i.e., **`TypeLambda1<TypeLambda1>`**):
+`Flip` also works with **curried** binary type-level functions (i.e., `TypeLambda1<TypeLambda1>`):
 
 ```typescript
 // See the next section for `Curry`
@@ -1059,11 +1059,11 @@ type _2 = Call1<Call1<FlippedCurriedMap, ["foo", "bar"]>, Append<"baz">>; // => 
 
 #### `Curry`
 
-Currying is a common technique in functional programming that transforms a function accepting multiple arguments into a series of functions that each accept a single argument. While useful, currying doesn't fit well in TypeScript, especially **auto-currying** (see [a discussion about TypeScript support in Ramda’s repository](https://github.com/ramda/ramda/issues/2976#issuecomment-706475091)). It’s also quite challenging to create a type-safe, general-purpose **`curry`** function that works well with generics.
+Currying is a common technique in functional programming that transforms a function accepting multiple arguments into a series of functions that each accept a single argument. While useful, currying doesn't fit well in TypeScript, especially **auto-currying** (see [a discussion about TypeScript support in Ramda’s repository](https://github.com/ramda/ramda/issues/2976#issuecomment-706475091)). It’s also quite challenging to create a type-safe, general-purpose `curry` function that works well with generics.
 
-However, it _is_ possible to create type-safe curry functions for a specific number of arguments (e.g., `curry2`, `curry3`, etc.), or use overloads for each number of arguments to create a close-to-general-purpose, type-safe **`curry`** function. **hkt-core** provides a utility called **`Curry`** that supports up to **3** arguments, which can be thought of as a combination of overloads for **`curry2`** and **`curry3`**.
+However, it _is_ possible to create type-safe curry functions for a specific number of arguments (e.g., `curry2`, `curry3`, etc.), or use overloads for each number of arguments to create a close-to-general-purpose, type-safe `curry` function. hkt-core provides a utility called `Curry` that supports up to **3** arguments, which can be thought of as a combination of overloads for `curry2` and `curry3`.
 
-For example, you can curry the previously defined **`Map`** function like this:
+For example, you can curry the previously defined `Map` function like this:
 
 ```typescript
 type CurriedMap = Curry<Map>;
@@ -1071,7 +1071,7 @@ type CurriedMapSig = Sig<CurriedMap>; // => <T, U>(f: (x: T) => U) => (xs: T[]) 
 type _ = Call1<Call1<CurriedMap, Append<"baz">>, ["foo", "bar"]>; // => ["foobaz", "barbaz"]
 ```
 
-You can also create a curried version of **`Reduce`**:
+You can also create a curried version of `Reduce`:
 
 ```typescript
 interface Reduce extends TypeLambdaG<["T", "U"]> {
@@ -1090,7 +1090,7 @@ type CurriedReduceSig = Sig<CurriedReduce>; // => <T, U>(f: (acc: U, x: T) => U)
 type _2 = Call1<Call1<Call1<CurriedReduce, Concat>, "">, ["foo", "bar", "baz"]>; // => "foobarbaz"
 ```
 
-**`Curry`** is also quite useful in combination with **`Flip`**. If you have a binary type-level function like **`Map`**, you can use **`Curry`** and **`Flip`** to create two type-level function templates with different argument orders:
+`Curry` is also quite useful in combination with `Flip`. If you have a binary type-level function like `Map`, you can use `Curry` and `Flip` to create two type-level function templates with different argument orders:
 
 ```typescript
 // <T, U>[f: (x: T) => U](xs: T[]) => U[]
@@ -1102,15 +1102,15 @@ type MapOn<TS extends unknown[]> = Call1<Curry<Flip<Map>>, TS>;
 type MapOnSig = Sig<MapOn<string[]>>; // => (f: (x: string) => unknown) => unknown[]
 ```
 
-It’s worth noting that **`U`** is widened to **`unknown`** in the **`MapOn`** example. This is a limitation of TypeScript’s type inference system, and you’ll encounter the same issue if you define similar non-type-level `flip` and `curry2` functions in TypeScript. We provide this example for demonstration purposes, but in real-world scenarios, manually creating curried versions for the two different argument orders is generally a better choice.
+It’s worth noting that `U` is widened to `unknown` in the `MapOn` example. This is a limitation of TypeScript’s type inference system, and you’ll encounter the same issue if you define similar non-type-level `flip` and `curry2` functions in TypeScript. We provide this example for demonstration purposes, but in real-world scenarios, manually creating curried versions for the two different argument orders is generally a better choice.
 
 ### Tips for creating and managing your type-level functions
 
-**hkt-core** is a _core_ library that provides essential utilities for type-level programming in TypeScript, but it doesn’t come with many built-in type-level functions out of the box. We’ve shown some examples of useful type-level functions in the previous sections, and you might create your own toolkit with a lot of useful type-level functions based on **hkt-core**. Below are some tips for creating and managing your type-level functions effectively.
+hkt-core is a _core_ library that provides essential utilities for type-level programming in TypeScript, but it doesn’t come with many built-in type-level functions out of the box. We’ve shown some examples of useful type-level functions in the previous sections, and you might create your own toolkit with a lot of useful type-level functions based on hkt-core. Below are some tips for creating and managing your type-level functions effectively.
 
 First, while it might seem appealing, we don’t recommend creating auto-currying type-level functions like those in [HOTScript](https://github.com/gvergnaud/HOTScript). TypeScript cannot reliably identify whether a function is partially applied or not (see [a discussion about TypeScript support in Ramda’s repository](https://github.com/ramda/ramda/issues/2976#issuecomment-706475091)), and this applies to type-level functions as well. Instead, we recommend manually creating curried functions, similar to how [fp-ts](https://github.com/gcanti/fp-ts) handles currying.
 
-Another challenge is how to manage different variants of the same type-level function — such as the simple generic version, the type-level function version, and the type-level function template version. A useful strategy is to apply different suffixes to distinguish between these variants. For example, **`Map`**, **`Map$`**, and **`Map$$`**, where the number of **`$`** indicates the number of arguments the returned type-level function accepts:
+Another challenge is how to manage different variants of the same type-level function — such as the simple generic version, the type-level function version, and the type-level function template version. A useful strategy is to apply different suffixes to distinguish between these variants. For example, `Map`, `Map$`, and `Map$$`, where the number of `$` indicates the number of arguments the returned type-level function accepts:
 
 ```typescript
 type ConcatNames<Names extends string[]> = Pipe<
@@ -1225,7 +1225,7 @@ We use namespaces here to avoid polluting the global scope, and apply different 
 
 ### Performance
 
-For experienced TypeScript developers, performance in type-level programming is a common concern. Although **hkt-core** uses many conditional types and recursive type aliases, it’s designed so that TypeScript simplifies types as if **hkt-core** weren’t even there. For example:
+For experienced TypeScript developers, performance in type-level programming is a common concern. Although hkt-core uses many conditional types and recursive type aliases, it’s designed so that TypeScript simplifies types as if hkt-core weren’t even there. For example:
 
 ```typescript
 import type { Arg0, Pipe, TypeLambda } from "hkt-core";
@@ -1250,21 +1250,21 @@ type F<S extends string> =
   Capitalize<S> extends `${string}${infer Tail}` ? _StrLength<Tail, [void]> : 0;
 ```
 
-This is equivalent to writing the type directly without **hkt-core**, demonstrating that the extra type-checking adds minimal overhead.
+This is equivalent to writing the type directly without hkt-core, demonstrating that the extra type-checking adds minimal overhead.
 
-However, there are cases where **hkt-core** can slow down the TypeScript compiler, especially when using utilities with _type validation_ (not merely _type checking_) features. In particular, **`Apply`** and its variants might slow down the compiler when used with _generic_ type-level functions that have complex type signatures — if you encounter this, try using **`ApplyW`** and **`Call*W`** instead. On the other hand, even though **`Args`** and its variants also perform type validation, they seldom affect the compiler’s performance, so normally, you can safely use them without worry.
+However, there are cases where hkt-core can slow down the TypeScript compiler, especially when using utilities with _type validation_ (not merely _type checking_) features. In particular, `Apply` and its variants might slow down the compiler when used with _generic_ type-level functions that have complex type signatures — if you encounter this, try using `ApplyW` and `Call*W` instead. On the other hand, even though `Args` and its variants also perform type validation, they seldom affect the compiler’s performance, so normally, you can safely use them without worry.
 
 ## FAQ
 
 ### Should I add it as a dev dependency or a regular dependency?
 
-Even though **hkt-core** is a type-only library, it **should _not_** be added as a dev dependency if you are developing a library or framework that will be used by other projects. Without **hkt-core** as a regular dependency, the type definitions of your library will be incomplete, and users will encounter type errors when they try to use it.
+Even though hkt-core is a type-only library, it **should _not_** be added as a dev dependency if you are developing a library or framework that will be used by other projects. Without hkt-core as a regular dependency, the type definitions of your library will be incomplete, and users will encounter type errors when they try to use it.
 
-On the other hand, if you’re using **hkt-core** just for your own project and don’t plan to publish it as a library, you can safely add it as a dev dependency.
+On the other hand, if you’re using hkt-core just for your own project and don’t plan to publish it as a library, you can safely add it as a dev dependency.
 
 ### _Generic_ type-level functions don’t infer types correctly!
 
-**hkt-core** simulates the TypeScript type system at the type level as closely as possible, but it’s not perfect. If something doesn’t work in TypeScript, it’s likely that it won’t work in **hkt-core** either. When encountering issues with generic type-level functions, first test whether their equivalent runtime version works in TypeScript (you can use **fp-ts** or other libraries for this). If it doesn’t work in TypeScript, it’s also unlikely to work in **hkt-core**.
+hkt-core simulates the TypeScript type system at the type level as closely as possible, but it’s not perfect. If something doesn’t work in TypeScript, it’s likely that it won’t work in hkt-core either. When encountering issues with generic type-level functions, first test whether their equivalent runtime version works in TypeScript (you can use **fp-ts** or other libraries for this). If it doesn’t work in TypeScript, it’s also unlikely to work in hkt-core.
 
 For example, the following code will trigger an error in TypeScript:
 
@@ -1283,7 +1283,7 @@ type Composed = Flow<Head, Head, Head>;
 //         Type 'unknown' is not assignable to type '[unknown, ...unknown[]]'.
 ```
 
-You might expect the signature of **`Composed`** to be inferred as `<T>(tuple3: [[[T, …unknown[]], …unknown[]], …unknown[]]) => T`, but this is the expected behavior. If you try the equivalent runtime code in **fp-ts**, you’ll see that it still doesn’t work in TypeScript:
+You might expect the signature of `Composed` to be inferred as `<T>(tuple3: [[[T, ...unknown[]], ...unknown[]], ...unknown[]]) => T`, but this is the expected behavior. If you try the equivalent runtime code in **fp-ts**, you’ll see that it still doesn’t work in TypeScript:
 
 ```typescript
 import { flow } from "fp-ts/function";
@@ -1296,9 +1296,9 @@ flow(head, head, head);
 //   Type 'T' is not assignable to type '[unknown, ...unknown[]]'.
 ```
 
-These kinds of “issues” are not considered bugs in **hkt-core**. In such cases, it’s often necessary to rethink your design and simplify the type-level functions to avoid complex type inference issues.
+These kinds of “issues” are not considered bugs in hkt-core. In such cases, it’s often necessary to rethink your design and simplify the type-level functions to avoid complex type inference issues.
 
-Though many unexpected behaviors are _not_ true issues, as described above, there are also cases where unexpected behavior is due to **limitations** inherent in **hkt-core**, particularly with generic function composition. For example, the following code works in TypeScript because TypeScript provides special support for generic function types:
+Though many unexpected behaviors are _not_ true issues, as described above, there are also cases where unexpected behavior is due to **limitations** inherent in hkt-core, particularly with generic function composition. For example, the following code works in TypeScript because TypeScript provides special support for generic function types:
 
 ```typescript
 declare function compose2<T, U, V>(g: (y: U) => V, f: (x: T) => U): (x: T) => V;
@@ -1310,7 +1310,7 @@ const testCompose2 = compose2(makeTuple, toString);
 //    ^?: (x: number) => [string]
 ```
 
-However, if you try to define a similar type-level **`Compose2`** in **hkt-core**, it won’t work as expected:
+However, if you try to define a similar type-level `Compose2` in hkt-core, it won’t work as expected:
 
 ```typescript
 interface Compose2 extends TypeLambdaG<["T", "U", "V"]> {
@@ -1326,11 +1326,11 @@ declare function makeTuple<T>(x: T): [T];
 type TestCompose2 = RetType<Compose2, [typeof makeTuple, typeof toString]>; // => (x: number) => [unknown]
 ```
 
-Here, the return type is inferred as `(x: number) => [unknown]` instead of `(x: number) => [string]`. Since **hkt-core** simulates the TypeScript type system at the type level, it cannot provide the same special support for generic function types that TypeScript does.
+Here, the return type is inferred as `(x: number) => [unknown]` instead of `(x: number) => [string]`. Since hkt-core simulates the TypeScript type system at the type level, it cannot provide the same special support for generic function types that TypeScript does.
 
 While these limitations are not expected to be fixed in the near future, you’re welcome to open an issue to present these cases and discuss potential solutions.
 
-If you believe you’ve encountered a bug — where the equivalent runtime code works in TypeScript but **hkt-core** behaves unexpectedly — please [open an issue on the GitHub repository](https://www.github.com/Snowflyt/hkt-core/issues) with a minimal reproduction case. Some known issues are already listed there, so please check whether your issue has already been reported before submitting a new one.
+If you believe you’ve encountered a bug — where the equivalent runtime code works in TypeScript but hkt-core behaves unexpectedly — please [open an issue on the GitHub repository](https://www.github.com/Snowflyt/hkt-core/issues) with a minimal reproduction case. Some known issues are already listed there, so please check whether your issue has already been reported before submitting a new one.
 
 ### What’s the magic behind generic type-level functions?
 
@@ -1363,7 +1363,7 @@ type _ = (Map & TypeArgs)["signature"];
 //   ^?: (f: (x: string) => number, xs: string[]) => number[]
 ```
 
-We use `ArgT` and `ArgU` to extract the type arguments from the type-level function, just like `TArg` in **hkt-core**. We then instantiate the type arguments from known parameter types and refine the signature with the instantiated type arguments. This is the basic idea behind generic type-level functions.
+We use `ArgT` and `ArgU` to extract the type arguments from the type-level function, just like `TArg` in hkt-core. We then instantiate the type arguments from known parameter types and refine the signature with the instantiated type arguments. This is the basic idea behind generic type-level functions.
 
 We use `ArgT` and `ArgU` to extract the type arguments from the type-level function — just like `TArg` in hkt-core. Then we instantiate these type arguments from known parameter types and refine the signature accordingly. This is the core idea behind generic type-level functions.
 
@@ -1414,11 +1414,11 @@ type _ = (Map & TypeArgs)["signature"];
 
 This might seem like magic at first, and it can be a bit tricky to grasp initially. We’ll skip the finer details here, but if you’re curious, you can apply the variance rules in TypeScript step by step to see how everything falls into place.
 
-Internally, **hkt-core** uses a similar technique to handle variance correctly, so you don’t have to write this kind of code yourself. Understanding the basic idea behind generic type-level functions can help explain why some seemingly simple functions might not infer types correctly in edge cases.
+Internally, hkt-core uses a similar technique to handle variance correctly, so you don’t have to write this kind of code yourself. Understanding the basic idea behind generic type-level functions can help explain why some seemingly simple functions might not infer types correctly in edge cases.
 
 ### Why not just access arguments and type parameters via `this`?
 
-Libraries like [HOTScript](https://github.com/gvergnaud/hotscript) use syntax like **`this["arg0"]`** to access arguments inside a type-level function. While this approach seems simpler and more concise, it introduces unnecessary properties to the type-level function, which can lead to variance issues. Let’s first revisit the variance of function types in TypeScript:
+Libraries like [HOTScript](https://github.com/gvergnaud/hotscript) use syntax like `this["arg0"]` to access arguments inside a type-level function. While this approach seems simpler and more concise, it introduces unnecessary properties to the type-level function, which can lead to variance issues. Let’s first revisit the variance of function types in TypeScript:
 
 ```typescript
 type IsSubtype<T, U> = [T] extends [U] ? true : false;
@@ -1441,7 +1441,7 @@ type TestParam2 = IsSubtype<(_: unknown) => void, (_: string) => void>; // => tr
 type TestFunc = IsSubtype<(_: string) => number, (_: never) => unknown>; // => true
 ```
 
-**hkt-core** provides a _typed_ version of type-level functions, so we should keep the variance rules of **`TypeLambda`** aligned with TypeScript’s function types. However, if we add extra properties like **`args`** to **`TypeLambda`** for convenience to access arguments, we can break the variance rules:
+hkt-core provides a _typed_ version of type-level functions, so we should keep the variance rules of `TypeLambda` aligned with TypeScript’s function types. However, if we add extra properties like `args` to `TypeLambda` for convenience to access arguments, we can break the variance rules:
 
 ```typescript
 interface TypeLambda<Params extends unknown[], R> {
@@ -1453,7 +1453,7 @@ interface TypeLambda<Params extends unknown[], R> {
 type TestVariance = IsSubtype<TypeLambda<[string], number>, TypeLambda<[never], unknown>>; // => false
 ```
 
-If we remove the `args: Params` from the code above, we get the standard **`TypeLambda`** implementation as it is defined in **`hkt-core`**, and the result of **`TestVariance`** will be `true` as expected. However, by adding `args: Params` back, **`Params`** now appears in both a contravariant position (as function parameters in the **`signature`** property) and a covariant position (as the **`args`** property). This makes **`Params`** invariant and breaks the variance rules.
+If we remove the `args: Params` from the code above, we get the standard `TypeLambda` implementation as it is defined in `hkt-core`, and the result of `TestVariance` will be `true` as expected. However, by adding `args: Params` back, `Params` now appears in both a contravariant position (as function parameters in the `signature` property) and a covariant position (as the `args` property). This makes `Params` invariant and breaks the variance rules.
 
 Now, you might wonder, what if we use a contravariant **`args`** property, like `args: (_: Params) => void`? While this would work, it forces the user to access the arguments using the more complex syntax `Parameters<this["args"]>[0]`, which doesn’t provide much benefit over the standard **`Args`** utility in **hkt-core**.
 
