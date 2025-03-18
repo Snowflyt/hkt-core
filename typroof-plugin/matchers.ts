@@ -6,10 +6,7 @@ import { match } from "typroof/plugin";
  * Note: Parameter labels are also checked.
  * @returns
  */
-export const beOfSig = <S extends (...args: any) => any>(
-  // @ts-expect-error - `sig` is unused.
-  sig?: S,
-) => match<"beOfSig", S>();
+export const beOfSig = <S extends (...args: any) => any>(sig?: S) => match<"beOfSig", S>();
 
 /**
  * [Matcher] Check if a type equals one of the given types.
@@ -43,15 +40,10 @@ export const beOneOf = <
   Y = Placeholder,
   Z = Placeholder,
 >(
-  // @ts-expect-error - `a` is unused.
   a?: A,
-  // @ts-expect-error - `b` is unused.
   b?: B,
-  // @ts-expect-error - `c` is unused.
   c?: C,
-  // @ts-expect-error - `d` is unused.
   d?: D,
-  // @ts-expect-error - `e` is unused.
   e?: E,
 ) =>
   match<
@@ -75,7 +67,4 @@ type _ExcludePlaceholders<TS extends readonly unknown[]> =
  * Note: Tuple labels are also checked.
  * @returns
  */
-export const exactEqual = <U>(
-  // @ts-expect-error - `y` is unused.
-  y?: U,
-) => match<"exactEqual", U>();
+export const exactEqual = <U>(y?: U) => match<"exactEqual", U>();
