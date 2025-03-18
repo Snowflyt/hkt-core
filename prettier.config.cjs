@@ -1,7 +1,6 @@
 // @ts-check
 
-/** @satisfies {import("prettier").Config} */
-const config = {
+module.exports = /** @satisfies {import("prettier").Config} */ ({
   arrowParens: "always",
   bracketSameLine: true,
   bracketSpacing: true,
@@ -11,6 +10,4 @@ const config = {
   singleQuote: false,
   trailingComma: "all",
   printWidth: 100,
-};
-
-module.exports = config;
+});
