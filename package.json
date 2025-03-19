@@ -40,7 +40,6 @@
   },
   "devDependencies": {
     "@typescript-eslint/parser": "^8.26.1",
-    "chalk": "^5.4.1",
     "commitlint": "^19.8.0",
     "cpy-cli": "^5.0.0",
     "effect": "^3.13.12",
@@ -61,6 +60,6 @@
     "rimraf": "^6.0.1",
     "typescript": "latest",
     "typescript-eslint": "^8.26.1",
-    "typroof": "^0.4.2"
+    "typroof": "^0.5.1"
   }
 }
