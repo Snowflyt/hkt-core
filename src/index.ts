@@ -1129,9 +1129,16 @@ export type Call1W<F, A0> =
     F["return"]
   : never;
 /**
- * An alias of {@linkcode Call1W}.
+ * The same as {@linkcode Call1W}, but when {@linkcode F} is not a “concrete” type lambda,
+ * {@linkcode TolerantRetTypeW} is used to provide a default result instead of `never`.
+ *
+ * This can be useful for classical HKTs, e.g., a [Free monad](https://hackage.haskell.org/package/free)
+ * defined as `type Free<F extends HKT, A> = { _tag: "Pure"; _0: A } | { _tag: "Suspend"; _0: Kind<F, Free<F, A>> }`.
  */
-export type Kind<F, T> = Call1W<F, T>;
+export type Kind<F, T> =
+  F & { readonly Args: (_: [T]) => void } extends infer F extends { readonly return: unknown } ?
+    F["return"]
+  : TolerantRetTypeW<F>;
 /**
  * A shorthand for `Apply<F, [A0, A1]>`.
  *
@@ -1160,9 +1167,15 @@ export type Call2W<F, A0, A1> =
     F["return"]
   : never;
 /**
- * An alias of {@linkcode Call2W}.
+ * The same as {@linkcode Call2W}, but when {@linkcode F} is not a “concrete” type lambda,
+ * {@linkcode TolerantRetTypeW} is used to provide a default result instead of `never`.
+ *
+ * This can be useful for classical HKTs, see {@linkcode Kind}.
  */
-export type Kind2<F, T, U> = Call2W<F, T, U>;
+export type Kind2<F, T, U> =
+  F & { readonly Args: (_: [T, U]) => void } extends infer F extends { readonly return: unknown } ?
+    F["return"]
+  : TolerantRetTypeW<F>;
 /**
  * A shorthand for `Apply<F, [A0, A1, A2]>`.
  *
@@ -1192,9 +1205,17 @@ export type Call3W<F, A0, A1, A2> =
     F["return"]
   : never;
 /**
- * An alias of {@linkcode Call3W}.
+ * The same as {@linkcode Call3W}, but when {@linkcode F} is not a “concrete” type lambda,
+ * {@linkcode TolerantRetTypeW} is used to provide a default result instead of `never`.
+ *
+ * This can be useful for classical HKTs, see {@linkcode Kind}.
  */
-export type Kind3<F, T, U, V> = Call3W<F, T, U, V>;
+export type Kind3<F, T, U, V> =
+  F & { readonly Args: (_: [T, U, V]) => void } extends (
+    infer F extends { readonly return: unknown }
+  ) ?
+    F["return"]
+  : TolerantRetTypeW<F>;
 /**
  * A shorthand for `Apply<F, [A0, A1, A2, A3]>`.
  *
@@ -1225,9 +1246,17 @@ export type Call4W<F, A0, A1, A2, A3> =
     F["return"]
   : never;
 /**
- * An alias of {@linkcode Call4W}.
+ * The same as {@linkcode Call4W}, but when {@linkcode F} is not a “concrete” type lambda,
+ * {@linkcode TolerantRetTypeW} is used to provide a default result instead of `never`.
+ *
+ * This can be useful for classical HKTs, see {@linkcode Kind}.
  */
-export type Kind4<F, T, U, V, W> = Call4W<F, T, U, V, W>;
+export type Kind4<F, T, U, V, W> =
+  F & { readonly Args: (_: [T, U, V, W]) => void } extends (
+    infer F extends { readonly return: unknown }
+  ) ?
+    F["return"]
+  : TolerantRetTypeW<F>;
 
 /********************
  * Common utilities *

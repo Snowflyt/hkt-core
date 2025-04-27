@@ -169,7 +169,9 @@ type StringOption = Call1<OptionHKT, string>; // => Option<string>
 
 As shown above, we can “invoke” a `TypeLambda` with type arguments using `Apply` or its aliases like `Call1`, `Call2`, etc, which correspond to type-level functions that take exactly one, two, or more type arguments. These work similarly to `Function.prototype.apply` and `Function.prototype.call` in JavaScript.
 
-For classical HKT use cases, hkt-core provides concise aliases like `HKT` and `Kind`, which can be seen as aliases for `TypeLambda1` and `Call1` (`Kind` is actually an alias for `Call1W`, see the [Aliases for classical HKT use cases](#aliases-for-classical-hkt-use-cases) section for details). Using these aliases, we can define a `MonadTypeClass` and `createFlatten` function like this:
+For classical HKT use cases, hkt-core provides concise aliases like `HKT` and `Kind`, which can be seen as aliases for `TypeLambda1` and an enhanced version of `Call1`. Unlike `Call1W` which returns `never` when `F` is not a “concrete” type lambda, `Kind` uses `TolerantRetTypeW<F>` as a fallback to provide a more useful default result. See the [Aliases for classical HKT use cases](#aliases-for-classical-hkt-use-cases) section for details.
+
+Using these aliases, we can define a `MonadTypeClass` and `createFlatten` function like this:
 
 ```typescript
 import { Arg0, HKT, Kind } from "hkt-core";
@@ -630,9 +632,9 @@ type _ = Call1<FromEntries, [["name", string], ["age", number]]>; // => { name: 
 hkt-core provide the following aliases for **type constructors**:
 
 - `HKT`, `HKT2`, `HKT3` and `HKT4` are aliases for `TypeLambda1`, `TypeLambda2`, `TypeLambda3` and `TypeLambda4`, respectively.
-- `Kind`, `Kind2`, `Kind3` and `Kind4` are aliases for `Call1W`, `Call2W`, `Call3W` and `Call4W`, respectively.
+- `Kind`, `Kind2`, `Kind3` and `Kind4` are similar to `Call1W`, `Call2W`, `Call3W` and `Call4W`, but with an important enhancement: when `F` is not a “concrete” type lambda, they use `TolerantRetTypeW<F>` as a fallback instead of returning `never`. This makes them more robust for classical HKT scenarios, such as when implementing type classes for higher-kinded types.
 
-The aliases for higher-arity type constructors allow you to work with type constructors that take multiple type arguments, such as `Either<L, R>` or `State<S, A>`.
+The aliases for higher-arity type constructors allow you to work with type constructors that take multiple type arguments, such as `Either<L, R>`, `State<S, A>` or `Free<F extends HKT, A>`.
 
 The `W` suffix in `Call*W` stands for “**widening**”, meaning type checking and validation are relaxed for arguments passed to the type-level function. For more details, see the [Bypass strict type checking and validation](#bypass-strict-type-checking-and-validation) sections.
 
