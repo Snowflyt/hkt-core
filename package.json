@@ -39,16 +39,16 @@
     "test": "tsc --noEmit && typroof"
   },
   "devDependencies": {
-    "@typescript-eslint/parser": "^8.26.1",
+    "@typescript-eslint/parser": "^8.31.0",
     "commitlint": "^19.8.0",
     "cpy-cli": "^5.0.0",
-    "effect": "^3.13.12",
-    "eslint": "^9.22.0",
-    "eslint-config-prettier": "^10.1.1",
-    "eslint-import-resolver-typescript": "^4.2.0",
-    "eslint-plugin-import-x": "^4.8.0",
-    "eslint-plugin-jsdoc": "^50.6.8",
-    "eslint-plugin-prettier": "^5.2.3",
+    "effect": "^3.14.14",
+    "eslint": "^9.25.1",
+    "eslint-config-prettier": "^10.1.2",
+    "eslint-import-resolver-typescript": "^4.3.4",
+    "eslint-plugin-import-x": "^4.11.0",
+    "eslint-plugin-jsdoc": "^50.6.11",
+    "eslint-plugin-prettier": "^5.2.6",
     "eslint-plugin-sonarjs": "^3.0.2",
     "eslint-plugin-sort-destructure-keys": "^2.0.0",
     "globals": "^16.0.0",
@@ -59,7 +59,7 @@
     "replace-in-file": "^8.3.0",
     "rimraf": "^6.0.1",
     "typescript": "latest",
-    "typescript-eslint": "^8.26.1",
+    "typescript-eslint": "^8.31.0",
     "typroof": "^0.5.1"
   }
 }
