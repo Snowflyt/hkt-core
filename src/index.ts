@@ -1341,11 +1341,12 @@ export interface Ask<T> extends TypeLambda<[value: T], T> {
  */
 export type Tupled<F extends TypeLambda<never, unknown>> =
   F extends TypeLambdaG ? TupledGeneric<F> : TupledNormal<F>;
-interface TupledNormal<F extends TypeLambda<never, unknown>>
+export interface TupledNormal<F extends TypeLambda<never, unknown>>
   extends TypeLambda<[args: Params<F>], RetType<F>> {
   readonly return: ApplyW<F, Arg0<this>>;
 }
-interface TupledGeneric<F extends TypeLambdaG & TypeLambda<never, unknown>> extends TypeLambdaG {
+export interface TupledGeneric<F extends TypeLambdaG & TypeLambda<never, unknown>>
+  extends TypeLambdaG {
   readonly ["~hkt"]: F["~hkt"];
   readonly signature: (F & _PickTypeArgs<this>)["signature"] extends infer S ?
     (args: ParametersW<S>) => ReturnTypeW<S>
@@ -1373,11 +1374,12 @@ interface TupledGeneric<F extends TypeLambdaG & TypeLambda<never, unknown>> exte
  */
 export type Untupled<F extends TypeLambda1<any, unknown>> =
   F extends TypeLambdaG ? UntupledGeneric<F> : UntupledNormal<F>;
-interface UntupledNormal<F extends TypeLambda1<any, unknown>>
+export interface UntupledNormal<F extends TypeLambda1<any, unknown>>
   extends TypeLambda<[...args: Param0<F>], RetType<F>> {
   readonly return: Call1W<F, Args<this>>;
 }
-interface UntupledGeneric<F extends TypeLambdaG & TypeLambda1<any, unknown>> extends TypeLambdaG {
+export interface UntupledGeneric<F extends TypeLambdaG & TypeLambda1<any, unknown>>
+  extends TypeLambdaG {
   readonly ["~hkt"]: F["~hkt"];
   readonly signature: (F & _PickTypeArgs<this>)["signature"] extends infer S ?
     (
@@ -1436,12 +1438,12 @@ export type Flip<
 /* Flip `TypeLambda2` */
 type Flip2<F extends TypeLambda2<never, never, unknown>> =
   F extends TypeLambdaG ? Flip2Generic<F> : Flip2Normal<F>;
-interface Flip2Normal<F extends TypeLambda2<never, never, unknown>>
+export interface Flip2Normal<F extends TypeLambda2<never, never, unknown>>
   // Use `GetPart` to preserve tuple labels
   extends TypeLambda<[...GetPart<Params<F>, 1>, ...HeadPart<Params<F>>], RetType<F>> {
   readonly return: Call2W<F, RawArg1<this>, RawArg0<this>>;
 }
-interface Flip2Generic<F extends TypeLambdaG & TypeLambda2<never, never, unknown>>
+export interface Flip2Generic<F extends TypeLambdaG & TypeLambda2<never, never, unknown>>
   extends TypeLambdaG {
   readonly ["~hkt"]: F["~hkt"];
   readonly signature: (F & _PickTypeArgs<this>)["signature"] extends infer S ?
@@ -1453,7 +1455,7 @@ interface Flip2Generic<F extends TypeLambdaG & TypeLambda2<never, never, unknown
 /* Flip `TypeLambda1<never, TypeLambda1>` */
 type Flip1<F extends TypeLambda1<never, TypeLambda1<never, unknown>>> =
   F extends TypeLambdaG ? Flip1Generic<F> : Flip1Normal<F>;
-interface Flip1Normal<F extends TypeLambda1<never, TypeLambda1<never, unknown>>>
+export interface Flip1Normal<F extends TypeLambda1<never, TypeLambda1<never, unknown>>>
   // Use `GetPart` to preserve tuple labels
   extends TypeLambda<Params<RetType<F>>, TypeLambda<Params<F>, RetType<RetType<F>>>> {
   readonly return: _Flip1Normal<F, RawArg0<this>>;
@@ -1462,8 +1464,9 @@ interface _Flip1Normal<F extends TypeLambda1<never, TypeLambda1<never, unknown>>
   extends TypeLambda<Params<F>, RetType<RetType<F>>> {
   readonly return: Call1W<Call1W<F, RawArg0<this>>, A1>;
 }
-interface Flip1Generic<F extends TypeLambdaG & TypeLambda1<never, TypeLambda1<never, unknown>>>
-  extends TypeLambdaG {
+export interface Flip1Generic<
+  F extends TypeLambdaG & TypeLambda1<never, TypeLambda1<never, unknown>>,
+> extends TypeLambdaG {
   readonly ["~hkt"]: F["~hkt"];
   readonly signature: (F & _PickTypeArgs<this>)["signature"] extends infer S ?
     (...args: ParamsW<ReturnTypeW<S>>) => TypeLambda<ParametersW<S>, RetTypeW<ReturnTypeW<S>>>
@@ -1715,7 +1718,7 @@ export type ComposeW<G, F> =
 /**
  * Compose two {@linkcode TypeLambda1}s if either or none of them is generic.
  */
-interface ComposeNormal<
+export interface ComposeNormal<
   G extends TypeLambda1<RetType<F>, unknown>,
   F extends TypeLambda1<never, unknown>,
 > extends TypeLambda<Params<F, { r: Param0<G> }>, RetType<G, [RetType<F>]>> {
@@ -1724,7 +1727,7 @@ interface ComposeNormal<
 /**
  * Compose two {@linkcode TypeLambda1}s if both of them are generic.
  */
-interface ComposeGeneric<
+export interface ComposeGeneric<
   G extends TypeLambdaG & TypeLambda1<RetType<F>, unknown>,
   F extends TypeLambdaG & TypeLambda1<never, unknown>,
 > extends TypeLambdaG {
