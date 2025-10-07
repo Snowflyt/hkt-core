@@ -1572,7 +1572,7 @@ export type Curry<
 /* Curry `TypeLambda2` */
 type Curry2<F extends TypeLambda2<never, never, unknown>> =
   F extends TypeLambdaG ? Curry2Generic<F> : Curry2Normal<F>;
-interface Curry2Normal<F extends TypeLambda2<never, never, unknown>>
+export interface Curry2Normal<F extends TypeLambda2<never, never, unknown>>
   // Use `GetPart` to preserve tuple labels
   extends TypeLambda<[...HeadPart<Params<F>>], TypeLambda<[...GetPart<Params<F>, 1>], RetType<F>>> {
   readonly return: _Curry2Normal<F, RawArg0<this>>;
@@ -1581,7 +1581,7 @@ interface _Curry2Normal<F extends TypeLambda2<never, never, unknown>, A0>
   extends TypeLambda<[...GetPart<Params<F>, 1>], RetType<F>> {
   readonly return: Call2W<F, A0, RawArg0<this>>;
 }
-interface Curry2Generic<F extends TypeLambdaG & TypeLambda2<never, never, unknown>>
+export interface Curry2Generic<F extends TypeLambdaG & TypeLambda2<never, never, unknown>>
   extends TypeLambdaG {
   readonly ["~hkt"]: F["~hkt"];
   readonly signature: (F & _PickTypeArgs<this>)["signature"] extends infer S ?
@@ -1600,7 +1600,7 @@ interface _Curry2Generic<F extends TypeLambdaG & TypeLambda2<never, never, unkno
 /* Curry `TypeLambda3` */
 type Curry3<F extends TypeLambda3<never, never, never, unknown>> =
   F extends TypeLambdaG ? Curry3Generic<F> : Curry3Normal<F>;
-interface Curry3Normal<F extends TypeLambda3<never, never, never, unknown>>
+export interface Curry3Normal<F extends TypeLambda3<never, never, never, unknown>>
   // Use `HeadPart` to preserve tuple labels
   extends TypeLambda<
     [...HeadPart<Params<F>>],
@@ -1619,7 +1619,7 @@ interface __Curry3Normal<F extends TypeLambda3<never, never, never, unknown>, A0
   extends TypeLambda<[...GetPart<Params<F>, 2>], RetType<F>> {
   readonly return: Call3W<F, A0, A1, RawArg0<this>>;
 }
-interface Curry3Generic<F extends TypeLambdaG & TypeLambda3<never, never, never, unknown>>
+export interface Curry3Generic<F extends TypeLambdaG & TypeLambda3<never, never, never, unknown>>
   extends TypeLambdaG {
   readonly ["~hkt"]: F["~hkt"];
   readonly signature: (F & _PickTypeArgs<this>)["signature"] extends infer S ?
