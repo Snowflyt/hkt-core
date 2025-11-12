@@ -8,7 +8,6 @@
  * @property {?string} subject The subject of the commit message.
  */
 
-// eslint-disable-next-line jsdoc/valid-types
 const emojiEnum = /** @type {const} */ ([
   2,
   "always",
