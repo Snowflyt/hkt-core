@@ -668,6 +668,106 @@ type _Sig<F, BaseParams extends unknown[], BaseRetType, Known = never> =
             >(
               ...args: _FurtherExpandAll<_GenericParamsWithTypeArgsTuple<F, [T, U, V]>, BaseParams>
             ) => _FurtherExpand<_GenericRetTypeWithTypeArgsTuple<F, [T, U, V]>, BaseRetType>
+        : // * TypeLambda4
+        TypeParameters["length"] extends 4 ?
+          [unknown, unknown, unknown, unknown] extends (
+            [TypeParameters[0][1], TypeParameters[1][1], TypeParameters[2][1], TypeParameters[3][1]]
+          ) ?
+            <T, U, V, W>(
+              ...args: _FurtherExpandAll<
+                _GenericParamsWithTypeArgsTuple<F, [T, U, V, W]>,
+                BaseParams
+              >
+            ) => _FurtherExpand<_GenericRetTypeWithTypeArgsTuple<F, [T, U, V, W]>, BaseRetType>
+          : [unknown, unknown, unknown] extends (
+            [TypeParameters[0][1], TypeParameters[1][1], TypeParameters[2][1]]
+          ) ?
+            <T, U, V, W extends TypeParameters[3][1]>(
+              ...args: _FurtherExpandAll<
+                _GenericParamsWithTypeArgsTuple<F, [T, U, V, W]>,
+                BaseParams
+              >
+            ) => _FurtherExpand<_GenericRetTypeWithTypeArgsTuple<F, [T, U, V, W]>, BaseRetType>
+          : [unknown, unknown, unknown] extends (
+            [TypeParameters[0][1], TypeParameters[1][1], TypeParameters[3][1]]
+          ) ?
+            <T, U, V extends TypeParameters[2][1], W>(
+              ...args: _FurtherExpandAll<
+                _GenericParamsWithTypeArgsTuple<F, [T, U, V, W]>,
+                BaseParams
+              >
+            ) => _FurtherExpand<_GenericRetTypeWithTypeArgsTuple<F, [T, U, V, W]>, BaseRetType>
+          : [unknown, unknown, unknown] extends (
+            [TypeParameters[0][1], TypeParameters[2][1], TypeParameters[3][1]]
+          ) ?
+            <T, U extends TypeParameters[1][1], V, W>(
+              ...args: _FurtherExpandAll<
+                _GenericParamsWithTypeArgsTuple<F, [T, U, V, W]>,
+                BaseParams
+              >
+            ) => _FurtherExpand<_GenericRetTypeWithTypeArgsTuple<F, [T, U, V, W]>, BaseRetType>
+          : [unknown, unknown, unknown] extends (
+            [TypeParameters[1][1], TypeParameters[2][1], TypeParameters[3][1]]
+          ) ?
+            <T extends TypeParameters[0][1], U, V, W>(
+              ...args: _FurtherExpandAll<
+                _GenericParamsWithTypeArgsTuple<F, [T, U, V, W]>,
+                BaseParams
+              >
+            ) => _FurtherExpand<_GenericRetTypeWithTypeArgsTuple<F, [T, U, V, W]>, BaseRetType>
+          : [unknown, unknown] extends [TypeParameters[0][1], TypeParameters[1][1]] ?
+            <T, U, V extends TypeParameters[2][1], W extends TypeParameters[3][1]>(
+              ...args: _FurtherExpandAll<
+                _GenericParamsWithTypeArgsTuple<F, [T, U, V, W]>,
+                BaseParams
+              >
+            ) => _FurtherExpand<_GenericRetTypeWithTypeArgsTuple<F, [T, U, V, W]>, BaseRetType>
+          : [unknown, unknown] extends [TypeParameters[0][1], TypeParameters[2][1]] ?
+            <T, U extends TypeParameters[1][1], V, W extends TypeParameters[3][1]>(
+              ...args: _FurtherExpandAll<
+                _GenericParamsWithTypeArgsTuple<F, [T, U, V, W]>,
+                BaseParams
+              >
+            ) => _FurtherExpand<_GenericRetTypeWithTypeArgsTuple<F, [T, U, V, W]>, BaseRetType>
+          : [unknown, unknown] extends [TypeParameters[0][1], TypeParameters[3][1]] ?
+            <T, U extends TypeParameters[1][1], V extends TypeParameters[2][1], W>(
+              ...args: _FurtherExpandAll<
+                _GenericParamsWithTypeArgsTuple<F, [T, U, V, W]>,
+                BaseParams
+              >
+            ) => _FurtherExpand<_GenericRetTypeWithTypeArgsTuple<F, [T, U, V, W]>, BaseRetType>
+          : [unknown, unknown] extends [TypeParameters[1][1], TypeParameters[2][1]] ?
+            <T extends TypeParameters[0][1], U, V, W extends TypeParameters[3][1]>(
+              ...args: _FurtherExpandAll<
+                _GenericParamsWithTypeArgsTuple<F, [T, U, V, W]>,
+                BaseParams
+              >
+            ) => _FurtherExpand<_GenericRetTypeWithTypeArgsTuple<F, [T, U, V, W]>, BaseRetType>
+          : [unknown, unknown] extends [TypeParameters[1][1], TypeParameters[3][1]] ?
+            <T extends TypeParameters[0][1], U, V extends TypeParameters[2][1], W>(
+              ...args: _FurtherExpandAll<
+                _GenericParamsWithTypeArgsTuple<F, [T, U, V, W]>,
+                BaseParams
+              >
+            ) => _FurtherExpand<_GenericRetTypeWithTypeArgsTuple<F, [T, U, V, W]>, BaseRetType>
+          : [unknown, unknown] extends [TypeParameters[2][1], TypeParameters[3][1]] ?
+            <T extends TypeParameters[0][1], U extends TypeParameters[1][1], V, W>(
+              ...args: _FurtherExpandAll<
+                _GenericParamsWithTypeArgsTuple<F, [T, U, V, W]>,
+                BaseParams
+              >
+            ) => _FurtherExpand<_GenericRetTypeWithTypeArgsTuple<F, [T, U, V, W]>, BaseRetType>
+          : <
+              T extends TypeParameters[0][1],
+              U extends TypeParameters[1][1],
+              V extends TypeParameters[2][1],
+              W extends TypeParameters[3][1],
+            >(
+              ...args: _FurtherExpandAll<
+                _GenericParamsWithTypeArgsTuple<F, [T, U, V, W]>,
+                BaseParams
+              >
+            ) => _FurtherExpand<_GenericRetTypeWithTypeArgsTuple<F, [T, U, V, W]>, BaseRetType>
         : // Fallback to simple formatter, since we cannot handle these all conditions infinitely
           (
             ...args: _FurtherExpandAll<Params<F>, BaseParams>
