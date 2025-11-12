@@ -1361,8 +1361,6 @@ type _ = (Map & TypeArgs)["signature"];
 //   ^?: (f: (x: string) => number, xs: string[]) => number[]
 ```
 
-We use `ArgT` and `ArgU` to extract the type arguments from the type-level function, just like `TArg` in hkt-core. We then instantiate the type arguments from known parameter types and refine the signature with the instantiated type arguments. This is the basic idea behind generic type-level functions.
-
 We use `ArgT` and `ArgU` to extract the type arguments from the type-level function — just like `TArg` in hkt-core. Then we instantiate these type arguments from known parameter types and refine the signature accordingly. This is the core idea behind generic type-level functions.
 
 While the example above works well for simple cases, it doesn’t handle subtyping correctly. For instance, the following code will simply yield never:
