@@ -1937,6 +1937,139 @@ interface ___Curry4Generic<
 }
 
 /**
+ * Partially apply a {@linkcode TypeLambda} by providing some of its arguments.
+ *
+ * Similar to the `Known` argument in {@linkcode TypeArgs}, {@linkcode Params} and {@linkcode RetType},
+ * the {@linkcode Args} argument in this utility should be an object with integer keys (tuples are
+ * also supported since they satisfy this condition), where the integer keys represent the positions
+ * of the arguments being provided, and the values represent the types being provided for those
+ * arguments.
+ *
+ * **⚠️ Warning:** This utility does not type check whether the provided arguments are valid
+ * for the given {@linkcode TypeLambda}. Use with caution.
+ *
+ * @example
+ * ```typescript
+ * interface Concat extends TypeLambda<[s1: string, s2: string], string> {
+ *   return: `${Arg0<this>}${Arg1<this>}`;
+ * }
+ *
+ * type ConcatSig = Sig<Concat>; // => (s1: string, s2: string) => string
+ * type _1 = Apply<Concat, ["Hello, ", "world!"]>; // => "Hello, world!"
+ *
+ * type Greet = PartialApply<Concat, ["Hello, "]>;
+ * type GreetSig = Sig<Greet>; // => (s2: string) => string
+ * type _2 = Apply<Greet, ["world!"]>; // => "Hello, world!"
+ *
+ * type SayWorld = PartialApply<Concat, { 1: "world!" }>;
+ * type SayWorldSig = Sig<SayWorld>; // => (s1: string) => string
+ * type _3 = Apply<SayWorld, ["Hello, "]>; // => "Hello, world!"
+ * ```
+ *
+ * @example
+ * ```typescript
+ * // Handling generic TypeLambdas
+ * interface Reduce extends TypeLambdaG<["T", "U"]> {
+ *   signature: (
+ *     f: TypeLambda<[acc: TArg<this, "U">, x: TArg<this, "T">], TArg<this, "U">>,
+ *     init: TArg<this, "U">,
+ *     xs: TArg<this, "T">[],
+ *   ) => TArg<this, "U">;
+ *   return: _Reduce<Arg0<this>, Arg1<this>, Arg2<this>>;
+ * }
+ * type _Reduce<F, Acc, TS> =
+ *   TS extends readonly [infer Head, ...infer Tail] ? _Reduce<F, Call2W<F, Acc, Head>, Tail>
+ *   : Acc;
+ *
+ * type ReduceSig = Sig<Reduce>; // => <T, U>(f: (acc: U, x: T) => U, init: U, xs: T[]) => U
+ * type _1 = Apply<Reduce, [Concat, "", ["foo", "bar", "baz"]]>; // => "foobarbaz"
+ *
+ * type ConcatAll = PartialApply<Reduce, [Concat, ""]>;
+ * type ConcatAllSig = Sig<ConcatAll>; // => (xs: string[]) => string
+ * type _2 = Apply<ConcatAll, [["foo", "bar", "baz"]]>; // => "foobarbaz"
+ *
+ * type ReduceFooBarBaz = PartialApply<Reduce, { 2: ["foo", "bar", "baz"] }>;
+ * type ReduceFooBarBazSig = Sig<ReduceFooBarBaz>; // => <U>(f: (acc: U, x: "foo" | "bar" | "baz") => U, init: U) => U
+ * type _3 = Apply<ReduceFooBarBaz, [Concat, ""]>; // => "foobarbaz"
+ * ```
+ */
+export type PartialApply<
+  F extends
+    | TypeLambda1<never, unknown>
+    | TypeLambda2<never, never, unknown>
+    | TypeLambda3<never, never, never, unknown>
+    | TypeLambda4<never, never, never, never, unknown>,
+  Args,
+> =
+  F extends TypeLambdaG ?
+    _OmitFixedTypeParams<F["~hkt"]["tparams"], TypeArgs<F, Args>> extends [] ?
+      PartialNormal<F & TypeArgs<F, Args>, Args>
+    : PartialGeneric<F, Args>
+  : PartialNormal<F, Args>;
+type _OmitFixedTypeParams<
+  TypeParams extends TypeParameter[],
+  TypeArgs,
+  Result extends TypeParameter[] = [],
+> =
+  TypeParams extends (
+    readonly [infer Head extends TypeParameter, ...infer Tail extends TypeParameter[]]
+  ) ?
+    `~${Head[0]}` extends keyof TypeArgs ?
+      _OmitFixedTypeParams<Tail, TypeArgs, Result>
+    : _OmitFixedTypeParams<Tail, TypeArgs, [...Result, Head]>
+  : Result;
+type _OmitProvidedArgsInParams<
+  Params extends unknown[],
+  ProvidedArgs,
+  Counter extends void[] = [],
+  Result extends unknown[] = [],
+> =
+  Params extends [infer _, ...infer Tail] ?
+    Counter["length"] extends IndexOf<ProvidedArgs> ?
+      _OmitProvidedArgsInParams<Tail, ProvidedArgs, [...Counter, void], Result>
+    : _OmitProvidedArgsInParams<
+        Tail,
+        ProvidedArgs,
+        [...Counter, void],
+        // Use `GetPart` to preserve tuple labels
+        [...Result, ...GetPart<Params, 0>]
+      >
+  : Result;
+type _RebuildFullArgsFromPartial<
+  PartialArgs extends unknown[],
+  ProvidedArgs,
+  Counter extends void[] = [],
+  Result extends unknown[] = [],
+> =
+  Counter["length"] extends IndexOf<ProvidedArgs> ?
+    _RebuildFullArgsFromPartial<
+      PartialArgs,
+      ProvidedArgs,
+      [...Counter, void],
+      [...Result, ProvidedArgs[Counter["length"]]]
+    >
+  : PartialArgs extends [infer PHead, ...infer PTail] ?
+    _RebuildFullArgsFromPartial<PTail, ProvidedArgs, [...Counter, void], [...Result, PHead]>
+  : Result;
+export interface PartialNormal<F extends TypeLambda<never, unknown>, ProvidedArgs>
+  extends TypeLambda<_OmitProvidedArgsInParams<Params<F>, ProvidedArgs>, RetType<F>> {
+  readonly return: ApplyW<F, _RebuildFullArgsFromPartial<RawArgs<this>, ProvidedArgs>>;
+}
+export interface PartialGeneric<F extends TypeLambdaG, ProvidedArgs> extends TypeLambdaG {
+  readonly ["~hkt"]: {
+    [K in keyof F["~hkt"]]: K extends "tparams" ?
+      _OmitFixedTypeParams<F["~hkt"][K], TypeArgs<F, ProvidedArgs>>
+    : F["~hkt"][K];
+  };
+  readonly signature: (F & TypeArgs<F, ProvidedArgs> & _PickTypeArgs<this>)["signature"] extends (
+    infer S
+  ) ?
+    (...args: _OmitProvidedArgsInParams<ParametersW<S>, ProvidedArgs>) => ReturnTypeW<S>
+  : never;
+  readonly return: ApplyW<F, _RebuildFullArgsFromPartial<RawArgs<this>, ProvidedArgs>>;
+}
+
+/**
  * Compose two {@linkcode TypeLambda1}s from right to left. Generics are elegantly handled.
  *
  * @example

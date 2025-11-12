@@ -1119,6 +1119,28 @@ type MapOnSig = Sig<MapOn<string[]>>; // => (f: (x: string) => unknown) => unkno
 
 It’s worth noting that `U` is widened to `unknown` in the `MapOn` example. This is a limitation of TypeScript’s type inference system, and you’ll encounter the same issue if you define similar non-type-level `flip` and `curry2` functions in TypeScript. We provide this example for demonstration purposes, but in real-world scenarios, manually creating curried versions for the two different argument orders is generally a better choice.
 
+### `PartialApply`
+
+Partial application is another common technique in functional programming that lets you fix some of a function’s arguments to create a new function. While currying transforms a function into a sequence of unary functions, partial application allows you to produce functions with fewer parameters by pre-filling some of the originals.
+
+For example, you can create a partially applied version of `Reduce` by fixing its first two arguments (`f` and `init`):
+
+```typescript
+type ConcatAll = PartialApply<Reduce, [Concat, ""]>;
+type ConcatAllSig = Sig<ConcatAll>; // => (xs: string[]) => string
+type _ = Call1<ConcatAll, ["foo", "bar", "baz"]>; // => "foobarbaz"
+```
+
+In the example above, `PartialApply` takes a tuple of arguments. However, similar to `TypeArgs`, you can also provide an object with integer keys to specify which arguments to fix. This can be more convenient when the arguments you want to fix are not at the beginning:
+
+```typescript
+type ReduceFooBarBaz = PartialApply<Reduce, { 2: ["foo", "bar", "baz"] }>;
+type ReduceFooBarBazSig = Sig<ReduceFooBarBaz>; // => <U>(f: (acc: U, x: "foo" | "bar" | "baz") => U, init: U) => U
+type _ = Call2<ReduceFooBarBaz, Concat, "">; // => "foobarbaz"
+```
+
+`PartialApply` is also “smart” enough to infer the remaining type parameters of the resulting type-level function. In the example above, since the third argument (`xs`) is fixed, `PartialApply` correctly infers that `T` is `"foo" | "bar" | "baz"`, while leaving `U` as a generic type parameter.
+
 ### Tips for creating and managing your type-level functions
 
 hkt-core is a _core_ library that provides essential utilities for type-level programming in TypeScript, but it doesn’t come with many built-in type-level functions out of the box. We’ve shown some examples of useful type-level functions in the previous sections, and you might create your own toolkit with a lot of useful type-level functions based on hkt-core. Below are some tips for creating and managing your type-level functions effectively.
