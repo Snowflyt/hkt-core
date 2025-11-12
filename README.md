@@ -1059,7 +1059,7 @@ type _2 = Call1<Call1<FlippedCurriedMap, ["foo", "bar"]>, Append<"baz">>; // => 
 
 Currying is a common technique in functional programming that transforms a function accepting multiple arguments into a series of functions that each accept a single argument. While useful, currying doesn't fit well in TypeScript, especially **auto-currying** (see [a discussion about TypeScript support in Ramda’s repository](https://github.com/ramda/ramda/issues/2976#issuecomment-706475091)). It’s also quite challenging to create a type-safe, general-purpose `curry` function that works well with generics.
 
-However, it _is_ possible to create type-safe curry functions for a specific number of arguments (e.g., `curry2`, `curry3`, etc.), or use overloads for each number of arguments to create a close-to-general-purpose, type-safe `curry` function. hkt-core provides a utility called `Curry` that supports up to **3** arguments, which can be thought of as a combination of overloads for `curry2` and `curry3`.
+However, it _is_ possible to create type-safe curry functions for a specific number of arguments (e.g., `curry2`, `curry3`, `curry4`, etc.), or use overloads for each number of arguments to create a close-to-general-purpose, type-safe `curry` function. hkt-core provides a utility called `Curry` that supports up to **4** arguments, which can be thought of as a combination of overloads for `curry2`, `curry3`, and `curry4`.
 
 For example, you can curry the previously defined `Map` function like this:
 

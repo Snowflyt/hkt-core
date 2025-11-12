@@ -7,6 +7,7 @@ import type {
   Arg0,
   Arg1,
   Arg2,
+  Arg3,
   Call1W,
   Call2W,
   Curry,
@@ -70,5 +71,98 @@ describe("Curry", () => {
     expect<Apply<Apply<Apply<CurriedReduce, [Concat]>, [""]>, [["foo", "bar", "baz"]]>>().to(
       equal<"foobarbaz">,
     );
+  });
+
+  it("should curry a quaternary type-level function", () => {
+    interface Zip4Str
+      extends TypeLambda<[s1: string[], s2: string[], s3: string[], s4: string[]], string[]> {
+      return: _Zip4Str<Arg0<this>, Arg1<this>, Arg2<this>, Arg3<this>>;
+    }
+    type _Zip4Str<A, B, C, D> =
+      A extends readonly [infer AHead, ...infer ATail] ?
+        B extends readonly [infer BHead, ...infer BTail] ?
+          C extends readonly [infer CHead, ...infer CTail] ?
+            D extends readonly [infer DHead, ...infer DTail] ?
+              [
+                `${AHead & string}${BHead & string}${CHead & string}${DHead & string}`,
+                ..._Zip4Str<ATail, BTail, CTail, DTail>,
+              ]
+            : []
+          : []
+        : []
+      : [];
+
+    expect<Zip4Str>().to(
+      beOfSig<(s1: string[], s2: string[], s3: string[], s4: string[]) => string[]>,
+    );
+    expect<Apply<Zip4Str, [["a", "b"], ["1", "2"], ["X", "Y"], ["!", "?"]]>>().to(
+      equal<["a1X!", "b2Y?"]>,
+    );
+
+    type CurriedZip4Str = Curry<Zip4Str>;
+    expect<CurriedZip4Str>().to(
+      beOfSig<(s1: string[]) => (s2: string[]) => (s3: string[]) => (s4: string[]) => string[]>,
+    );
+    expect<Apply<CurriedZip4Str, [["a", "b"]]>>().to(
+      beOfSig<(s2: string[]) => (s3: string[]) => (s4: string[]) => string[]>,
+    );
+    expect<Apply<Apply<CurriedZip4Str, [["a", "b"]]>, [["1", "2"]]>>().to(
+      beOfSig<(s3: string[]) => (s4: string[]) => string[]>,
+    );
+    expect<Apply<Apply<Apply<CurriedZip4Str, [["a", "b"]]>, [["1", "2"]]>, [["X", "Y"]]>>().to(
+      beOfSig<(s4: string[]) => string[]>,
+    );
+    expect<
+      Apply<
+        Apply<Apply<Apply<CurriedZip4Str, [["a", "b"]]>, [["1", "2"]]>, [["X", "Y"]]>,
+        [["!", "?"]]
+      >
+    >().to(equal<["a1X!", "b2Y?"]>);
+
+    interface Zip4 extends TypeLambdaG<["T", "U", "V", "W"]> {
+      signature: (
+        as: TArg<this, "T">[],
+        bs: TArg<this, "U">[],
+        cs: TArg<this, "V">[],
+        ds: TArg<this, "W">[],
+      ) => [TArg<this, "T">, TArg<this, "U">, TArg<this, "V">, TArg<this, "W">][];
+      return: _Zip4<Arg0<this>, Arg1<this>, Arg2<this>, Arg3<this>>;
+    }
+    type _Zip4<T, U, V, W> =
+      T extends readonly [infer AHead, ...infer ATail] ?
+        U extends readonly [infer BHead, ...infer BTail] ?
+          V extends readonly [infer CHead, ...infer CTail] ?
+            W extends readonly [infer DHead, ...infer DTail] ?
+              [[AHead, BHead, CHead, DHead], ..._Zip4<ATail, BTail, CTail, DTail>]
+            : []
+          : []
+        : []
+      : [];
+
+    expect<Zip4>().to(beOfSig<<T, U, V, W>(as: T[], bs: U[], cs: V[], ds: W[]) => [T, U, V, W][]>);
+    expect<Apply<Zip4, [[1, 2], ["a", "b"], [true, false], [0.1, 0.2]]>>().to(
+      equal<[[1, "a", true, 0.1], [2, "b", false, 0.2]]>,
+    );
+
+    type CurriedZip4 = Curry<Zip4>;
+    expect<CurriedZip4>().to(
+      beOfSig<<T, U, V, W>(as: T[]) => (bs: U[]) => (cs: V[]) => (ds: W[]) => [T, U, V, W][]>,
+    );
+    expect<Apply<CurriedZip4, [[1, 2]]>>().to(
+      beOfSig<
+        (
+          bs: unknown[],
+        ) => (cs: unknown[]) => (ds: unknown[]) => [1 | 2, unknown, unknown, unknown][]
+      >,
+    );
+    expect<Apply<Apply<CurriedZip4, [[1, 2]]>, [["a", "b"]]>>().to(
+      beOfSig<(cs: unknown[]) => (ds: unknown[]) => [1 | 2, "a" | "b", unknown, unknown][]>,
+    );
+    expect<Apply<Apply<Apply<CurriedZip4, [[1, 2]]>, [["a", "b"]]>, [[true, false]]>>().to(
+      beOfSig<(ds: unknown[]) => [1 | 2, "a" | "b", boolean, unknown][]>,
+    );
+    expect<
+      Apply<Apply<Apply<Apply<CurriedZip4, [[1, 2]]>, [["a", "b"]]>, [[true, false]]>, [[0.1, 0.2]]>
+    >().to(equal<[[1, "a", true, 0.1], [2, "b", false, 0.2]]>);
   });
 });

@@ -1604,11 +1604,13 @@ type _WrapInForIntermediateParameterOfCurried2<S> = (
 /**
  * Curry a {@linkcode TypeLambda} to a {@linkcode TypeLambda1}.
  *
- * Only support currying up to 3 arguments.
+ * Only support currying up to 4 arguments.
  *
  * Sig1: `<T, U, V>(f: (x: T, y: U) => V) => (x: T) => (y: U) => V`
  *
  * Sig2: `<T, U, V, W>(f: (x: T, y: U, z: V) => W) => (x: T) => (y: U) => (z: V) => W`
+ *
+ * Sig3: `<T, U, V, W, X>(f: (x: T, y: U, z: V, w: W) => X) => (x: T) => (y: U) => (z: V) => (w: W) => X`
  *
  * @example
  * ```typescript
@@ -1663,11 +1665,13 @@ export type Curry<
   F extends
     | TypeLambda1<never, unknown>
     | TypeLambda2<never, never, unknown>
-    | TypeLambda3<never, never, never, unknown>,
+    | TypeLambda3<never, never, never, unknown>
+    | TypeLambda4<never, never, never, never, unknown>,
 > =
   F extends TypeLambda1<never, unknown> ? F
   : F extends TypeLambda2<never, never, unknown> ? Curry2<F>
   : F extends TypeLambda3<never, never, never, unknown> ? Curry3<F>
+  : F extends TypeLambda4<never, never, never, never, unknown> ? Curry4<F>
   : never;
 /* Curry `TypeLambda2` */
 type Curry2<F extends TypeLambda2<never, never, unknown>> =
@@ -1745,6 +1749,92 @@ interface __Curry3Generic<F extends TypeLambdaG & TypeLambda3<never, never, neve
   // Use `GetPart` to preserve tuple labels
   extends TypeLambda<[...GetPart<Params<F, [A0, A1]>, 2>], RetType<F, [A0, A1]>> {
   readonly return: Call3W<F, A0, A1, RawArg0<this>>;
+}
+/* Curry `TypeLambda4` */
+type Curry4<F extends TypeLambda4<never, never, never, never, unknown>> =
+  F extends TypeLambdaG ? Curry4Generic<F> : Curry4Normal<F>;
+export interface Curry4Normal<F extends TypeLambda4<never, never, never, never, unknown>>
+  // Use `HeadPart` to preserve tuple labels
+  extends TypeLambda<
+    [...HeadPart<Params<F>>],
+    TypeLambda<
+      [...GetPart<Params<F>, 1>],
+      TypeLambda<[...GetPart<Params<F>, 2>], TypeLambda<[...GetPart<Params<F>, 3>], RetType<F>>>
+    >
+  > {
+  readonly return: _Curry4Normal<F, RawArg0<this>>;
+}
+interface _Curry4Normal<F extends TypeLambda4<never, never, never, never, unknown>, A0>
+  extends TypeLambda<
+    [...GetPart<Params<F>, 1>],
+    TypeLambda<[...GetPart<Params<F>, 2>], TypeLambda<[...GetPart<Params<F>, 3>], RetType<F>>>
+  > {
+  readonly return: __Curry4Normal<F, A0, RawArg0<this>>;
+}
+interface __Curry4Normal<F extends TypeLambda4<never, never, never, never, unknown>, A0, A1>
+  extends TypeLambda<
+    [...GetPart<Params<F>, 2>],
+    TypeLambda<[...GetPart<Params<F>, 3>], RetType<F>>
+  > {
+  readonly return: ___Curry4Normal<F, A0, A1, RawArg0<this>>;
+}
+interface ___Curry4Normal<F extends TypeLambda4<never, never, never, never, unknown>, A0, A1, A2>
+  extends TypeLambda<[...GetPart<Params<F>, 3>], RetType<F>> {
+  readonly return: Call4W<F, A0, A1, A2, RawArg0<this>>;
+}
+export interface Curry4Generic<
+  F extends TypeLambdaG & TypeLambda4<never, never, never, never, unknown>,
+> extends TypeLambdaG {
+  readonly ["~hkt"]: F["~hkt"];
+  readonly signature: (F & _PickTypeArgs<this>)["signature"] extends infer S ?
+    // Use `GetPart` to preserve tuple labels
+    (
+      ...args: [...HeadPart<ParametersW<S>>]
+    ) => TypeLambda<
+      [...GetPart<ParametersW<S>, 1>],
+      TypeLambda<
+        [...GetPart<ParametersW<S>, 2>],
+        TypeLambda<[...GetPart<ParametersW<S>, 3>], ReturnTypeW<S>>
+      >
+    >
+  : never;
+  readonly return: _Curry4Generic<F, RawArg0<this>>;
+}
+interface _Curry4Generic<
+    F extends TypeLambdaG & TypeLambda4<never, never, never, never, unknown>,
+    A0,
+  >
+  // Use `GetPart` to preserve tuple labels
+  extends TypeLambda<
+    [...GetPart<Params<F, [A0]>, 1>],
+    TypeLambda<
+      [...GetPart<Params<F, [A0]>, 2>],
+      TypeLambda<[...GetPart<Params<F, [A0]>, 3>], RetType<F, [A0]>>
+    >
+  > {
+  readonly return: __Curry4Generic<F, A0, RawArg0<this>>;
+}
+interface __Curry4Generic<
+    F extends TypeLambdaG & TypeLambda4<never, never, never, never, unknown>,
+    A0,
+    A1,
+  >
+  // Use `GetPart` to preserve tuple labels
+  extends TypeLambda<
+    [...GetPart<Params<F, [A0, A1]>, 2>],
+    TypeLambda<[...GetPart<Params<F, [A0, A1]>, 3>], RetType<F, [A0, A1]>>
+  > {
+  readonly return: ___Curry4Generic<F, A0, A1, RawArg0<this>>;
+}
+interface ___Curry4Generic<
+    F extends TypeLambdaG & TypeLambda4<never, never, never, never, unknown>,
+    A0,
+    A1,
+    A2,
+  >
+  // Use `GetPart` to preserve tuple labels
+  extends TypeLambda<[...GetPart<Params<F, [A0, A1, A2]>, 3>], RetType<F, [A0, A1, A2]>> {
+  readonly return: Call4W<F, A0, A1, A2, RawArg0<this>>;
 }
 
 /**
