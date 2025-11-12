@@ -22,9 +22,10 @@ test("TypeArgs", () => {
   type _Map<F, TS> = { [K in keyof TS]: Call1W<F, TS[K]> };
 
   expect<TypeArgs<Map, { 1: string[]; r: number[] }>>().to(
-    equal<{ readonly "~T": string } & { readonly ["~U"]: number }>,
+    equal<{ readonly "~T": string; readonly "~U": number }>,
   );
   expect<TypeArgs<Map, [TypeLambda1<number, boolean>]>>().to(
-    equal<{ readonly "~T": number } & { readonly ["~U"]: boolean }>,
+    equal<{ readonly "~T": number; readonly "~U": boolean }>,
   );
+  expect<TypeArgs<Map, { 1: string[] }>>().to(equal<{ readonly "~T": string }>);
 });

@@ -158,6 +158,15 @@ type ParametersW<F> = F extends (...args: infer Params) => any ? Params : never;
  */
 type ReturnTypeW<F> = F extends (...args: any) => infer R ? R : never;
 
+/**
+ * Check whether two types are exactly equal.
+ * @private
+ *
+ * @see https://github.com/microsoft/TypeScript/issues/27024#issuecomment-421529650
+ */
+type Equals<T, U> =
+  (<G>() => G extends T ? 1 : 2) extends <G>() => G extends U ? 1 : 2 ? true : false;
+
 /******************************************
  * {@linkcode TypeLambda} and its aliases *
  ******************************************/
@@ -890,27 +899,34 @@ type _TypeParameterUpperBoundByName<F extends TypeLambdaG, Name extends string> 
  * `Known` is also supported by {@linkcode Sig}, {@linkcode Params}, {@linkcode RetType},
  * {@linkcode TolerantParams}, and {@linkcode TolerantRetType}.
  *
+ * NOTE: This utility only infers type arguments that are “inferrable” from the known parameters
+ * and return type. If a type argument cannot be inferred due to type parameter variance or lack of
+ * information, it will not be included in the resulting type.
+ *
  * @example
  * ```typescript
  * interface Map extends TypeLambdaG<["T", "U"]> {
- *   signature: (f: TypeLambda<[x: TArg<this, "T">], TArg<this, "U">>, xs: TArg<this, "T">[]) => TArg<this, "U">[];
+ *   signature: (
+ *     f: TypeLambda<[x: TArg<this, "T">], TArg<this, "U">>,
+ *     xs: TArg<this, "T">[],
+ *   ) => TArg<this, "U">[];
  *   return: _Map<Arg0<this>, Arg1<this>>;
  * }
  * type _Map<F, TS> = { [K in keyof TS]: Call1W<F, TS[K]> };
  *
  * type InferredTypeArgs1 = TypeArgs<Map, { 1: string[], r: number }>;
- * // => { readonly ["~T"]: string } & { readonly ["~U"]: number; }
+ * // => { readonly "~T": string; readonly "~U": number; }
  * // `[TypeLambda1<number, boolean>]` is the same as `{ 0: TypeLambda1<number, boolean> }`
  * type InferredTypeArgs2 = TypeArgs<Map, [TypeLambda1<number, boolean>]>;
- * // => { readonly ["~T"]: number } & { readonly ["~U"]: boolean; }
+ * // => { readonly "~T": number; readonly "~U": boolean; }
+ * type InferredTypeArgs3 = TypeArgs<Map, { 1: string[] }>;
+ * // => { readonly "~T": string; }
  * ```
  */
 export type TypeArgs<F extends TypeLambdaG, Known = never> =
   [Known] extends [never] ?
     // A quick path if no parameters or return type is known
-    {
-      readonly [K in keyof F["~hkt"]["tparams"] as `~${F["~hkt"]["tparams"][StringToNumber<K>][0]}`]: F["~hkt"]["tparams"][StringToNumber<K>][1];
-    }
+    {}
   : _TypeArgs<F, _OmitInvalidKeysInKnown<F, Known>>;
 type _PickTypeArgs<F> = Pick<F, `~${TypeParameterIdentifier}` & keyof F>;
 // Omit extract keys and keys that are not the subtype of declared parameters or return type
@@ -935,13 +951,45 @@ type _TypeArgs<F extends TypeLambdaG, Known> =
       })["signature"]
     ) ?
       {
-        readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: T & F["~hkt"]["tparams"][0][1];
-      } & {
-        readonly [K in `~${F["~hkt"]["tparams"][1][0]}`]: U & F["~hkt"]["tparams"][1][1];
-      } & {
-        readonly [K in `~${F["~hkt"]["tparams"][2][0]}`]: V & F["~hkt"]["tparams"][2][1];
-      } & {
-        readonly [K in `~${F["~hkt"]["tparams"][3][0]}`]: W & F["~hkt"]["tparams"][3][1];
+        readonly [K in `~${F["~hkt"]["tparams"][number][0]}` as K extends (
+          `~${F["~hkt"]["tparams"][0][0]}`
+        ) ?
+          _TestTypeParametersVarianceAtIndex<
+            F,
+            [F["~hkt"]["tparams"][0]],
+            IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
+          > extends { readonly [P in K]: "irrelevant" } ?
+            never
+          : K
+        : K extends `~${F["~hkt"]["tparams"][1][0]}` ?
+          _TestTypeParametersVarianceAtIndex<
+            F,
+            [F["~hkt"]["tparams"][1]],
+            IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
+          > extends { readonly [P in K]: "irrelevant" } ?
+            never
+          : K
+        : K extends `~${F["~hkt"]["tparams"][2][0]}` ?
+          _TestTypeParametersVarianceAtIndex<
+            F,
+            [F["~hkt"]["tparams"][2]],
+            IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
+          > extends { readonly [P in K]: "irrelevant" } ?
+            never
+          : K
+        : K extends `~${F["~hkt"]["tparams"][3][0]}` ?
+          _TestTypeParametersVarianceAtIndex<
+            F,
+            [F["~hkt"]["tparams"][3]],
+            IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
+          > extends { readonly [P in K]: "irrelevant" } ?
+            never
+          : K
+        : never]: K extends `~${F["~hkt"]["tparams"][0][0]}` ? T & F["~hkt"]["tparams"][0][1]
+        : K extends `~${F["~hkt"]["tparams"][1][0]}` ? U & F["~hkt"]["tparams"][1][1]
+        : K extends `~${F["~hkt"]["tparams"][2][0]}` ? V & F["~hkt"]["tparams"][2][1]
+        : K extends `~${F["~hkt"]["tparams"][3][0]}` ? W & F["~hkt"]["tparams"][3][1]
+        : never;
       }
     : never
   : F["~hkt"]["tparams"]["length"] extends 3 ?
@@ -955,11 +1003,36 @@ type _TypeArgs<F extends TypeLambdaG, Known> =
       })["signature"]
     ) ?
       {
-        readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: T & F["~hkt"]["tparams"][0][1];
-      } & {
-        readonly [K in `~${F["~hkt"]["tparams"][1][0]}`]: U & F["~hkt"]["tparams"][1][1];
-      } & {
-        readonly [K in `~${F["~hkt"]["tparams"][2][0]}`]: V & F["~hkt"]["tparams"][2][1];
+        readonly [K in `~${F["~hkt"]["tparams"][number][0]}` as K extends (
+          `~${F["~hkt"]["tparams"][0][0]}`
+        ) ?
+          _TestTypeParametersVarianceAtIndex<
+            F,
+            [F["~hkt"]["tparams"][0]],
+            IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
+          > extends { readonly [P in K]: "irrelevant" } ?
+            never
+          : K
+        : K extends `~${F["~hkt"]["tparams"][1][0]}` ?
+          _TestTypeParametersVarianceAtIndex<
+            F,
+            [F["~hkt"]["tparams"][1]],
+            IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
+          > extends { readonly [P in K]: "irrelevant" } ?
+            never
+          : K
+        : K extends `~${F["~hkt"]["tparams"][2][0]}` ?
+          _TestTypeParametersVarianceAtIndex<
+            F,
+            [F["~hkt"]["tparams"][2]],
+            IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
+          > extends { readonly [P in K]: "irrelevant" } ?
+            never
+          : K
+        : never]: K extends `~${F["~hkt"]["tparams"][0][0]}` ? T & F["~hkt"]["tparams"][0][1]
+        : K extends `~${F["~hkt"]["tparams"][1][0]}` ? U & F["~hkt"]["tparams"][1][1]
+        : K extends `~${F["~hkt"]["tparams"][2][0]}` ? V & F["~hkt"]["tparams"][2][1]
+        : never;
       }
     : never
   : F["~hkt"]["tparams"]["length"] extends 2 ?
@@ -971,9 +1044,27 @@ type _TypeArgs<F extends TypeLambdaG, Known> =
       })["signature"]
     ) ?
       {
-        readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: T & F["~hkt"]["tparams"][0][1];
-      } & {
-        readonly [K in `~${F["~hkt"]["tparams"][1][0]}`]: U & F["~hkt"]["tparams"][1][1];
+        readonly [K in `~${F["~hkt"]["tparams"][number][0]}` as K extends (
+          `~${F["~hkt"]["tparams"][0][0]}`
+        ) ?
+          _TestTypeParametersVarianceAtIndex<
+            F,
+            [F["~hkt"]["tparams"][0]],
+            IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
+          > extends { readonly [P in K]: "irrelevant" } ?
+            never
+          : K
+        : K extends `~${F["~hkt"]["tparams"][1][0]}` ?
+          _TestTypeParametersVarianceAtIndex<
+            F,
+            [F["~hkt"]["tparams"][1]],
+            IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
+          > extends { readonly [P in K]: "irrelevant" } ?
+            never
+          : K
+        : never]: K extends `~${F["~hkt"]["tparams"][0][0]}` ? T & F["~hkt"]["tparams"][0][1]
+        : K extends `~${F["~hkt"]["tparams"][1][0]}` ? U & F["~hkt"]["tparams"][1][1]
+        : never;
       }
     : never
   : F["~hkt"]["tparams"]["length"] extends 1 ?
@@ -982,9 +1073,15 @@ type _TypeArgs<F extends TypeLambdaG, Known> =
         readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: infer T;
       })["signature"]
     ) ?
-      {
-        readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: T & F["~hkt"]["tparams"][0][1];
-      }
+      _TestTypeParametersVarianceAtIndex<
+        F,
+        F["~hkt"]["tparams"],
+        IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
+      > extends { readonly [P in `~${F["~hkt"]["tparams"][0][0]}`]: "irrelevant" } ?
+        {}
+      : {
+          readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: T & F["~hkt"]["tparams"][0][1];
+        }
     : never
   : [];
 // Fill signature with `Known` parameters and rest with placeholders (`any` for parameters and
@@ -1132,23 +1229,25 @@ type _TestTypeParametersVarianceAtIndex<
   TypeParameters extends TypeParameter[],
   Index extends number | "r",
 > =
-  _BuildBaseTypeArgs<TypeParameters> extends infer Base ?
-    {
-      [K in keyof Base]: _CheckVariance<
-        _GetParameterOrReturnTypeByIndex<
-          (F & { [P in keyof Base]: P extends K ? never : any })["signature"],
-          Index
-        >,
-        _GetParameterOrReturnTypeByIndex<
-          (F & { [P in keyof Base]: P extends K ? Base[P] : any })["signature"],
-          Index
-        >
-      >;
-    }
+  Index extends unknown ?
+    _BuildBaseTypeArgs<TypeParameters> extends infer Base ?
+      {
+        [K in keyof Base]: _CheckVariance<
+          _GetParameterOrReturnTypeByIndex<
+            (F & { [P in keyof Base]: P extends K ? never : any })["signature"],
+            Index
+          >,
+          _GetParameterOrReturnTypeByIndex<
+            (F & { [P in keyof Base]: P extends K ? Base[P] : any })["signature"],
+            Index
+          >
+        >;
+      }
+    : never
   : never;
 type _CheckVariance<Lower, Upper> =
   [Lower] extends [Upper] ?
-    [Upper] extends [Lower] ?
+    Equals<Lower, Upper> extends true ?
       "irrelevant"
     : "covariant"
   : [Upper] extends [Lower] ? "contravariant"

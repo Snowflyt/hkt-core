@@ -569,6 +569,23 @@ type InferredTypeArgs3 = TypeArgs<Take<3>, { 0: string[]; r: number[] }>; // => 
 
 Here, `Known` can be an object with integer keys and a special key `"r"` (tuples are also supported since they satisfy this condition), where the integer keys represent known parameter types at specific indexes, and `"r"` represents the known return type.
 
+> [!NOTE]
+>
+> The `TypeArgs` utility only infers “inferrable” type parameters. If a type parameter cannot be inferred due to type parameter variance or lack of information, it will not be included in the resulting type. For example:
+>
+> ```typescript
+> interface Map extends TypeLambdaG<["T", "U"]> {
+>   signature: (
+>     f: TypeLambda<[x: TArg<this, "T">], TArg<this, "U">>,
+>     xs: TArg<this, "T">[],
+>   ) => TArg<this, "U">[];
+>   return: _Map<Arg0<this>, Arg1<this>>;
+> }
+> type _Map<F, TS> = { [K in keyof TS]: Call1W<F, TS[K]> };
+>
+> type InferredTypeArgs = TypeArgs<Map, { 1: string[] }>; // => { readonly "~T": string }
+> ```
+
 Utility types like `Params`, `RetType`, and their variants also support `Known` to provide a more precise result based on the known types:
 
 ```typescript
