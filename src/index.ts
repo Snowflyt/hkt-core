@@ -940,7 +940,7 @@ type _OmitInvalidKeysInKnown<F extends TypeLambdaG, Known> = {
 type _TypeArgs<F extends TypeLambdaG, Known> =
   F["~hkt"]["tparams"]["length"] extends 4 ?
     _BuildKnownSignature<ParametersW<F["signature"]>["length"], Known> extends (
-      (_FlipParameterVariance<F> & {
+      (_FlipParameterVariance<F, Known> & {
         readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: infer T;
       } & {
         readonly [K in `~${F["~hkt"]["tparams"][1][0]}`]: infer U;
@@ -994,7 +994,7 @@ type _TypeArgs<F extends TypeLambdaG, Known> =
     : never
   : F["~hkt"]["tparams"]["length"] extends 3 ?
     _BuildKnownSignature<ParametersW<F["signature"]>["length"], Known> extends (
-      (_FlipParameterVariance<F> & {
+      (_FlipParameterVariance<F, Known> & {
         readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: infer T;
       } & {
         readonly [K in `~${F["~hkt"]["tparams"][1][0]}`]: infer U;
@@ -1037,7 +1037,7 @@ type _TypeArgs<F extends TypeLambdaG, Known> =
     : never
   : F["~hkt"]["tparams"]["length"] extends 2 ?
     _BuildKnownSignature<ParametersW<F["signature"]>["length"], Known> extends (
-      (_FlipParameterVariance<F> & {
+      (_FlipParameterVariance<F, Known> & {
         readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: infer T;
       } & {
         readonly [K in `~${F["~hkt"]["tparams"][1][0]}`]: infer U;
@@ -1069,7 +1069,7 @@ type _TypeArgs<F extends TypeLambdaG, Known> =
     : never
   : F["~hkt"]["tparams"]["length"] extends 1 ?
     _BuildKnownSignature<ParametersW<F["signature"]>["length"], Known> extends (
-      (_FlipParameterVariance<F> & {
+      (_FlipParameterVariance<F, Known> & {
         readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: infer T;
       })["signature"]
     ) ?
@@ -1106,15 +1106,22 @@ type _BuildKnownReturnType<Known> =
 // NOTE: Wrap `In<...>` here is intentional to flip variance of parameters,
 // so TypeScript and infer type arguments correctly when known parameters are subtype of
 // declared parameters.
-interface _FlipParameterVariance<F extends TypeLambdaG> extends TypeLambda {
+interface _FlipParameterVariance<F extends TypeLambdaG, Known> extends TypeLambda {
   readonly "~hkt": F["~hkt"];
-  readonly signature: _WrapInForEachParameter<(F & _PickTypeArgs<this>)["signature"]>;
+  readonly signature: _WrapInForEachParameter<(F & _PickTypeArgs<this>)["signature"], Known>;
 }
-type _WrapInForEachParameter<S extends (...args: never) => unknown> = (
-  ...args: Parameters<S> extends infer Params extends unknown[] ?
-    { [K in keyof Params]: In<Params[K]> }
-  : never
-) => ReturnTypeW<S>;
+type _WrapInForEachParameter<S extends (...args: never) => unknown, Known> =
+  "r" extends keyof Known ?
+    (
+      ...args: Parameters<S> extends infer Params extends unknown[] ?
+        { [K in keyof Params]: StringToNumber<K> extends IndexOf<Known> ? In<Params[K]> : never }
+      : never
+    ) => ReturnTypeW<S>
+  : (
+      ...args: Parameters<S> extends infer Params extends unknown[] ?
+        { [K in keyof Params]: StringToNumber<K> extends IndexOf<Known> ? In<Params[K]> : never }
+      : never
+    ) => unknown;
 
 /**
  * Get a **tolerant** parameter list for a {@linkcode TypeLambda}.
