@@ -151,12 +151,12 @@ type GetPart<TS, Index, Counter extends void[] = []> =
  * A wider version of {@linkcode Parameters} that does not require the type to be a function.
  * @private
  */
-type ParametersW<F> = F extends (...args: infer Params) => any ? Params : never;
+type ParametersW<F> = F extends (...args: infer Params) => unknown ? Params : never;
 /**
  * A wider version of {@linkcode ReturnType} that does not require the type to be a function.
  * @private
  */
-type ReturnTypeW<F> = F extends (...args: any) => infer R ? R : never;
+type ReturnTypeW<F> = F extends (...args: never) => infer R ? R : never;
 
 /**
  * Check whether two types are exactly equal.
@@ -567,7 +567,7 @@ export type ParamsLength<F extends TypeLambda<never, unknown>> = Parameters<
  * type ConcatRetType = RetType<Concat>; // => string
  * ```
  */
-export type RetType<F extends TypeLambda<never, unknown>, Known = never> = ReturnType<
+export type RetType<F extends TypeLambda<never, unknown>, Known = never> = ReturnTypeW<
   (F extends TypeLambdaG ? F & TypeArgs<F, Known> : F)["signature"]
 >;
 /**
@@ -801,7 +801,7 @@ type _FurtherExpand<T, BaseType> =
 type _GenericParamsWithTypeArgsTuple<F extends TypeLambdaG, Types extends unknown[]> = Parameters<
   _RefinedSigByTypeArgsTuple<F, Types>
 >;
-type _GenericRetTypeWithTypeArgsTuple<F extends TypeLambdaG, Types extends unknown[]> = ReturnType<
+type _GenericRetTypeWithTypeArgsTuple<F extends TypeLambdaG, Types extends unknown[]> = ReturnTypeW<
   _RefinedSigByTypeArgsTuple<F, Types>
 >;
 type _RefinedSigByTypeArgsTuple<F extends TypeLambdaG, Types extends unknown[]> = (F & {
