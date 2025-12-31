@@ -872,7 +872,10 @@ interface GenericTypeLambdaMeta<TypeParameters extends TypeParameter[]> extends 
 }
 
 /**
- * Get a generic type parameter of a {@linkcode TypeLambdaG} by name.
+ * Get a generic type parameter of a {@linkcode TypeLambdaG} by name. The parameter is ensured
+ * to be compatible with its upper bound.
+ *
+ * @see {@linkcode RawTArg} for a type that does not check the compatibility of the type argument with the upper bound.
  */
 export type TArg<F extends TypeLambdaG, Name extends F["~hkt"]["tparams"][number][0]> =
   // Do not use the following implementation
@@ -888,6 +891,23 @@ type _TypeParameterUpperBoundByName<F extends TypeLambdaG, Name extends string> 
   F["~hkt"]["tparams"][number],
   [Name, unknown]
 >[1];
+
+/**
+ * Get the original generic type parameter passed to a {@linkcode TypeLambdaG} by name,
+ * no matter whether the passed generic type parameter is compatible with the upper bound or not.
+ *
+ * @see {@linkcode TArg} for a type that checks the compatibility of the type argument with the upper bound.
+ */
+export type RawTArg<F extends TypeLambdaG, Name extends F["~hkt"]["tparams"][number][0]> =
+  // Do not use the following implementation
+  // ```
+  // F extends {
+  //   readonly [K in `~${Name}`]: infer T;
+  // } ? T : _TypeParameterUpperBoundByName<F, Name>
+  // ```
+  // which does not seem to infer a type argument when its corresponding upper bound is specified
+  F extends { readonly [K in `~${Name}`]: unknown } ? F[`~${Name}`]
+  : _TypeParameterUpperBoundByName<F, Name>;
 
 /**
  * Get type arguments of a {@linkcode TypeLambdaG} based on known parameters and return type.

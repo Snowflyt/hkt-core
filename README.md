@@ -644,6 +644,34 @@ type FromEntriesSig = Sig<FromEntries>; // => <K extends PropertyKey, V>(entries
 type _ = Call1<FromEntries, [["name", string], ["age", number]]>; // => { name: string, age: number }
 ```
 
+> [!NOTE]
+>
+> Like `Args` and its variants, `TArg<this, "Name">` performs type checking on the type parameter value. If a type argument passed to a type-level function does not satisfy its corresponding constraint, it defaults to the parameter’s upper bound (which is `unknown` by default). For example:
+>
+> ```typescript
+> interface Example extends TypeLambdaG<[["T", string]]> {
+>   signature: (x: TArg<this, "T">) => void;
+>   return: void;
+> }
+>
+> type _1 = Param0<Example & { "~T": "foo" }>; // => "foo"
+> type _2 = Param0<Example & { "~T": number }>; // => string
+> ```
+>
+> Here, `Param0<Example & { "~T": number }>` returns `string` because `number` does not satisfy the constraint `string`.
+>
+> This is usually the expected behavior. However, if you want to access the original type argument passed to a `TypeLambdaG`, regardless of whether it satisfies the constraint, you can use the `RawTArg` utility:
+>
+> ```typescript
+> interface Example extends TypeLambdaG<[["T", string]]> {
+>   signature: (x: RawTArg<this, "T">) => void;
+>   return: void;
+> }
+>
+> type _1 = Param0<Example & { "~T": "foo" }>; // => "foo"
+> type _2 = Param0<Example & { "~T": number }>; // => number
+> ```
+
 ### Aliases for classical HKT use cases
 
 hkt-core provide the following aliases for **type constructors**:
@@ -673,6 +701,7 @@ There are cases where you might want to bypass strict type checking or validatio
 
 - `ApplyW`, `Call1W`, `Call2W`, etc. are the “**widening**” versions of `Apply`, `Call1`, `Call2`, etc. They relax both type _checking_ for arguments passed to the type-level function **and type _validation_ for the return type**.
 - `RawArgs` and its variants (`RawArg0`, `RawArg1`, etc.) are used to access the original arguments passed to a `TypeLambda`, regardless of whether they are compatible with the parameters.
+- `RawTArg` is used to access the original type argument passed to a `TypeLambdaG`, regardless of whether it is compatible with the type parameter’s constraint (upper bound).
 - `Params`, `RetType`, `Args` and `RawArgs` all provide their **widening** versions (e.g., `RetTypeW`, `Args0W`, `RawArgs1W`, etc.) to bypass strict type checking. Unlike `ApplyW` and its variants, which relax both type _checking_ for arguments and type _validation_ for return types, these widening utilities are simple aliases for their strict counterparts that relaxes type checking. They return `never` when the input type is not a `TypeLambda`, and do not perform additional checks or relaxations.
 
 Note that using `ApplyW` and its variants alone does not fully bypass strict type checking and validation if the body of a type-level function is still defined using `Args` and its variants. `ApplyW` and its variants only relax type _checking_ for arguments _passed_ to the type-level function and the return type, but they do not suppress type _validation_ performed by `Args` in the type-level function’s body. For example:
