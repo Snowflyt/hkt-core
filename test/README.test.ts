@@ -428,6 +428,24 @@ test("Documentation > Generic type-level functions", () => {
       equal<{ name: string; age: number }>,
     );
   }
+
+  {
+    interface Example1 extends TypeLambdaG<[["T", string]]> {
+      signature: (x: TArg<this, "T">) => void;
+      return: void;
+    }
+
+    expect<Param0<Example1 & { "~T": "foo" }>>().to(equal<"foo">);
+    expect<Param0<Example1 & { "~T": number }>>().to(equal<string>);
+
+    interface Example2 extends TypeLambdaG<[["T", string]]> {
+      signature: (x: RawTArg<this, "T">) => void;
+      return: void;
+    }
+
+    expect<Param0<Example2 & { "~T": "foo" }>>().to(equal<"foo">);
+    expect<Param0<Example2 & { "~T": number }>>().to(equal<number>);
+  }
 });
 
 test("Documentation > Type checking in detail > Bypassing strict type checking", () => {

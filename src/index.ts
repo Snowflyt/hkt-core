@@ -948,7 +948,30 @@ export type TypeArgs<F extends TypeLambdaG, Known = never> =
     // A quick path if no parameters or return type is known
     {}
   : _TypeArgs<F, _OmitInvalidKeysInKnown<F, Known>>;
-type _PickTypeArgs<F> = Pick<F, `~${TypeParameterIdentifier}` & keyof F>;
+/**
+ * Pick all passed type arguments of an applied {@linkcode TypeLambdaG}.
+ *
+ * Useful to preserve generic type parameters when creating new generic type-level functions based on existing ones.
+ *
+ * @example
+ * ```typescript
+ * interface Map<F extends TypeLambda1> extends TypeLambda {
+ *   "~hkt": F["~hkt"];
+ *   signature: (xs: Param0<F & PickTypeArgs<this>>[]) => RetType<F & PickTypeArgs<this>>[];
+ *   return: _Map<Arg0<this>, F>;
+ * }
+ * type _Map<F, TS> = { [K in keyof TS]: Call1W<F, TS[K]> };
+ *
+ * type MapSig1 = Sig<Map<Identity>>; // => <T>(xs: T[]) => T[]
+ *
+ * interface ParseNumber extends TypeLambda<[s: string], number> {
+ *   return: Arg0<this> extends `${infer N extends number}` ? N : never;
+ * }
+ *
+ * type MapSig2 = Sig<Map<ParseNumber>>; // => (xs: string[]) => number[]
+ * ```
+ */
+export type PickTypeArgs<F> = Pick<F, `~${TypeParameterIdentifier}` & keyof F>;
 // Omit extract keys and keys that are not the subtype of declared parameters or return type
 type _OmitInvalidKeysInKnown<F extends TypeLambdaG, Known> = {
   [K in Extract<
@@ -1128,7 +1151,7 @@ type _BuildKnownReturnType<Known> =
 // declared parameters.
 interface _FlipParameterVariance<F extends TypeLambdaG, Known> extends TypeLambda {
   readonly "~hkt": F["~hkt"];
-  readonly signature: _WrapInForEachParameter<(F & _PickTypeArgs<this>)["signature"], Known>;
+  readonly signature: _WrapInForEachParameter<(F & PickTypeArgs<this>)["signature"], Known>;
 }
 type _WrapInForEachParameter<S extends (...args: never) => unknown, Known> =
   "r" extends keyof Known ?
@@ -1574,7 +1597,7 @@ export interface TupledNormal<F extends TypeLambda<never, unknown>>
 export interface TupledGeneric<F extends TypeLambdaG & TypeLambda<never, unknown>>
   extends TypeLambdaG {
   readonly ["~hkt"]: F["~hkt"];
-  readonly signature: (F & _PickTypeArgs<this>)["signature"] extends infer S ?
+  readonly signature: (F & PickTypeArgs<this>)["signature"] extends infer S ?
     (args: ParametersW<S>) => ReturnTypeW<S>
   : never;
   readonly return: ApplyW<F, Arg0<this>>;
@@ -1607,7 +1630,7 @@ export interface UntupledNormal<F extends TypeLambda1<any, unknown>>
 export interface UntupledGeneric<F extends TypeLambdaG & TypeLambda1<any, unknown>>
   extends TypeLambdaG {
   readonly ["~hkt"]: F["~hkt"];
-  readonly signature: (F & _PickTypeArgs<this>)["signature"] extends infer S ?
+  readonly signature: (F & PickTypeArgs<this>)["signature"] extends infer S ?
     (
       ...args: ParametersW<S>[0] extends readonly unknown[] ? ParametersW<S>[0] : never
     ) => ReturnTypeW<S>
@@ -1672,7 +1695,7 @@ export interface Flip2Normal<F extends TypeLambda2<never, never, unknown>>
 export interface Flip2Generic<F extends TypeLambdaG & TypeLambda2<never, never, unknown>>
   extends TypeLambdaG {
   readonly ["~hkt"]: F["~hkt"];
-  readonly signature: (F & _PickTypeArgs<this>)["signature"] extends infer S ?
+  readonly signature: (F & PickTypeArgs<this>)["signature"] extends infer S ?
     // Use `GetPart` to preserve tuple labels
     (...args: [...GetPart<ParametersW<S>, 1>, ...HeadPart<ParametersW<S>>]) => ReturnTypeW<S>
   : never;
@@ -1694,7 +1717,7 @@ export interface Flip1Generic<
   F extends TypeLambdaG & TypeLambda1<never, TypeLambda1<never, unknown>>,
 > extends TypeLambdaG {
   readonly ["~hkt"]: F["~hkt"];
-  readonly signature: (F & _PickTypeArgs<this>)["signature"] extends infer S ?
+  readonly signature: (F & PickTypeArgs<this>)["signature"] extends infer S ?
     (...args: ParamsW<ReturnTypeW<S>>) => TypeLambda<ParametersW<S>, RetTypeW<ReturnTypeW<S>>>
   : never;
   readonly return: _Flip1Generic<F, RawArg0<this>>;
@@ -1715,7 +1738,7 @@ interface _FlipIntermediateParameterVarianceForCurried2<F extends TypeLambda<nev
   extends TypeLambda {
   readonly ["~hkt"]: F["~hkt"];
   readonly signature: _WrapInForIntermediateParameterOfCurried2<
-    (F & _PickTypeArgs<this>)["signature"]
+    (F & PickTypeArgs<this>)["signature"]
   >;
 }
 type _WrapInForIntermediateParameterOfCurried2<S> = (
@@ -1814,7 +1837,7 @@ interface _Curry2Normal<F extends TypeLambda2<never, never, unknown>, A0>
 export interface Curry2Generic<F extends TypeLambdaG & TypeLambda2<never, never, unknown>>
   extends TypeLambdaG {
   readonly ["~hkt"]: F["~hkt"];
-  readonly signature: (F & _PickTypeArgs<this>)["signature"] extends infer S ?
+  readonly signature: (F & PickTypeArgs<this>)["signature"] extends infer S ?
     // Use `GetPart` to preserve tuple labels
     (
       ...args: [...HeadPart<ParametersW<S>>]
@@ -1852,7 +1875,7 @@ interface __Curry3Normal<F extends TypeLambda3<never, never, never, unknown>, A0
 export interface Curry3Generic<F extends TypeLambdaG & TypeLambda3<never, never, never, unknown>>
   extends TypeLambdaG {
   readonly ["~hkt"]: F["~hkt"];
-  readonly signature: (F & _PickTypeArgs<this>)["signature"] extends infer S ?
+  readonly signature: (F & PickTypeArgs<this>)["signature"] extends infer S ?
     // Use `GetPart` to preserve tuple labels
     (
       ...args: [...HeadPart<ParametersW<S>>]
@@ -1912,7 +1935,7 @@ export interface Curry4Generic<
   F extends TypeLambdaG & TypeLambda4<never, never, never, never, unknown>,
 > extends TypeLambdaG {
   readonly ["~hkt"]: F["~hkt"];
-  readonly signature: (F & _PickTypeArgs<this>)["signature"] extends infer S ?
+  readonly signature: (F & PickTypeArgs<this>)["signature"] extends infer S ?
     // Use `GetPart` to preserve tuple labels
     (
       ...args: [...HeadPart<ParametersW<S>>]
@@ -2088,7 +2111,7 @@ export interface PartialGeneric<F extends TypeLambdaG, ProvidedArgs> extends Typ
       _OmitFixedTypeParams<F["~hkt"][K], TypeArgs<F, ProvidedArgs>>
     : F["~hkt"][K];
   };
-  readonly signature: (F & TypeArgs<F, ProvidedArgs> & _PickTypeArgs<this>)["signature"] extends (
+  readonly signature: (F & TypeArgs<F, ProvidedArgs> & PickTypeArgs<this>)["signature"] extends (
     infer S
   ) ?
     (...args: _OmitProvidedArgsInParams<ParametersW<S>, ProvidedArgs>) => ReturnTypeW<S>
@@ -2181,7 +2204,7 @@ export interface ComposeGeneric<
   F extends TypeLambdaG & TypeLambda1<never, unknown>,
 > extends TypeLambdaG {
   readonly ["~hkt"]: F["~hkt"];
-  readonly signature: (F & _PickTypeArgs<this>)["signature"] extends infer S ?
+  readonly signature: (F & PickTypeArgs<this>)["signature"] extends infer S ?
     (...args: ParametersW<S>) => RetType<G, [ReturnTypeW<S>]>
   : never;
   readonly return: Call1W<G, Call1W<F, RawArg0<this>>>;
