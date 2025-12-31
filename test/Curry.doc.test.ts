@@ -74,8 +74,10 @@ describe("Curry", () => {
   });
 
   it("should curry a quaternary type-level function", () => {
-    interface Zip4Str
-      extends TypeLambda<[s1: string[], s2: string[], s3: string[], s4: string[]], string[]> {
+    interface Zip4Str extends TypeLambda<
+      [s1: string[], s2: string[], s3: string[], s4: string[]],
+      string[]
+    > {
       return: _Zip4Str<Arg0<this>, Arg1<this>, Arg2<this>, Arg3<this>>;
     }
     type _Zip4Str<A, B, C, D> =

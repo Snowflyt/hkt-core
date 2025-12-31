@@ -30,6 +30,7 @@ import type {
   Pipe,
   RawArg0,
   RawArg1,
+  RawTArg,
   RetType,
   Sig,
   TArg,
@@ -217,8 +218,10 @@ test("Quickstart > Use as type-level functions ✨", () => {
     }
 
     /* Define type-level functions for filtering, mapping and joining */
-    interface Filter<F extends TypeLambda1<never, boolean>>
-      extends TypeLambda<[xs: Param0<F>[]], Param0<F>[]> {
+    interface Filter<F extends TypeLambda1<never, boolean>> extends TypeLambda<
+      [xs: Param0<F>[]],
+      Param0<F>[]
+    > {
       return: _Filter<F, Arg0<this>>;
     }
     type _Filter<F, TS, Acc extends unknown[] = []> =
@@ -278,8 +281,10 @@ test("Documentation > Generic type-level functions", () => {
       return: Capitalize<Arg0<this>>;
     }
 
-    interface Filter<F extends TypeLambda1<never, boolean>>
-      extends TypeLambda<[xs: Param0<F>[]], Param0<F>[]> {
+    interface Filter<F extends TypeLambda1<never, boolean>> extends TypeLambda<
+      [xs: Param0<F>[]],
+      Param0<F>[]
+    > {
       return: _Filter<F, Arg0<this>>;
     }
     type _Filter<F, TS, Acc extends unknown[] = []> =
@@ -615,16 +620,15 @@ test("Documentation > Common Utilities > `Always`, `Identity` and `Ask`", () => 
     type Ok<T> = { _tag: "Ok"; value: T };
     type Err<E> = { _tag: "Err"; error: E };
 
-    interface MatchResult<OnOk extends TypeLambda1, OnErr extends TypeLambda1>
-      extends TypeLambda<
-        [
-          result: Result<
-            OnOk extends TypeLambda0 ? unknown : Param0<OnOk>,
-            OnErr extends TypeLambda0 ? unknown : Param0<OnErr>
-          >,
-        ],
-        RetType<OnOk> | RetType<OnErr>
-      > {
+    interface MatchResult<OnOk extends TypeLambda1, OnErr extends TypeLambda1> extends TypeLambda<
+      [
+        result: Result<
+          OnOk extends TypeLambda0 ? unknown : Param0<OnOk>,
+          OnErr extends TypeLambda0 ? unknown : Param0<OnErr>
+        >,
+      ],
+      RetType<OnOk> | RetType<OnErr>
+    > {
       return: Arg0<this> extends { _tag: "Ok"; value: infer T } ? Call1<OnOk, T>
       : Arg0<this> extends { _tag: "Err"; error: infer E } ? Call1<OnErr, E>
       : never;

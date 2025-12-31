@@ -39,7 +39,7 @@
     "test": "tsc --noEmit && typroof"
   },
   "devDependencies": {
-    "@typescript-eslint/parser": "^8.46.4",
+    "@typescript-eslint/parser": "^8.51.0",
     "commitlint": "^20.2.0",
     "cpy-cli": "^6.0.0",
     "effect": "^3.19.13",
@@ -59,7 +59,7 @@
     "replace-in-file": "^8.4.0",
     "rimraf": "^6.1.2",
     "typescript": "latest",
-    "typescript-eslint": "^8.50.1",
+    "typescript-eslint": "^8.51.0",
     "typroof": "^0.6.0"
   }
 }

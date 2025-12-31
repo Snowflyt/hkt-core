@@ -257,8 +257,10 @@ export type HKT<T = any, F = any> = TypeLambda1<T, F>;
  *
  * @see {@linkcode TypeLambda}
  */
-export interface TypeLambda2<in A0 = any, in A1 = any, out R = any>
-  extends TypeLambda<[A0, A1], R> {}
+export interface TypeLambda2<in A0 = any, in A1 = any, out R = any> extends TypeLambda<
+  [A0, A1],
+  R
+> {}
 /**
  * An alias of {@linkcode TypeLambda2}.
  */
@@ -268,8 +270,10 @@ export type HKT2<T = any, U = any, F = any> = TypeLambda2<T, U, F>;
  *
  * @see {@linkcode TypeLambda}
  */
-export interface TypeLambda3<in A0 = any, in A1 = any, in A2 = any, out R = any>
-  extends TypeLambda<[A0, A1, A2], R> {}
+export interface TypeLambda3<in A0 = any, in A1 = any, in A2 = any, out R = any> extends TypeLambda<
+  [A0, A1, A2],
+  R
+> {}
 /**
  * An alias of {@linkcode TypeLambda3}.
  */
@@ -279,8 +283,13 @@ export type HKT3<T = any, U = any, V = any, F = any> = TypeLambda3<T, U, V, F>;
  *
  * @see {@linkcode TypeLambda}
  */
-export interface TypeLambda4<in A0 = any, in A1 = any, in A2 = any, in A3 = any, out R = any>
-  extends TypeLambda<[A0, A1, A2, A3], R> {}
+export interface TypeLambda4<
+  in A0 = any,
+  in A1 = any,
+  in A2 = any,
+  in A3 = any,
+  out R = any,
+> extends TypeLambda<[A0, A1, A2, A3], R> {}
 /**
  * An alias of {@linkcode TypeLambda4}.
  */
@@ -860,8 +869,10 @@ export type TypeLambdaG<
         [TypeParameters[K], unknown]
       : never;
     }>;
-interface GenericTypeLambda<TypeParameters extends TypeParameter[]>
-  extends TypeLambda<never, unknown> {
+interface GenericTypeLambda<TypeParameters extends TypeParameter[]> extends TypeLambda<
+  never,
+  unknown
+> {
   readonly ["~hkt"]: GenericTypeLambdaMeta<TypeParameters>;
 }
 interface GenericTypeLambdaMeta<TypeParameters extends TypeParameter[]> extends TypeLambdaMeta {
@@ -1590,12 +1601,15 @@ export interface Ask<T> extends TypeLambda<[value: T], T> {
  */
 export type Tupled<F extends TypeLambda<never, unknown>> =
   F extends TypeLambdaG ? TupledGeneric<F> : TupledNormal<F>;
-export interface TupledNormal<F extends TypeLambda<never, unknown>>
-  extends TypeLambda<[args: Params<F>], RetType<F>> {
+export interface TupledNormal<F extends TypeLambda<never, unknown>> extends TypeLambda<
+  [args: Params<F>],
+  RetType<F>
+> {
   readonly return: ApplyW<F, Arg0<this>>;
 }
-export interface TupledGeneric<F extends TypeLambdaG & TypeLambda<never, unknown>>
-  extends TypeLambdaG {
+export interface TupledGeneric<
+  F extends TypeLambdaG & TypeLambda<never, unknown>,
+> extends TypeLambdaG {
   readonly ["~hkt"]: F["~hkt"];
   readonly signature: (F & PickTypeArgs<this>)["signature"] extends infer S ?
     (args: ParametersW<S>) => ReturnTypeW<S>
@@ -1623,12 +1637,15 @@ export interface TupledGeneric<F extends TypeLambdaG & TypeLambda<never, unknown
  */
 export type Untupled<F extends TypeLambda1<any, unknown>> =
   F extends TypeLambdaG ? UntupledGeneric<F> : UntupledNormal<F>;
-export interface UntupledNormal<F extends TypeLambda1<any, unknown>>
-  extends TypeLambda<[...args: Param0<F>], RetType<F>> {
+export interface UntupledNormal<F extends TypeLambda1<any, unknown>> extends TypeLambda<
+  [...args: Param0<F>],
+  RetType<F>
+> {
   readonly return: Call1W<F, Args<this>>;
 }
-export interface UntupledGeneric<F extends TypeLambdaG & TypeLambda1<any, unknown>>
-  extends TypeLambdaG {
+export interface UntupledGeneric<
+  F extends TypeLambdaG & TypeLambda1<any, unknown>,
+> extends TypeLambdaG {
   readonly ["~hkt"]: F["~hkt"];
   readonly signature: (F & PickTypeArgs<this>)["signature"] extends infer S ?
     (
@@ -1692,8 +1709,9 @@ export interface Flip2Normal<F extends TypeLambda2<never, never, unknown>>
   extends TypeLambda<[...GetPart<Params<F>, 1>, ...HeadPart<Params<F>>], RetType<F>> {
   readonly return: Call2W<F, RawArg1<this>, RawArg0<this>>;
 }
-export interface Flip2Generic<F extends TypeLambdaG & TypeLambda2<never, never, unknown>>
-  extends TypeLambdaG {
+export interface Flip2Generic<
+  F extends TypeLambdaG & TypeLambda2<never, never, unknown>,
+> extends TypeLambdaG {
   readonly ["~hkt"]: F["~hkt"];
   readonly signature: (F & PickTypeArgs<this>)["signature"] extends infer S ?
     // Use `GetPart` to preserve tuple labels
@@ -1709,8 +1727,10 @@ export interface Flip1Normal<F extends TypeLambda1<never, TypeLambda1<never, unk
   extends TypeLambda<Params<RetType<F>>, TypeLambda<Params<F>, RetType<RetType<F>>>> {
   readonly return: _Flip1Normal<F, RawArg0<this>>;
 }
-interface _Flip1Normal<F extends TypeLambda1<never, TypeLambda1<never, unknown>>, A1>
-  extends TypeLambda<Params<F>, RetType<RetType<F>>> {
+interface _Flip1Normal<
+  F extends TypeLambda1<never, TypeLambda1<never, unknown>>,
+  A1,
+> extends TypeLambda<Params<F>, RetType<RetType<F>>> {
   readonly return: Call1W<Call1W<F, RawArg0<this>>, A1>;
 }
 export interface Flip1Generic<
@@ -1722,20 +1742,23 @@ export interface Flip1Generic<
   : never;
   readonly return: _Flip1Generic<F, RawArg0<this>>;
 }
-interface _Flip1Generic<F extends TypeLambdaG & TypeLambda1<never, TypeLambda1<never, unknown>>, A1>
-  extends TypeLambda<
-    // `any` in `TypeLambda1<In<A1>, any>` here is intentional to avoid variance issues
+interface _Flip1Generic<
+  F extends TypeLambdaG & TypeLambda1<never, TypeLambda1<never, unknown>>,
+  A1,
+> extends TypeLambda<
+  // `any` in `TypeLambda1<In<A1>, any>` here is intentional to avoid variance issues
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-arguments
+  Params<_FlipIntermediateParameterVarianceForCurried2<F>, { r: TypeLambda1<In<A1>, any> }>,
+  RetTypeW<
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-arguments
-    Params<_FlipIntermediateParameterVarianceForCurried2<F>, { r: TypeLambda1<In<A1>, any> }>,
-    RetTypeW<
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-arguments
-      RetType<_FlipIntermediateParameterVarianceForCurried2<F>, { r: TypeLambda1<In<A1>, any> }>
-    >
-  > {
+    RetType<_FlipIntermediateParameterVarianceForCurried2<F>, { r: TypeLambda1<In<A1>, any> }>
+  >
+> {
   readonly return: Call1W<Call1W<F, RawArg0<this>>, A1>;
 }
-interface _FlipIntermediateParameterVarianceForCurried2<F extends TypeLambda<never, unknown>>
-  extends TypeLambda {
+interface _FlipIntermediateParameterVarianceForCurried2<
+  F extends TypeLambda<never, unknown>,
+> extends TypeLambda {
   readonly ["~hkt"]: F["~hkt"];
   readonly signature: _WrapInForIntermediateParameterOfCurried2<
     (F & PickTypeArgs<this>)["signature"]
@@ -1830,12 +1853,15 @@ export interface Curry2Normal<F extends TypeLambda2<never, never, unknown>>
   extends TypeLambda<[...HeadPart<Params<F>>], TypeLambda<[...GetPart<Params<F>, 1>], RetType<F>>> {
   readonly return: _Curry2Normal<F, RawArg0<this>>;
 }
-interface _Curry2Normal<F extends TypeLambda2<never, never, unknown>, A0>
-  extends TypeLambda<[...GetPart<Params<F>, 1>], RetType<F>> {
+interface _Curry2Normal<F extends TypeLambda2<never, never, unknown>, A0> extends TypeLambda<
+  [...GetPart<Params<F>, 1>],
+  RetType<F>
+> {
   readonly return: Call2W<F, A0, RawArg0<this>>;
 }
-export interface Curry2Generic<F extends TypeLambdaG & TypeLambda2<never, never, unknown>>
-  extends TypeLambdaG {
+export interface Curry2Generic<
+  F extends TypeLambdaG & TypeLambda2<never, never, unknown>,
+> extends TypeLambdaG {
   readonly ["~hkt"]: F["~hkt"];
   readonly signature: (F & PickTypeArgs<this>)["signature"] extends infer S ?
     // Use `GetPart` to preserve tuple labels
@@ -1861,19 +1887,22 @@ export interface Curry3Normal<F extends TypeLambda3<never, never, never, unknown
   > {
   readonly return: _Curry3Normal<F, RawArg0<this>>;
 }
-interface _Curry3Normal<F extends TypeLambda3<never, never, never, unknown>, A0>
-  extends TypeLambda<
-    [...GetPart<Params<F>, 1>],
-    TypeLambda<[...GetPart<Params<F>, 2>], RetType<F>>
-  > {
+interface _Curry3Normal<F extends TypeLambda3<never, never, never, unknown>, A0> extends TypeLambda<
+  [...GetPart<Params<F>, 1>],
+  TypeLambda<[...GetPart<Params<F>, 2>], RetType<F>>
+> {
   readonly return: __Curry3Normal<F, A0, RawArg0<this>>;
 }
-interface __Curry3Normal<F extends TypeLambda3<never, never, never, unknown>, A0, A1>
-  extends TypeLambda<[...GetPart<Params<F>, 2>], RetType<F>> {
+interface __Curry3Normal<
+  F extends TypeLambda3<never, never, never, unknown>,
+  A0,
+  A1,
+> extends TypeLambda<[...GetPart<Params<F>, 2>], RetType<F>> {
   readonly return: Call3W<F, A0, A1, RawArg0<this>>;
 }
-export interface Curry3Generic<F extends TypeLambdaG & TypeLambda3<never, never, never, unknown>>
-  extends TypeLambdaG {
+export interface Curry3Generic<
+  F extends TypeLambdaG & TypeLambda3<never, never, never, unknown>,
+> extends TypeLambdaG {
   readonly ["~hkt"]: F["~hkt"];
   readonly signature: (F & PickTypeArgs<this>)["signature"] extends infer S ?
     // Use `GetPart` to preserve tuple labels
@@ -1913,22 +1942,31 @@ export interface Curry4Normal<F extends TypeLambda4<never, never, never, never, 
   > {
   readonly return: _Curry4Normal<F, RawArg0<this>>;
 }
-interface _Curry4Normal<F extends TypeLambda4<never, never, never, never, unknown>, A0>
-  extends TypeLambda<
-    [...GetPart<Params<F>, 1>],
-    TypeLambda<[...GetPart<Params<F>, 2>], TypeLambda<[...GetPart<Params<F>, 3>], RetType<F>>>
-  > {
+interface _Curry4Normal<
+  F extends TypeLambda4<never, never, never, never, unknown>,
+  A0,
+> extends TypeLambda<
+  [...GetPart<Params<F>, 1>],
+  TypeLambda<[...GetPart<Params<F>, 2>], TypeLambda<[...GetPart<Params<F>, 3>], RetType<F>>>
+> {
   readonly return: __Curry4Normal<F, A0, RawArg0<this>>;
 }
-interface __Curry4Normal<F extends TypeLambda4<never, never, never, never, unknown>, A0, A1>
-  extends TypeLambda<
-    [...GetPart<Params<F>, 2>],
-    TypeLambda<[...GetPart<Params<F>, 3>], RetType<F>>
-  > {
+interface __Curry4Normal<
+  F extends TypeLambda4<never, never, never, never, unknown>,
+  A0,
+  A1,
+> extends TypeLambda<
+  [...GetPart<Params<F>, 2>],
+  TypeLambda<[...GetPart<Params<F>, 3>], RetType<F>>
+> {
   readonly return: ___Curry4Normal<F, A0, A1, RawArg0<this>>;
 }
-interface ___Curry4Normal<F extends TypeLambda4<never, never, never, never, unknown>, A0, A1, A2>
-  extends TypeLambda<[...GetPart<Params<F>, 3>], RetType<F>> {
+interface ___Curry4Normal<
+  F extends TypeLambda4<never, never, never, never, unknown>,
+  A0,
+  A1,
+  A2,
+> extends TypeLambda<[...GetPart<Params<F>, 3>], RetType<F>> {
   readonly return: Call4W<F, A0, A1, A2, RawArg0<this>>;
 }
 export interface Curry4Generic<
@@ -1950,9 +1988,9 @@ export interface Curry4Generic<
   readonly return: _Curry4Generic<F, RawArg0<this>>;
 }
 interface _Curry4Generic<
-    F extends TypeLambdaG & TypeLambda4<never, never, never, never, unknown>,
-    A0,
-  >
+  F extends TypeLambdaG & TypeLambda4<never, never, never, never, unknown>,
+  A0,
+>
   // Use `GetPart` to preserve tuple labels
   extends TypeLambda<
     [...GetPart<Params<F, [A0]>, 1>],
@@ -1964,10 +2002,10 @@ interface _Curry4Generic<
   readonly return: __Curry4Generic<F, A0, RawArg0<this>>;
 }
 interface __Curry4Generic<
-    F extends TypeLambdaG & TypeLambda4<never, never, never, never, unknown>,
-    A0,
-    A1,
-  >
+  F extends TypeLambdaG & TypeLambda4<never, never, never, never, unknown>,
+  A0,
+  A1,
+>
   // Use `GetPart` to preserve tuple labels
   extends TypeLambda<
     [...GetPart<Params<F, [A0, A1]>, 2>],
@@ -1976,11 +2014,11 @@ interface __Curry4Generic<
   readonly return: ___Curry4Generic<F, A0, A1, RawArg0<this>>;
 }
 interface ___Curry4Generic<
-    F extends TypeLambdaG & TypeLambda4<never, never, never, never, unknown>,
-    A0,
-    A1,
-    A2,
-  >
+  F extends TypeLambdaG & TypeLambda4<never, never, never, never, unknown>,
+  A0,
+  A1,
+  A2,
+>
   // Use `GetPart` to preserve tuple labels
   extends TypeLambda<[...GetPart<Params<F, [A0, A1, A2]>, 3>], RetType<F, [A0, A1, A2]>> {
   readonly return: Call4W<F, A0, A1, A2, RawArg0<this>>;
@@ -2101,8 +2139,10 @@ type _RebuildFullArgsFromPartial<
   : PartialArgs extends [infer PHead, ...infer PTail] ?
     _RebuildFullArgsFromPartial<PTail, ProvidedArgs, [...Counter, void], [...Result, PHead]>
   : Result;
-export interface PartialNormal<F extends TypeLambda<never, unknown>, ProvidedArgs>
-  extends TypeLambda<_OmitProvidedArgsInParams<Params<F>, ProvidedArgs>, RetType<F>> {
+export interface PartialNormal<
+  F extends TypeLambda<never, unknown>,
+  ProvidedArgs,
+> extends TypeLambda<_OmitProvidedArgsInParams<Params<F>, ProvidedArgs>, RetType<F>> {
   readonly return: ApplyW<F, _RebuildFullArgsFromPartial<RawArgs<this>, ProvidedArgs>>;
 }
 export interface PartialGeneric<F extends TypeLambdaG, ProvidedArgs> extends TypeLambdaG {
