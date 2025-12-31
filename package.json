@@ -1,6 +1,6 @@
 {
   "name": "hkt-core",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "private": true,
   "description": "🍃 A micro HKT (higher-kinded type) implementation for TypeScript, with type safety elegantly guaranteed.",
   "keywords": [
