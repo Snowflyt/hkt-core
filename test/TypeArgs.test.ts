@@ -57,4 +57,24 @@ describe("TypeArgs", () => {
     expect<TypeArgs<Elem, [never]>>().to(equal<{ readonly "~T": unknown }>);
     expect<TypeArgs<Elem, [any]>>().to(equal<{ readonly "~T": unknown }>);
   });
+
+  it("should infer type parameters under generic context", () => {
+    interface WithoutConstraints extends TypeLambdaG<["T", "U"]> {
+      signature: (a: TArg<this, "T">, b: TArg<this, "U">) => [TArg<this, "T">, TArg<this, "U">];
+      return: [Arg0<this>, Arg1<this>];
+    }
+
+    interface WithConstraints extends TypeLambdaG<[["T", string], "U"]> {
+      signature: (a: TArg<this, "T">, b: TArg<this, "U">) => [TArg<this, "T">, TArg<this, "U">];
+      return: [Arg0<this>, Arg1<this>];
+    }
+
+    (<T extends string>() => {
+      expect<TypeArgs<WithoutConstraints, [T]>>().to(equal<{ readonly "~T": T }>);
+
+      expect<keyof TypeArgs<WithConstraints, [T]>>().to(equal<"~T">);
+      expect<keyof TypeArgs<WithConstraints, { 1: T }>>().to(equal<"~U">);
+      expect<keyof TypeArgs<WithConstraints, [T, {}]>>().to(equal<"~T" | "~U">);
+    })();
+  });
 });

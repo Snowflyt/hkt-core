@@ -934,6 +934,9 @@ export type RawTArg<F extends TypeLambdaG, Name extends F["~hkt"]["tparams"][num
  * and return type. If a type argument cannot be inferred due to type parameter variance or lack of
  * information, it will not be included in the resulting type.
  *
+ * **⚠️ Warning:** This utility does not type check whether the types in `Known` are valid for the
+ * given {@linkcode TypeLambdaG}. Use with caution.
+ *
  * @example
  * ```typescript
  * interface Map extends TypeLambdaG<["T", "U"]> {
@@ -958,7 +961,7 @@ export type TypeArgs<F extends TypeLambdaG, Known = never> =
   [Known] extends [never] ?
     // A quick path if no parameters or return type is known
     {}
-  : _TypeArgs<F, _OmitInvalidKeysInKnown<F, Known>>;
+  : _TypeArgs<F, Known>;
 /**
  * Pick all passed type arguments of an applied {@linkcode TypeLambdaG}.
  *
@@ -983,160 +986,228 @@ export type TypeArgs<F extends TypeLambdaG, Known = never> =
  * ```
  */
 export type PickTypeArgs<F> = Pick<F, `~${TypeParameterIdentifier}` & keyof F>;
-// Omit extract keys and keys that are not the subtype of declared parameters or return type
-type _OmitInvalidKeysInKnown<F extends TypeLambdaG, Known> = {
-  [K in Extract<
-    IndexOf<Known> | Extract<keyof Known, "r">,
-    IndexOf<Parameters<F["signature"]>> | "r"
-  > as Known[K] extends (K extends number ? TolerantParams<F>[K] : TolerantRetType<F>) ? K
-  : never]: Known[K];
-};
 type _TypeArgs<F extends TypeLambdaG, Known> =
   F["~hkt"]["tparams"]["length"] extends 4 ?
-    _BuildKnownSignature<ParametersW<F["signature"]>["length"], Known> extends (
-      (_FlipParameterVariance<F, Known> & {
-        readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: infer T;
-      } & {
-        readonly [K in `~${F["~hkt"]["tparams"][1][0]}`]: infer U;
-      } & {
-        readonly [K in `~${F["~hkt"]["tparams"][2][0]}`]: infer V;
-      } & {
-        readonly [K in `~${F["~hkt"]["tparams"][3][0]}`]: infer W;
-      })["signature"]
-    ) ?
-      {
-        readonly [K in `~${F["~hkt"]["tparams"][number][0]}` as K extends (
-          `~${F["~hkt"]["tparams"][0][0]}`
+    {
+      readonly [K in `~${F["~hkt"]["tparams"][number][0]}` as K extends (
+        `~${F["~hkt"]["tparams"][0][0]}`
+      ) ?
+        _TestTypeParametersVarianceAtIndex<
+          F,
+          [F["~hkt"]["tparams"][0]],
+          IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
+        > extends { readonly [P in K]: "irrelevant" } ?
+          never
+        : K
+      : K extends `~${F["~hkt"]["tparams"][1][0]}` ?
+        _TestTypeParametersVarianceAtIndex<
+          F,
+          [F["~hkt"]["tparams"][1]],
+          IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
+        > extends { readonly [P in K]: "irrelevant" } ?
+          never
+        : K
+      : K extends `~${F["~hkt"]["tparams"][2][0]}` ?
+        _TestTypeParametersVarianceAtIndex<
+          F,
+          [F["~hkt"]["tparams"][2]],
+          IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
+        > extends { readonly [P in K]: "irrelevant" } ?
+          never
+        : K
+      : K extends `~${F["~hkt"]["tparams"][3][0]}` ?
+        _TestTypeParametersVarianceAtIndex<
+          F,
+          [F["~hkt"]["tparams"][3]],
+          IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
+        > extends { readonly [P in K]: "irrelevant" } ?
+          never
+        : K
+      : never]: K extends `~${F["~hkt"]["tparams"][0][0]}` ?
+        _BuildKnownSignature<ParametersW<F["signature"]>["length"], Known> extends (
+          (_FlipParameterVariance<F, Known> & {
+            readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: infer T;
+          } & {
+            readonly [K in `~${F["~hkt"]["tparams"][1][0]}`]: infer _U;
+          } & {
+            readonly [K in `~${F["~hkt"]["tparams"][2][0]}`]: infer _V;
+          } & {
+            readonly [K in `~${F["~hkt"]["tparams"][3][0]}`]: infer _W;
+          })["signature"]
         ) ?
-          _TestTypeParametersVarianceAtIndex<
-            F,
-            [F["~hkt"]["tparams"][0]],
-            IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
-          > extends { readonly [P in K]: "irrelevant" } ?
-            never
-          : K
-        : K extends `~${F["~hkt"]["tparams"][1][0]}` ?
-          _TestTypeParametersVarianceAtIndex<
-            F,
-            [F["~hkt"]["tparams"][1]],
-            IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
-          > extends { readonly [P in K]: "irrelevant" } ?
-            never
-          : K
-        : K extends `~${F["~hkt"]["tparams"][2][0]}` ?
-          _TestTypeParametersVarianceAtIndex<
-            F,
-            [F["~hkt"]["tparams"][2]],
-            IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
-          > extends { readonly [P in K]: "irrelevant" } ?
-            never
-          : K
-        : K extends `~${F["~hkt"]["tparams"][3][0]}` ?
-          _TestTypeParametersVarianceAtIndex<
-            F,
-            [F["~hkt"]["tparams"][3]],
-            IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
-          > extends { readonly [P in K]: "irrelevant" } ?
-            never
-          : K
-        : never]: K extends `~${F["~hkt"]["tparams"][0][0]}` ? T & F["~hkt"]["tparams"][0][1]
-        : K extends `~${F["~hkt"]["tparams"][1][0]}` ? U & F["~hkt"]["tparams"][1][1]
-        : K extends `~${F["~hkt"]["tparams"][2][0]}` ? V & F["~hkt"]["tparams"][2][1]
-        : K extends `~${F["~hkt"]["tparams"][3][0]}` ? W & F["~hkt"]["tparams"][3][1]
-        : never;
-      }
-    : never
+          T & F["~hkt"]["tparams"][0][1]
+        : never
+      : K extends `~${F["~hkt"]["tparams"][1][0]}` ?
+        _BuildKnownSignature<ParametersW<F["signature"]>["length"], Known> extends (
+          (_FlipParameterVariance<F, Known> & {
+            readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: infer _T;
+          } & {
+            readonly [K in `~${F["~hkt"]["tparams"][1][0]}`]: infer U;
+          } & {
+            readonly [K in `~${F["~hkt"]["tparams"][2][0]}`]: infer _V;
+          } & {
+            readonly [K in `~${F["~hkt"]["tparams"][3][0]}`]: infer _W;
+          })["signature"]
+        ) ?
+          U & F["~hkt"]["tparams"][1][1]
+        : never
+      : K extends `~${F["~hkt"]["tparams"][2][0]}` ?
+        _BuildKnownSignature<ParametersW<F["signature"]>["length"], Known> extends (
+          (_FlipParameterVariance<F, Known> & {
+            readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: infer _T;
+          } & {
+            readonly [K in `~${F["~hkt"]["tparams"][1][0]}`]: infer _U;
+          } & {
+            readonly [K in `~${F["~hkt"]["tparams"][2][0]}`]: infer V;
+          } & {
+            readonly [K in `~${F["~hkt"]["tparams"][3][0]}`]: infer _W;
+          })["signature"]
+        ) ?
+          V & F["~hkt"]["tparams"][2][1]
+        : never
+      : K extends `~${F["~hkt"]["tparams"][3][0]}` ?
+        _BuildKnownSignature<ParametersW<F["signature"]>["length"], Known> extends (
+          (_FlipParameterVariance<F, Known> & {
+            readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: infer _T;
+          } & {
+            readonly [K in `~${F["~hkt"]["tparams"][1][0]}`]: infer _U;
+          } & {
+            readonly [K in `~${F["~hkt"]["tparams"][2][0]}`]: infer _V;
+          } & {
+            readonly [K in `~${F["~hkt"]["tparams"][3][0]}`]: infer W;
+          })["signature"]
+        ) ?
+          W & F["~hkt"]["tparams"][3][1]
+        : never
+      : never;
+    }
   : F["~hkt"]["tparams"]["length"] extends 3 ?
-    _BuildKnownSignature<ParametersW<F["signature"]>["length"], Known> extends (
-      (_FlipParameterVariance<F, Known> & {
-        readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: infer T;
-      } & {
-        readonly [K in `~${F["~hkt"]["tparams"][1][0]}`]: infer U;
-      } & {
-        readonly [K in `~${F["~hkt"]["tparams"][2][0]}`]: infer V;
-      })["signature"]
-    ) ?
-      {
-        readonly [K in `~${F["~hkt"]["tparams"][number][0]}` as K extends (
-          `~${F["~hkt"]["tparams"][0][0]}`
+    {
+      readonly [K in `~${F["~hkt"]["tparams"][number][0]}` as K extends (
+        `~${F["~hkt"]["tparams"][0][0]}`
+      ) ?
+        _TestTypeParametersVarianceAtIndex<
+          F,
+          [F["~hkt"]["tparams"][0]],
+          IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
+        > extends { readonly [P in K]: "irrelevant" } ?
+          never
+        : K
+      : K extends `~${F["~hkt"]["tparams"][1][0]}` ?
+        _TestTypeParametersVarianceAtIndex<
+          F,
+          [F["~hkt"]["tparams"][1]],
+          IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
+        > extends { readonly [P in K]: "irrelevant" } ?
+          never
+        : K
+      : K extends `~${F["~hkt"]["tparams"][2][0]}` ?
+        _TestTypeParametersVarianceAtIndex<
+          F,
+          [F["~hkt"]["tparams"][2]],
+          IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
+        > extends { readonly [P in K]: "irrelevant" } ?
+          never
+        : K
+      : never]: K extends `~${F["~hkt"]["tparams"][0][0]}` ?
+        _BuildKnownSignature<ParametersW<F["signature"]>["length"], Known> extends (
+          (_FlipParameterVariance<F, Known> & {
+            readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: infer T;
+          } & {
+            readonly [K in `~${F["~hkt"]["tparams"][1][0]}`]: infer _U;
+          } & {
+            readonly [K in `~${F["~hkt"]["tparams"][2][0]}`]: infer _V;
+          })["signature"]
         ) ?
-          _TestTypeParametersVarianceAtIndex<
-            F,
-            [F["~hkt"]["tparams"][0]],
-            IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
-          > extends { readonly [P in K]: "irrelevant" } ?
-            never
-          : K
-        : K extends `~${F["~hkt"]["tparams"][1][0]}` ?
-          _TestTypeParametersVarianceAtIndex<
-            F,
-            [F["~hkt"]["tparams"][1]],
-            IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
-          > extends { readonly [P in K]: "irrelevant" } ?
-            never
-          : K
-        : K extends `~${F["~hkt"]["tparams"][2][0]}` ?
-          _TestTypeParametersVarianceAtIndex<
-            F,
-            [F["~hkt"]["tparams"][2]],
-            IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
-          > extends { readonly [P in K]: "irrelevant" } ?
-            never
-          : K
-        : never]: K extends `~${F["~hkt"]["tparams"][0][0]}` ? T & F["~hkt"]["tparams"][0][1]
-        : K extends `~${F["~hkt"]["tparams"][1][0]}` ? U & F["~hkt"]["tparams"][1][1]
-        : K extends `~${F["~hkt"]["tparams"][2][0]}` ? V & F["~hkt"]["tparams"][2][1]
-        : never;
-      }
-    : never
+          T & F["~hkt"]["tparams"][0][1]
+        : never
+      : K extends `~${F["~hkt"]["tparams"][1][0]}` ?
+        _BuildKnownSignature<ParametersW<F["signature"]>["length"], Known> extends (
+          (_FlipParameterVariance<F, Known> & {
+            readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: infer _T;
+          } & {
+            readonly [K in `~${F["~hkt"]["tparams"][1][0]}`]: infer U;
+          } & {
+            readonly [K in `~${F["~hkt"]["tparams"][2][0]}`]: infer _V;
+          })["signature"]
+        ) ?
+          U & F["~hkt"]["tparams"][1][1]
+        : never
+      : K extends `~${F["~hkt"]["tparams"][2][0]}` ?
+        _BuildKnownSignature<ParametersW<F["signature"]>["length"], Known> extends (
+          (_FlipParameterVariance<F, Known> & {
+            readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: infer _T;
+          } & {
+            readonly [K in `~${F["~hkt"]["tparams"][1][0]}`]: infer _U;
+          } & {
+            readonly [K in `~${F["~hkt"]["tparams"][2][0]}`]: infer V;
+          })["signature"]
+        ) ?
+          V & F["~hkt"]["tparams"][2][1]
+        : never
+      : never;
+    }
   : F["~hkt"]["tparams"]["length"] extends 2 ?
-    _BuildKnownSignature<ParametersW<F["signature"]>["length"], Known> extends (
-      (_FlipParameterVariance<F, Known> & {
-        readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: infer T;
-      } & {
-        readonly [K in `~${F["~hkt"]["tparams"][1][0]}`]: infer U;
-      })["signature"]
-    ) ?
-      {
-        readonly [K in `~${F["~hkt"]["tparams"][number][0]}` as K extends (
-          `~${F["~hkt"]["tparams"][0][0]}`
+    {
+      readonly [K in `~${F["~hkt"]["tparams"][number][0]}` as K extends (
+        `~${F["~hkt"]["tparams"][0][0]}`
+      ) ?
+        _TestTypeParametersVarianceAtIndex<
+          F,
+          [F["~hkt"]["tparams"][0]],
+          IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
+        > extends { readonly [P in K]: "irrelevant" } ?
+          never
+        : K
+      : K extends `~${F["~hkt"]["tparams"][1][0]}` ?
+        _TestTypeParametersVarianceAtIndex<
+          F,
+          [F["~hkt"]["tparams"][1]],
+          IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
+        > extends { readonly [P in K]: "irrelevant" } ?
+          never
+        : K
+      : never]: K extends `~${F["~hkt"]["tparams"][0][0]}` ?
+        _BuildKnownSignature<ParametersW<F["signature"]>["length"], Known> extends (
+          (_FlipParameterVariance<F, Known> & {
+            readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: infer T;
+          } & {
+            readonly [K in `~${F["~hkt"]["tparams"][1][0]}`]: infer _U;
+          })["signature"]
         ) ?
-          _TestTypeParametersVarianceAtIndex<
-            F,
-            [F["~hkt"]["tparams"][0]],
-            IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
-          > extends { readonly [P in K]: "irrelevant" } ?
-            never
-          : K
-        : K extends `~${F["~hkt"]["tparams"][1][0]}` ?
-          _TestTypeParametersVarianceAtIndex<
-            F,
-            [F["~hkt"]["tparams"][1]],
-            IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
-          > extends { readonly [P in K]: "irrelevant" } ?
-            never
-          : K
-        : never]: K extends `~${F["~hkt"]["tparams"][0][0]}` ? T & F["~hkt"]["tparams"][0][1]
-        : K extends `~${F["~hkt"]["tparams"][1][0]}` ? U & F["~hkt"]["tparams"][1][1]
+          T & F["~hkt"]["tparams"][0][1]
+        : never
+      : K extends `~${F["~hkt"]["tparams"][1][0]}` ?
+        _BuildKnownSignature<ParametersW<F["signature"]>["length"], Known> extends (
+          (_FlipParameterVariance<F, Known> & {
+            readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: infer _T;
+          } & {
+            readonly [K in `~${F["~hkt"]["tparams"][1][0]}`]: infer U;
+          })["signature"]
+        ) ?
+          U & F["~hkt"]["tparams"][1][1]
+        : never
+      : never;
+    }
+  : F["~hkt"]["tparams"]["length"] extends 1 ?
+    _TestTypeParametersVarianceAtIndex<
+      F,
+      F["~hkt"]["tparams"],
+      IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
+    > extends { readonly [P in `~${F["~hkt"]["tparams"][0][0]}`]: "irrelevant" } ?
+      {}
+    : {
+        readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: _BuildKnownSignature<
+          ParametersW<F["signature"]>["length"],
+          Known
+        > extends (
+          (_FlipParameterVariance<F, Known> & {
+            readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: infer T;
+          })["signature"]
+        ) ?
+          T & F["~hkt"]["tparams"][0][1]
         : never;
       }
-    : never
-  : F["~hkt"]["tparams"]["length"] extends 1 ?
-    _BuildKnownSignature<ParametersW<F["signature"]>["length"], Known> extends (
-      (_FlipParameterVariance<F, Known> & {
-        readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: infer T;
-      })["signature"]
-    ) ?
-      _TestTypeParametersVarianceAtIndex<
-        F,
-        F["~hkt"]["tparams"],
-        IndexOf<Known> | ("r" extends keyof Known ? "r" : never)
-      > extends { readonly [P in `~${F["~hkt"]["tparams"][0][0]}`]: "irrelevant" } ?
-        {}
-      : {
-          readonly [K in `~${F["~hkt"]["tparams"][0][0]}`]: T & F["~hkt"]["tparams"][0][1];
-        }
-    : never
   : [];
 // Fill signature with `Known` parameters and rest with placeholders (`any` for parameters and
 // `never` for return type)
