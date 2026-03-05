@@ -1233,18 +1233,46 @@ type _BuildKnownReturnType<Known> =
 // declared parameters.
 interface _FlipParameterVariance<F extends TypeLambdaG, Known> extends TypeLambda {
   readonly "~hkt": F["~hkt"];
-  readonly signature: _WrapInForEachParameter<(F & PickTypeArgs<this>)["signature"], Known>;
+  readonly signature: _WrapInForEachParameter<
+    ParametersW<F["signature"]>,
+    (F & PickTypeArgs<this>)["signature"],
+    Known
+  >;
 }
-type _WrapInForEachParameter<S extends (...args: never) => unknown, Known> =
+// NOTE: Why do we use `K in keyof BaseParams` instead of just `K in keyof Params` here?
+// The reason is that we need to handle `void` as parameter type here.
+// When TypeScript instantiates `<T>(value: T) => Something` with `T = void`, the resulting
+// function type becomes `(value?: void) => Something`. Note that the parameter becomes optional.
+// This is useful when you write a `new Promise<void>((resolve, reject) => ...)`, since you
+// can call `resolve()` without any arguments.
+// However, in our case, we want to preserve the original optionality of the parameter, otherwise
+// `TypeArgs` will not be able to infer type arguments correctly when the known parameter is `void`.
+type _WrapInForEachParameter<
+  BaseParams extends unknown[],
+  S extends (...args: never) => unknown,
+  Known,
+> =
   "r" extends keyof Known ?
     (
-      ...args: Parameters<S> extends infer Params extends unknown[] ?
-        { [K in keyof Params]: StringToNumber<K> extends IndexOf<Known> ? In<Params[K]> : never }
+      ...args: ParametersW<S> extends infer Params extends unknown[] ?
+        {
+          [K in keyof BaseParams]: StringToNumber<K> extends IndexOf<Known> ?
+            K extends keyof Params ?
+              In<Params[K]>
+            : never
+          : never;
+        }
       : never
     ) => ReturnTypeW<S>
   : (
-      ...args: Parameters<S> extends infer Params extends unknown[] ?
-        { [K in keyof Params]: StringToNumber<K> extends IndexOf<Known> ? In<Params[K]> : never }
+      ...args: ParametersW<S> extends infer Params extends unknown[] ?
+        {
+          [K in keyof BaseParams]: StringToNumber<K> extends IndexOf<Known> ?
+            K extends keyof Params ?
+              In<Params[K]>
+            : never
+          : never;
+        }
       : never
     ) => unknown;
 

@@ -58,6 +58,15 @@ describe("TypeArgs", () => {
     expect<TypeArgs<Elem, [any]>>().to(equal<{ readonly "~T": unknown }>);
   });
 
+  it("should handle `void` as parameter type correctly", () => {
+    interface VoidParam extends TypeLambdaG<["T"]> {
+      signature: (value: TArg<this, "T">) => void;
+      return: void;
+    }
+
+    expect<TypeArgs<VoidParam, [void]>>().to(equal<{ readonly "~T": void }>);
+  });
+
   it("should infer type parameters under generic context", () => {
     interface WithoutConstraints extends TypeLambdaG<["T", "U"]> {
       signature: (a: TArg<this, "T">, b: TArg<this, "U">) => [TArg<this, "T">, TArg<this, "U">];
